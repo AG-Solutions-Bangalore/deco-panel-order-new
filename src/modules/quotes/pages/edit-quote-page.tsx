@@ -5,55 +5,63 @@ import { PageHeader } from "@/components/ui/page-header";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useUsersList, useProductsList } from "@/modules/orders/hooks/use-create-order";
-import { useOrderDetail, useCreateQuotationIndirectMutation, useFetchLastRateMutation } from "../hooks/use-quotes";
+import { useQuotationDetail, useUpdateQuotationMutation } from "../hooks/use-quotes";
 import SelectProductDialog from "@/modules/orders/components/SelectProductDialog";
 import { OrderProduct } from "@/modules/orders/types";
-import { ArrowLeft, User, Calendar, Plus, Trash2, ShieldCheck, HelpCircle } from "lucide-react";
+import { ArrowLeft, User, Calendar, Plus, Trash2, Edit3, Settings } from "lucide-react";
 import { useWebHaptics } from "web-haptics/react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Spinner } from "@/components/ui/spinner";
 
-interface CreateQuotePageProps {
-  orderId: string;
+interface EditQuotePageProps {
+  quoteId: string;
 }
 
-export function CreateQuotePage({ orderId }: CreateQuotePageProps) {
+export function EditQuotePage({ quoteId }: EditQuotePageProps) {
   const router = useRouter();
   const { trigger } = useWebHaptics();
 
-  // Parallel Query Fetching
-  const { data: orderData, isLoading: isLoadingOrder } = useOrderDetail(orderId);
+  // Queries
+  const { data: quoteData, isLoading: isLoadingQuote } = useQuotationDetail(quoteId);
   const { data: users = [], isLoading: isLoadingUsers } = useUsersList();
   const { data: products = [], isLoading: isLoadingProducts } = useProductsList();
 
   // Mutations
-  const createMutation = useCreateQuotationIndirectMutation();
-  const lastRateMutation = useFetchLastRateMutation();
+  const updateMutation = useUpdateQuotationMutation();
 
   // Form State
-  const [orderState, setOrderState] = useState({
-    orders_user_id: "",
-    orders_date: "",
-    orders_status: "",
-    orders_count: 0,
+  const [quotation, setQuotation] = useState({
+    order_user_id: "",
+    quotation_date: "",
+    quotation_status: "",
+    quotation_count: 0,
+    quotation_remarks: "",
+    quotation_delivery: "",
+    quotation_shipping: "",
   });
 
   const [items, setItems] = useState<Array<{
-    orders_sub_product_id: string | number;
-    orders_sub_quantity: string | number;
-    orders_sub_rate: string | number;
-    orders_sub_design_no: string;
+    quotation_sub_product_id: string | number;
+    quotation_sub_quantity: string | number;
+    quotation_sub_rate: string | number;
+    quotation_sub_design_no: string;
     id?: number | string;
-    last_rate?: number | string | null;
   }>>([
     {
-      orders_sub_product_id: "",
-      orders_sub_quantity: "",
-      orders_sub_rate: "",
-      orders_sub_design_no: "",
+      quotation_sub_product_id: "",
+      quotation_sub_quantity: "",
+      quotation_sub_rate: "",
+      quotation_sub_design_no: "",
     },
   ]);
 
@@ -61,56 +69,31 @@ export function CreateQuotePage({ orderId }: CreateQuotePageProps) {
   const [productDialogOpen, setProductDialogOpen] = useState(false);
   const [activeItemIndex, setActiveItemIndex] = useState<number | null>(null);
 
-  // Sync state when orderData loads
+  // Sync state when quoteData loads
   useEffect(() => {
-    if (orderData) {
-      setOrderState({
-        orders_user_id: String(orderData.order?.orders_user_id || ""),
-        orders_date: orderData.order?.orders_date || "",
-        orders_status: orderData.order?.orders_status || "",
-        orders_count: orderData.order?.orders_count || 0,
+    if (quoteData) {
+      setQuotation({
+        order_user_id: String(quoteData.quotation?.order_user_id || ""),
+        quotation_date: quoteData.quotation?.quotation_date || "",
+        quotation_status: quoteData.quotation?.quotation_status || "",
+        quotation_count: quoteData.quotation?.quotation_count || 0,
+        quotation_remarks: quoteData.quotation?.quotation_remarks || "",
+        quotation_delivery: quoteData.quotation?.quotation_delivery || "",
+        quotation_shipping: quoteData.quotation?.quotation_shipping || "",
       });
 
-      if (orderData.orderSub && orderData.orderSub.length > 0) {
-        const formattedSub = orderData.orderSub.map((sub: any) => ({
-          orders_sub_product_id: sub.orders_sub_product_id || "",
-          orders_sub_quantity: sub.orders_sub_quantity || "",
-          orders_sub_rate: sub.orders_sub_rate || "",
-          orders_sub_design_no: sub.orders_sub_design_no || "",
+      if (quoteData.quotationSub && quoteData.quotationSub.length > 0) {
+        const formattedSub = quoteData.quotationSub.map((sub: any) => ({
+          quotation_sub_product_id: sub.quotation_sub_product_id || "",
+          quotation_sub_quantity: sub.quotation_sub_quantity || "",
+          quotation_sub_rate: sub.quotation_sub_rate || "",
+          quotation_sub_design_no: sub.quotation_sub_design_no || "",
           id: sub.id,
-          last_rate: null,
         }));
         setItems(formattedSub);
-
-        // Fetch last rate for pre-populated items
-        formattedSub.forEach((item: any, idx: number) => {
-          if (orderData.order?.orders_user_id && item.orders_sub_product_id) {
-            fetchLastRate(orderData.order.orders_user_id, item.orders_sub_product_id, idx);
-          }
-        });
       }
     }
-  }, [orderData]);
-
-  const fetchLastRate = async (userId: number | string, productId: number | string, index: number) => {
-    if (!userId || !productId) return;
-    try {
-      const lastRate = await lastRateMutation.mutateAsync({ userId, productId });
-      setItems((prev) =>
-        prev.map((item, i) =>
-          i === index
-            ? {
-                ...item,
-                last_rate: lastRate,
-                orders_sub_rate: !item.orders_sub_rate && lastRate ? lastRate : item.orders_sub_rate,
-              }
-            : item
-        )
-      );
-    } catch (error) {
-      console.error("Error fetching last paid rate:", error);
-    }
-  };
+  }, [quoteData]);
 
   const handleOpenProductDialog = (index: number) => {
     trigger("light");
@@ -121,21 +104,14 @@ export function CreateQuotePage({ orderId }: CreateQuotePageProps) {
   const handleProductSelect = (product: OrderProduct) => {
     if (activeItemIndex === null) return;
     trigger("medium");
-    
     setItems((prev) =>
       prev.map((item, idx) =>
         idx === activeItemIndex
-          ? { ...item, orders_sub_product_id: String(product.id) }
+          ? { ...item, quotation_sub_product_id: String(product.id) }
           : item
       )
     );
-    
     setProductDialogOpen(false);
-    
-    // Fetch last paid rate for this customer and product
-    if (orderState.orders_user_id) {
-      fetchLastRate(orderState.orders_user_id, product.id, activeItemIndex);
-    }
   };
 
   const handleItemChange = (index: number, field: string, value: string) => {
@@ -151,10 +127,10 @@ export function CreateQuotePage({ orderId }: CreateQuotePageProps) {
     setItems((prev) => [
       ...prev,
       {
-        orders_sub_product_id: "",
-        orders_sub_quantity: "",
-        orders_sub_rate: "",
-        orders_sub_design_no: "",
+        quotation_sub_product_id: "",
+        quotation_sub_quantity: "",
+        quotation_sub_rate: "",
+        quotation_sub_design_no: "",
       },
     ]);
   };
@@ -170,67 +146,82 @@ export function CreateQuotePage({ orderId }: CreateQuotePageProps) {
     return `${prod.product_sub_category} (Category: ${prod.product_category}) - Brand: ${prod.products_brand} (${prod.products_thickness}MM, ${prod.products_size1}x${prod.products_size2})`;
   };
 
+  const handleInputChange = (field: string, value: string) => {
+    setQuotation((prev) => ({ ...prev, [field]: value }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     trigger("heavy");
 
     // Validations
-    if (items.some((item) => !item.orders_sub_product_id || !item.orders_sub_quantity || !item.orders_sub_rate)) {
+    if (items.some((item) => !item.quotation_sub_product_id || !item.quotation_sub_quantity || !item.quotation_sub_rate)) {
       toast.error("Please fill out all product, quantity, and rate fields.");
       return;
     }
 
-    createMutation.mutate(
+    if (!quotation.quotation_status) {
+      toast.error("Please select a status for the quotation.");
+      return;
+    }
+
+    updateMutation.mutate(
       {
-        id: orderId,
+        id: quoteId,
         payload: {
-          orders_status: orderState.orders_status,
-          order_sub_data: items,
-          orders_count: orderState.orders_count,
+          quotation_status: quotation.quotation_status,
+          quotation_sub_data: items,
+          quotation_count: quotation.quotation_count,
+          quotation_remarks: quotation.quotation_remarks,
+          quotation_delivery: quotation.quotation_delivery,
+          quotation_shipping: quotation.quotation_shipping,
         },
       },
       {
         onSuccess: (res) => {
           if (res.code === 200) {
-            toast.success("Quotation drafted successfully!");
+            toast.success("Quotation updated successfully!");
             router.push("/quotes");
           } else {
-            toast.error(res.msg || "Failed to create quotation");
+            toast.error(res.msg || "Failed to update quotation");
           }
         },
         onError: (err: any) => {
-          toast.error(err?.response?.data?.message || "Error submitting quotation");
+          toast.error(err?.response?.data?.message || "Error updating quotation");
         },
       }
     );
   };
 
-  if (isLoadingOrder || isLoadingUsers || isLoadingProducts) {
+  if (isLoadingQuote || isLoadingUsers || isLoadingProducts) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh] gap-3">
         <Spinner className="size-8 text-primary animate-spin" />
-        <p className="text-xs text-text-muted font-bold animate-pulse">Retrieving order details...</p>
+        <p className="text-xs text-text-muted font-bold animate-pulse">Retrieving quotation details...</p>
       </div>
     );
   }
 
-  const selectedCustomerName = users.find((u) => String(u.id) === String(orderState.orders_user_id))?.full_name || "Unknown Customer";
+  const selectedCustomerName =
+    users.find((u) => String(u.id) === String(quotation.order_user_id))?.full_name ||
+    users.find((u) => String(u.id) === String(quotation.order_user_id))?.user_name ||
+    "Unknown Customer";
 
   return (
     <div className="flex flex-col gap-6 p-4 md:p-6 w-full max-w-7xl mx-auto pb-24 md:pb-6 animate-fade-in duration-300">
       <div className="flex items-center gap-3">
-        <Link href="/">
+        <Link href="/quotes">
           <Button variant="ghost" size="icon" className="rounded-full bg-panel border border-border/80 text-text hover:text-primary hover:bg-primary/5 cursor-pointer">
             <ArrowLeft className="size-4" />
           </Button>
         </Link>
-        <PageHeader title="Add Quotation" subtitle={`Draft indirect quotation based on Order #${orderId}`} />
+        <PageHeader title="Edit Quotation" subtitle={`Modifying proposal details for Quote #${quoteId}`} />
       </div>
 
       <form onSubmit={handleSubmit} autoComplete="off" className="flex flex-col gap-6">
-        {/* Read-Only Details */}
+        {/* Main Details and Status */}
         <Card className="bg-panel border border-border/80 shadow-sm rounded-2xl relative pt-0">
-          <CardContent className="p-5 md:p-6 grid grid-cols-1 md:grid-cols-2 gap-5">
+          <CardContent className="p-5 md:p-6 grid grid-cols-1 md:grid-cols-3 gap-5">
             <div className="flex flex-col gap-1.5">
               <label className="text-xs font-bold text-text-muted uppercase tracking-wider flex items-center gap-1.5 select-none">
                 <User className="size-3.5 text-primary" />
@@ -246,18 +237,81 @@ export function CreateQuotePage({ orderId }: CreateQuotePageProps) {
             <div className="flex flex-col gap-1.5">
               <label className="text-xs font-bold text-text-muted uppercase tracking-wider flex items-center gap-1.5 select-none">
                 <Calendar className="size-3.5 text-primary" />
-                Order Date
+                Date
               </label>
               <Input
-                value={orderState.orders_date}
+                value={quotation.quotation_date}
                 readOnly
                 className="bg-muted/10 border-border/80 cursor-not-allowed font-semibold text-text"
+              />
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-bold text-text-muted uppercase tracking-wider flex items-center gap-1.5 select-none">
+                <Settings className="size-3.5 text-primary" />
+                Status *
+              </label>
+              <Select
+                value={quotation.quotation_status}
+                onValueChange={(val) => handleInputChange("quotation_status", val)}
+              >
+                <SelectTrigger className="w-full bg-background border border-border hover:border-border-hover focus:border-primary/80 rounded-xl px-3 py-2 text-sm font-semibold outline-none text-text">
+                  <SelectValue placeholder="Select status..." />
+                </SelectTrigger>
+                <SelectContent className="bg-popover border border-border rounded-xl shadow-md z-50">
+                  <SelectItem value="Quotation" className="cursor-pointer font-semibold hover:bg-primary/5">Quotation</SelectItem>
+                  <SelectItem value="Cancel" className="cursor-pointer font-semibold hover:bg-primary/5 text-rose-500">Cancel</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Remarks, Delivery, and Shipping Addresses */}
+        <Card className="bg-panel border border-border/80 shadow-sm rounded-2xl relative pt-0">
+          <CardContent className="p-5 md:p-6 grid grid-cols-1 md:grid-cols-3 gap-5">
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-bold text-text-muted uppercase tracking-wider select-none">
+                Remark
+              </label>
+              <Input
+                value={quotation.quotation_remarks}
+                onChange={(e) => handleInputChange("quotation_remarks", e.target.value)}
+                maxLength={200}
+                placeholder="Enter remarks..."
+                className="border-border hover:border-border-hover focus:border-primary/80 rounded-xl px-3 py-2 text-sm font-semibold outline-none text-text bg-background"
+              />
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-bold text-text-muted uppercase tracking-wider select-none">
+                Delivery Address
+              </label>
+              <Input
+                value={quotation.quotation_delivery}
+                onChange={(e) => handleInputChange("quotation_delivery", e.target.value)}
+                maxLength={200}
+                placeholder="Delivery instructions..."
+                className="border-border hover:border-border-hover focus:border-primary/80 rounded-xl px-3 py-2 text-sm font-semibold outline-none text-text bg-background"
+              />
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-bold text-text-muted uppercase tracking-wider select-none">
+                Billing Address
+              </label>
+              <Input
+                value={quotation.quotation_shipping}
+                onChange={(e) => handleInputChange("quotation_shipping", e.target.value)}
+                maxLength={200}
+                placeholder="Billing instructions..."
+                className="border-border hover:border-border-hover focus:border-primary/80 rounded-xl px-3 py-2 text-sm font-semibold outline-none text-text bg-background"
               />
             </div>
           </CardContent>
         </Card>
 
-        {/* Item rows heading */}
+        {/* Item Rows heading */}
         <div className="flex items-center justify-between mt-2">
           <h3 className="text-base font-extrabold text-text flex items-center gap-2">
             📋 Quotation Items ({items.length})
@@ -273,14 +327,14 @@ export function CreateQuotePage({ orderId }: CreateQuotePageProps) {
           </Button>
         </div>
 
-        {/* Items Container */}
+        {/* Dynamic sub items editing */}
         <div className="flex flex-col gap-4">
           {items.map((item, index) => (
             <Card key={index} className="bg-panel border border-border/80 hover:border-border-hover shadow-xs rounded-2xl overflow-hidden pt-0 transition-all">
               <CardContent className="p-4 flex flex-col gap-4">
-                {/* Desktop and Mobile Dual-layout */}
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-start">
-                  {/* Product field - takes 5 cols on desktop */}
+                  
+                  {/* Product Field */}
                   <div className="md:col-span-5 flex flex-col gap-1.5">
                     <label className="text-xs font-bold text-text-muted uppercase tracking-wider flex items-center justify-between">
                       <span>Product *</span>
@@ -291,13 +345,13 @@ export function CreateQuotePage({ orderId }: CreateQuotePageProps) {
                       onClick={() => handleOpenProductDialog(index)}
                       className="w-full bg-background border border-border hover:border-border-hover focus:border-primary/80 focus:ring-1 focus:ring-primary/45 rounded-xl px-3 py-2.5 text-xs font-semibold outline-none transition-all cursor-pointer text-left flex items-center justify-between text-text truncate"
                     >
-                      <span className={item.orders_sub_product_id ? "text-text" : "text-text-muted font-normal"}>
-                        {getProductLabel(item.orders_sub_product_id)}
+                      <span className={item.quotation_sub_product_id ? "text-text" : "text-text-muted font-normal"}>
+                        {getProductLabel(item.quotation_sub_product_id)}
                       </span>
                     </button>
                   </div>
 
-                  {/* Quantity - 2 cols on desktop */}
+                  {/* Quantity */}
                   <div className="md:col-span-2 flex flex-col gap-1.5">
                     <label className="text-xs font-bold text-text-muted uppercase tracking-wider">
                       Quantity *
@@ -307,14 +361,14 @@ export function CreateQuotePage({ orderId }: CreateQuotePageProps) {
                       placeholder="Qty"
                       min="1"
                       required
-                      value={item.orders_sub_quantity}
-                      onChange={(e) => handleItemChange(index, "orders_sub_quantity", e.target.value)}
+                      value={item.quotation_sub_quantity}
+                      onChange={(e) => handleItemChange(index, "quotation_sub_quantity", e.target.value)}
                       className="border-border hover:border-border-hover focus:border-primary/80 rounded-xl px-3 py-2 text-sm font-semibold outline-none text-text bg-background"
                     />
                   </div>
 
-                  {/* Rate - 2 cols on desktop */}
-                  <div className="md:col-span-2 flex flex-col gap-1.5 relative">
+                  {/* Rate */}
+                  <div className="md:col-span-2 flex flex-col gap-1.5">
                     <label className="text-xs font-bold text-text-muted uppercase tracking-wider">
                       Rate *
                     </label>
@@ -322,31 +376,26 @@ export function CreateQuotePage({ orderId }: CreateQuotePageProps) {
                       type="number"
                       placeholder="Rate"
                       required
-                      value={item.orders_sub_rate}
-                      onChange={(e) => handleItemChange(index, "orders_sub_rate", e.target.value)}
+                      value={item.quotation_sub_rate}
+                      onChange={(e) => handleItemChange(index, "quotation_sub_rate", e.target.value)}
                       className="border-border hover:border-border-hover focus:border-primary/80 rounded-xl px-3 py-2 text-sm font-semibold outline-none text-text bg-background"
                     />
-                    {item.last_rate !== undefined && item.last_rate !== null && (
-                      <span className="absolute top-[calc(100%+2px)] left-0 text-[10px] font-bold text-rose-500 flex items-center gap-0.5">
-                        Last Rate: {item.last_rate}
-                      </span>
-                    )}
                   </div>
 
-                  {/* Design No - 2 cols on desktop */}
+                  {/* Design No */}
                   <div className="md:col-span-2 flex flex-col gap-1.5">
                     <label className="text-xs font-bold text-text-muted uppercase tracking-wider">
                       Design No
                     </label>
                     <Input
                       placeholder="Design #"
-                      value={item.orders_sub_design_no}
-                      onChange={(e) => handleItemChange(index, "orders_sub_design_no", e.target.value)}
+                      value={item.quotation_sub_design_no}
+                      onChange={(e) => handleItemChange(index, "quotation_sub_design_no", e.target.value)}
                       className="border-border hover:border-border-hover focus:border-primary/80 rounded-xl px-3 py-2 text-sm font-semibold outline-none text-text bg-background"
                     />
                   </div>
 
-                  {/* Actions - 1 col on desktop */}
+                  {/* Row actions */}
                   {items.length > 1 && (
                     <div className="md:col-span-1 flex items-center justify-end md:justify-center md:h-16 pt-2 md:pt-4">
                       <Button
@@ -360,30 +409,31 @@ export function CreateQuotePage({ orderId }: CreateQuotePageProps) {
                       </Button>
                     </div>
                   )}
+
                 </div>
               </CardContent>
             </Card>
           ))}
         </div>
 
-        {/* Footer controls */}
+        {/* Form controls */}
         <div className="flex items-center justify-center gap-4 mt-6">
-          <Link href="/">
+          <Link href="/quotes">
             <Button type="button" variant="outline" className="px-6 rounded-xl cursor-pointer">
-              Back to Orders
+              Back to List
             </Button>
           </Link>
           <Button
             type="submit"
             className="px-6 rounded-xl cursor-pointer"
-            disabled={createMutation.isPending}
+            disabled={updateMutation.isPending}
           >
-            {createMutation.isPending ? "Submitting Proposal..." : "Submit Quotation"}
+            {updateMutation.isPending ? "Updating Proposal..." : "Update Quotation"}
           </Button>
         </div>
       </form>
 
-      {/* Reused Product Drawer Selection */}
+      {/* Select Product Dialog */}
       <SelectProductDialog
         open={productDialogOpen}
         onOpenChange={setProductDialogOpen}

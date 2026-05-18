@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import api from "@/lib/api";
-import { DashboardDataResponse } from "../types";
+import { DashboardDataResponse, PendingOrder } from "../types";
 
 // Fetch available dashboard years
 export function useDashboardYears() {
@@ -22,5 +22,16 @@ export function useDashboardData(year: string) {
       return response.data;
     },
     enabled: !!year,
+  });
+}
+
+// Fetch global pending orders list
+export function usePendingOrdersList() {
+  return useQuery({
+    queryKey: ["pending-orders-list"],
+    queryFn: async () => {
+      const response = await api.get<{ orders: PendingOrder[] }>("/web-fetch-pending-order-list");
+      return response.data?.orders || [];
+    },
   });
 }

@@ -7,66 +7,89 @@ import { useOrderList } from "../hooks/use-order-list";
 import { PlusCircle } from "lucide-react";
 import Link from "next/link";
 import OrderListSkeleton from "../components/OrderListSkeleton";
-import DashboardMetrics from "../components/DashboardMetrics";
-import CategoryList from "../components/CategoryList";
-import PendingOrders from "../components/PendingOrders";
+import OrdersTable from "../components/OrdersTable";
 import DashboardYearSelect from "../components/DashboardYearSelect";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 export function OrderListPage() {
   const {
     selectedYear,
     setSelectedYear,
+    activeTab,
+    setActiveTab,
     dashboardData,
+    pendingOrders,
     isLoadingData,
+    isLoadingPending,
     availableYears,
   } = useOrderList();
 
   return (
-    <div className="flex flex-col gap-6 p-4 md:p-6 w-full max-w-7xl mx-auto pb-24 md:pb-6 animate-fade-in duration-300">
-      <div className="flex items-center justify-between gap-4">
-        <PageHeader title="Dashboard" subtitle="Overview of your operations and pending orders." />
-        
-        <div className="flex items-center gap-3 shrink-0">
-          {/* Year selector component in header */}
-          <DashboardYearSelect 
-            selectedYear={selectedYear}
-            setSelectedYear={setSelectedYear}
-            availableYears={availableYears}
-          />
-          
-          <Button asChild className="hidden md:flex shrink-0">
+    <div className="flex flex-col gap-5 p-4 md:p-6 w-full max-w-7xl mx-auto pb-24 md:pb-6 animate-fade-in duration-300">
+      <PageHeader title="Orders" subtitle="Manage your orders and operations">
+        <div className="flex items-start md:items-center gap-2.5 w-full sm:w-auto sm:justify-start">
+          {/* Year selector component - only show when activeTab is "recent" */}
+          {activeTab === "recent" && (
+            <DashboardYearSelect
+              selectedYear={selectedYear}
+              setSelectedYear={setSelectedYear}
+              availableYears={availableYears}
+            />
+          )}
+
+          <Button asChild className="shrink-0">
             <Link href="/orders/create">
               <PlusCircle data-icon="inline-start" className="size-4" />
               Create Order
             </Link>
           </Button>
         </div>
-      </div>
+      </PageHeader>
 
-      {isLoadingData ? (
-        <OrderListSkeleton />
-      ) : dashboardData ? (
-        <div className="flex flex-col gap-8">
-          {/* Slipped Metrics Grid */}
-          <DashboardMetrics 
-            productsCount={dashboardData.productsCount}
-            ordersCount={dashboardData.ordersCount}
-            usersCount={dashboardData.usersCount}
-          />
-
-          {/* Slipped Categories Horizontal Snap List */}
-          <CategoryList categories={dashboardData.categoryBanner} />
-
-          {/* Slipped Pending Orders Native List */}
-          <PendingOrders orders={dashboardData.pendingOrder} />
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <div className="flex items-center justify-between border-b border-border/60 pb-3 mb-4">
+          <TabsList className="bg-muted/65 px-1 py-5  rounded-xl">
+            <TabsTrigger value="recent" className="rounded-lg px-4 py-4 font-bold text-xs cursor-pointer">
+              Recent Orders
+            </TabsTrigger>
+            <TabsTrigger value="pending" className="rounded-lg px-4 py-4 font-bold text-xs cursor-pointer">
+              Pending List
+            </TabsTrigger>
+          </TabsList>
         </div>
-      ) : (
-        <Card className="bg-panel shadow-sm border-border">
-          <CardContent className="p-12 text-center text-text-muted">
-            <p>Failed to load dashboard data. Please try again.</p>
-          </CardContent>
-        </Card>
-      )}
+
+        <TabsContent value="recent" className="focus-visible:outline-none focus-visible:ring-0">
+          {isLoadingData ? (
+            <OrderListSkeleton />
+          ) : dashboardData ? (
+            <div className="flex flex-col gap-8 animate-fade-in duration-300">
+              <OrdersTable orders={dashboardData.pendingOrder || []} />
+            </div>
+          ) : (
+            <Card className="bg-panel shadow-sm border-border">
+              <CardContent className="p-12 text-center text-text-muted">
+                <p>Failed to load dashboard data. Please try again.</p>
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
+
+        <TabsContent value="pending" className="focus-visible:outline-none focus-visible:ring-0">
+          {isLoadingPending ? (
+            <OrderListSkeleton />
+          ) : pendingOrders ? (
+            <div className="flex flex-col gap-8 animate-fade-in duration-300">
+              <OrdersTable orders={pendingOrders} />
+            </div>
+          ) : (
+            <Card className="bg-panel shadow-sm border-border">
+              <CardContent className="p-12 text-center text-text-muted">
+                <p>Failed to load pending orders list. Please try again.</p>
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
