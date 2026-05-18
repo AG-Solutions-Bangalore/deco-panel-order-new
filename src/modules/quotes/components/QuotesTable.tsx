@@ -358,9 +358,7 @@ export default function QuotesTable({ quotes, type }: QuotesTableProps) {
 
   return (
     <div className="flex flex-col gap-4">
-      {/* Filtering Header Section */}
-      <div className="flex flex-col gap-4 bg-panel border border-border/80 rounded-2xl p-4 md:p-5 shadow-xs">
-        {/* Search & Actions Bar */}
+      {/* <div className="flex flex-col gap-4 bg-panel border border-border/80 rounded-2xl p-4 md:p-5 shadow-xs">
         <div className="flex flex-col md:flex-row gap-3 items-center justify-between">
           <div className="relative w-full md:max-w-md group">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4.5 text-text-muted group-focus-within:text-primary transition-colors" />
@@ -384,7 +382,6 @@ export default function QuotesTable({ quotes, type }: QuotesTableProps) {
             )}
           </div>
 
-          {/* Quick Clear Button when filter is active */}
           {hasActiveFilters && (
             <Button
               variant="ghost"
@@ -398,7 +395,6 @@ export default function QuotesTable({ quotes, type }: QuotesTableProps) {
           )}
         </div>
 
-        {/* Status Category Pills */}
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-1.5 text-xs font-bold text-text-muted uppercase tracking-wider">
             <SlidersHorizontal className="size-3.5 text-primary" />
@@ -423,7 +419,7 @@ export default function QuotesTable({ quotes, type }: QuotesTableProps) {
             })}
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Main Table Card */}
       <Card className="bg-panel py-0 border border-border/80 shadow-sm overflow-hidden rounded-2xl">

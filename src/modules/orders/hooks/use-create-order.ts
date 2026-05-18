@@ -63,3 +63,42 @@ export function useCreateOrderMutation() {
     },
   });
 }
+
+// Fetch single order details by ID
+export function useOrderDetail(id: number | string | undefined) {
+  return useQuery({
+    queryKey: ["order-by-id", id],
+    queryFn: async () => {
+      const response = await api.get<{ order: any; orderSub: any[] }>(`/web-fetch-order-by-Id/${id}`);
+      return response.data;
+    },
+    enabled: !!id,
+  });
+}
+
+// Mutation to update/edit order
+export function useUpdateOrderMutation() {
+  const queryClient = useQueryClient();
+  const router = useRouter();
+
+  return useMutation({
+    mutationFn: async ({ id, data }: { id: number | string; data: any }) => {
+      const response = await api.put<{ code: number; msg?: string }>(`/web-update-order/${id}`, data);
+      return response.data;
+    },
+    onSuccess: (data) => {
+      toast.success(data?.msg || "Order updated successfully");
+      queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
+      queryClient.invalidateQueries({ queryKey: ["pending-orders-list"] });
+      queryClient.invalidateQueries({ queryKey: ["order-by-id"] });
+      setTimeout(() => {
+        router.push("/");
+      }, 500);
+    },
+    onError: (error: any) => {
+      const errMsg = error.response?.data?.message || error.message || "Failed to update order";
+      toast.error(errMsg);
+    },
+  });
+}
+

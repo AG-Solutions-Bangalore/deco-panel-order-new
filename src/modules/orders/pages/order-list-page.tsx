@@ -26,9 +26,9 @@ export function OrderListPage() {
 
   return (
     <div className="flex flex-col gap-5 p-4 md:p-6 w-full max-w-7xl mx-auto pb-24 md:pb-6 animate-fade-in duration-300">
-      <PageHeader title="Orders" subtitle="Manage your orders and operations">
+      {/* <PageHeader title="Orders" subtitle="Manage your orders and operations">
         <div className="flex items-start md:items-center gap-2.5 w-full sm:w-auto sm:justify-start">
-          {/* Year selector component - only show when activeTab is "recent" */}
+
           {activeTab === "recent" && (
             <DashboardYearSelect
               selectedYear={selectedYear}
@@ -44,7 +44,7 @@ export function OrderListPage() {
             </Link>
           </Button>
         </div>
-      </PageHeader>
+      </PageHeader> */}
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <div className="flex items-center justify-between border-b border-border/60 pb-3 mb-4">

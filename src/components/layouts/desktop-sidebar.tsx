@@ -12,10 +12,10 @@ import { useWebHaptics } from "web-haptics/react";
 import { useSidebarStore } from "@/lib/store/use-sidebar-store";
 
 const menuItems = [
+
   { name: "Orders", href: "/", icon: Home },
   { name: "Create Order", href: "/orders/create", icon: PlusCircle },
   { name: "Quotes", href: "/quotes", icon: FileText },
-  { name: "Create Quote", href: "/quotes/create", icon: PlusCircle },
   { name: "Profile", href: "/profile", icon: User },
 ];
 
@@ -65,11 +65,11 @@ export function DesktopSidebar() {
           </span>
         )}
         <div className={cn("flex justify-center w-full", isSidebarOpen && "w-auto")}>
-          <Hamburger 
-            toggled={isSidebarOpen} 
-            toggle={toggleSidebar} 
-            size={20} 
-            color="currentColor" 
+          <Hamburger
+            toggled={isSidebarOpen}
+            toggle={toggleSidebar}
+            size={20}
+            color="currentColor"
             onToggle={() => trigger("light")}
           />
         </div>
@@ -78,8 +78,8 @@ export function DesktopSidebar() {
       {/* Navigation Links */}
       <nav className="flex-1 flex flex-col gap-2 p-3 overflow-y-auto mt-2">
         {menuItems.map((item) => {
-          const isActive = item.href === "/" 
-            ? pathname === "/" 
+          const isActive = item.href === "/"
+            ? pathname === "/"
             : pathname?.startsWith(item.href);
 
           return (

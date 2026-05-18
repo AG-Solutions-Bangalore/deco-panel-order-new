@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -29,9 +29,19 @@ import {
   Search,
   X,
   SlidersHorizontal,
+  Pencil,
+  FilePlus,
+  Eye,
 } from "lucide-react";
 import { useWebHaptics } from "web-haptics/react";
 import { PendingOrder } from "../types";
+import Link from "next/link";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface OrdersTableProps {
   orders: PendingOrder[];
@@ -43,6 +53,13 @@ export default function OrdersTable({ orders }: OrdersTableProps) {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
   const [selectedStatus, setSelectedStatus] = useState<string>("ALL");
+  const [userTypeId, setUserTypeId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setUserTypeId(localStorage.getItem("user_type_id"));
+    }
+  }, []);
 
   // Filter unique statuses from incoming orders for dynamic filter tabs/pills
   const availableStatuses = ["ALL", ...Array.from(new Set(orders.map((o) => o.orders_status.toUpperCase())))];
@@ -127,7 +144,7 @@ export default function OrdersTable({ orders }: OrdersTableProps) {
       ),
       cell: ({ row }) => {
         const status = (row.getValue("orders_status") as string) || "Pending";
-        
+
         let badgeClasses = "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20";
         if (status.toLowerCase().includes("complete") || status.toLowerCase().includes("deliver")) {
           badgeClasses = "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20";
@@ -146,25 +163,72 @@ export default function OrdersTable({ orders }: OrdersTableProps) {
     },
     {
       id: "actions",
-      header: () => null,
+      header: () => (
+        <span className="font-bold text-xs uppercase tracking-wider text-text-muted text-right block pr-4">
+          Actions
+        </span>
+      ),
       cell: ({ row }) => {
         const order = row.original;
         return (
-          <div className="text-right">
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              className="h-8 w-8 text-text-muted hover:text-primary hover:bg-primary/5 rounded-full transition-colors cursor-pointer"
-              onClick={(e) => {
-                e.stopPropagation();
-                trigger("light");
-                if (typeof window !== "undefined") {
-                  window.location.href = `/orders/${order.id}`;
-                }
-              }}
-            >
-              <ChevronRight className="size-4.5" />
-            </Button>
+          <div className="flex items-center justify-end gap-1.5 pr-2" onClick={(e) => e.stopPropagation()}>
+            {userTypeId !== "1" && (
+              <>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon-sm"
+                      className="h-8 w-8 text-text-muted hover:text-amber-600 dark:hover:text-amber-400 hover:bg-amber-500/5 rounded-xl transition-all cursor-pointer"
+                      asChild
+                    >
+                      <Link href={`/orders/edit/${order.id}`} onClick={() => trigger("light")}>
+                        <Pencil className="size-4" />
+                      </Link>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="bg-foreground text-background font-semibold text-xs px-2.5 py-1 rounded-lg">
+                    Edit Order
+                  </TooltipContent>
+                </Tooltip>
+
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon-sm"
+                      className="h-8 w-8 text-text-muted hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-500/5 rounded-xl transition-all cursor-pointer"
+                      asChild
+                    >
+                      <Link href={`/quotes/create/${order.id}`} onClick={() => trigger("light")}>
+                        <FilePlus className="size-4" />
+                      </Link>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="bg-foreground text-background font-semibold text-xs px-2.5 py-1 rounded-lg">
+                    Generate Quotation
+                  </TooltipContent>
+                </Tooltip>
+              </>
+            )}
+
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  className="h-8 w-8 text-text-muted hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-500/5 rounded-xl transition-all cursor-pointer"
+                  asChild
+                >
+                  <Link href={`/orders/${order.id}`} onClick={() => trigger("light")}>
+                    <Eye className="size-4" />
+                  </Link>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="top" className="bg-foreground text-background font-semibold text-xs px-2.5 py-1 rounded-lg">
+                View Order
+              </TooltipContent>
+            </Tooltip>
           </div>
         );
       },
@@ -215,10 +279,9 @@ export default function OrdersTable({ orders }: OrdersTableProps) {
   };
 
   return (
-    <div className="flex flex-col gap-4">
-      {/* Filtering Header Section */}
-      <div className="flex flex-col gap-4 bg-panel border border-border/80 rounded-2xl p-4 md:p-5 shadow-xs">
-        {/* Search & Actions Bar */}
+    <TooltipProvider>
+      <div className="flex flex-col gap-4">
+      {/* <div className="flex flex-col gap-4 bg-panel border border-border/80 rounded-2xl p-4 md:p-5 shadow-xs">
         <div className="flex flex-col md:flex-row gap-3 items-center justify-between">
           <div className="relative w-full md:max-w-md group">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4.5 text-text-muted group-focus-within:text-primary transition-colors" />
@@ -242,7 +305,7 @@ export default function OrdersTable({ orders }: OrdersTableProps) {
             )}
           </div>
 
-          {/* Quick Clear Button when filter is active */}
+
           {hasActiveFilters && (
             <Button
               variant="ghost"
@@ -256,7 +319,7 @@ export default function OrdersTable({ orders }: OrdersTableProps) {
           )}
         </div>
 
-        {/* Status Category Pills */}
+
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-1.5 text-xs font-bold text-text-muted uppercase tracking-wider">
             <SlidersHorizontal className="size-3.5 text-primary" />
@@ -269,11 +332,10 @@ export default function OrdersTable({ orders }: OrdersTableProps) {
                 <button
                   key={status}
                   onClick={() => handleStatusFilter(status)}
-                  className={`px-3 py-1.5 text-xs font-bold rounded-full border transition-all cursor-pointer ${
-                    isActive
+                  className={`px-3 py-1.5 text-xs font-bold rounded-full border transition-all cursor-pointer ${isActive
                       ? "bg-primary border-primary text-primary-foreground shadow-xs scale-102"
                       : "bg-background border-border text-text-muted hover:text-text hover:border-border-hover"
-                  }`}
+                    }`}
                 >
                   {status}
                 </button>
@@ -281,7 +343,7 @@ export default function OrdersTable({ orders }: OrdersTableProps) {
             })}
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Main Table Card */}
       <Card className="bg-panel py-0 border border-border/80 shadow-sm overflow-hidden rounded-2xl">
@@ -299,9 +361,9 @@ export default function OrdersTable({ orders }: OrdersTableProps) {
                         {header.isPlaceholder
                           ? null
                           : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
                       </TableHead>
                     ))}
                   </TableRow>
@@ -405,5 +467,6 @@ export default function OrdersTable({ orders }: OrdersTableProps) {
         </CardContent>
       </Card>
     </div>
+    </TooltipProvider>
   );
 }
