@@ -1,9 +1,9 @@
-import Image from "next/image";
+import { OrderListPage } from "@/modules/orders/pages/order-list-page";
 
-export default function Home() {
-  return (
-    <div>
-      <h1>Welcome to the Home Page</h1>
-    </div>
-  );
+export const metadata = {
+  title: "Orders | Deco Panel",
+};
+
+export default function DashboardPage() {
+  return <OrderListPage />;
 }

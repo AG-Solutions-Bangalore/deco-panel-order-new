@@ -15,10 +15,33 @@ api.interceptors.request.use((config) => {
 });
 
 api.interceptors.response.use(
-  (res) => res,
+  (res) => {
+    // Handle cases where the API returns HTTP 200 but contains an error code in the body
+    if (res.data && res.data.code === 501) {
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user_type_id");
+        localStorage.removeItem("id");
+        localStorage.removeItem("username");
+        localStorage.removeItem("email");
+        window.location.href = "/login";
+      }
+      return Promise.reject(new Error(res.data.message || "Token expired"));
+    }
+    return res;
+  },
   (err) => {
-    if (err.response?.status === 401 && typeof window !== "undefined") {
+    // Handle actual HTTP 401 or 501 statuses
+    if (
+      (err.response?.status === 401 || err.response?.status === 501) && 
+      typeof window !== "undefined"
+    ) {
       localStorage.removeItem("token");
+      localStorage.removeItem("user_type_id");
+      localStorage.removeItem("id");
+      localStorage.removeItem("username");
+      localStorage.removeItem("email");
+      window.location.href = "/login";
     }
     return Promise.reject(err);
   }
