@@ -71,15 +71,15 @@ export function QuoteListPage() {
 
       {/* Unified life-cycle switcher */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <div className="flex items-center justify-between border-b border-border/60 pb-3 mb-4">
-          <TabsList className="bg-muted/65 p-1 rounded-xl">
-            <TabsTrigger value="open" className="rounded-lg px-4 py-2 font-bold text-xs cursor-pointer">
+        <div className="flex items-center justify-between border-b border-border/60 pb-3 mb-4 overflow-x-auto scrollbar-none w-full max-w-full">
+          <TabsList className="bg-muted/65 p-1 rounded-xl flex flex-row shrink-0 min-w-max">
+            <TabsTrigger value="open" className="rounded-lg px-4 py-2 font-bold text-xs cursor-pointer whitespace-nowrap">
               Open Proposals ({isLoadingOpen ? "..." : openQuotes.length})
             </TabsTrigger>
-            <TabsTrigger value="processing" className="rounded-lg px-4 py-2 font-bold text-xs cursor-pointer">
+            <TabsTrigger value="processing" className="rounded-lg px-4 py-2 font-bold text-xs cursor-pointer whitespace-nowrap">
               Processing ({isLoadingProcessing ? "..." : processingQuotes.length})
             </TabsTrigger>
-            <TabsTrigger value="completed" className="rounded-lg px-4 py-2 font-bold text-xs cursor-pointer">
+            <TabsTrigger value="completed" className="rounded-lg px-4 py-2 font-bold text-xs cursor-pointer whitespace-nowrap">
               Completed/Cancel ({isLoadingCompleted ? "..." : completedQuotes.length})
             </TabsTrigger>
           </TabsList>
