@@ -120,7 +120,7 @@ export function ProfileForm({
       </Card>
 
       {/* Address Card */}
-      <Card className="bg-panel border-border shadow-sm py-0 overflow-hidden">
+      {/* <Card className="bg-panel border-border shadow-sm py-0 overflow-hidden">
         <CardContent className="p-5 flex flex-col gap-5">
           <h3 className="text-sm font-bold uppercase tracking-wider text-text-muted border-b border-border/40 pb-2 flex items-center gap-2">
             <MapPin className="size-4 text-primary" />
@@ -168,7 +168,7 @@ export function ProfileForm({
             </div>
           </div>
         </CardContent>
-      </Card>
+      </Card> */}
     </div>
   );
 }
