@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
+import { VitePWA } from 'vite-plugin-pwa'
 import path from 'node:path'
 import { constants, gzip, brotliCompress } from 'node:zlib'
 import { promisify } from 'node:util'
@@ -77,7 +78,68 @@ function compressionPlugin() {
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), tailwindcss(), compressionPlugin()],
+  plugins: [
+    react(),
+    tailwindcss(),
+    compressionPlugin(),
+    VitePWA({
+      registerType: 'autoUpdate',
+      includeAssets: [
+        'favicon.svg',
+        'icons/*.svg',
+        'icons/*.png',
+      ],
+      manifest: {
+        name: 'Deco Panel',
+        short_name: 'DecoPanel',
+        description: 'Enterprise SaaS for Deco Panel Operations',
+        theme_color: '#6366f1',
+        background_color: '#f7f5f1',
+        display: 'standalone',
+        orientation: 'portrait',
+        start_url: '/',
+        scope: '/',
+        categories: ['business', 'productivity'],
+        lang: 'en',
+        dir: 'ltr',
+        icons: [
+          {
+            src: 'icons/icon-192.png',
+            sizes: '192x192',
+            type: 'image/png',
+          },
+          {
+            src: 'icons/icon-512.png',
+            sizes: '512x512',
+            type: 'image/png',
+          },
+          {
+            src: 'icons/icon-512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'maskable',
+          },
+        ],
+        screenshots: [],
+      },
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,svg,png,ico,woff2}'],
+        runtimeCaching: [
+          {
+            urlPattern: /^https?:\/\/.*\/api\/.*/i,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'api-cache',
+              expiration: {
+                maxEntries: 50,
+                maxAgeSeconds: 60 * 60,
+              },
+            },
+          },
+        ],
+      },
+    }),
+  ],
   server: {
     host: '0.0.0.0',
     port: 5173,
