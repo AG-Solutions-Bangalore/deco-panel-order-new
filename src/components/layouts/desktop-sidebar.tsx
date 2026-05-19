@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useWebHaptics } from "web-haptics/react";
 import { useSidebarStore } from "@/lib/store/use-sidebar-store";
+import { AppLogo } from "@/components/brand/app-logo";
 
 const menuItems = [
 
@@ -48,12 +49,23 @@ export function DesktopSidebar() {
     >
       {/* Top Header Area */}
       <div className="flex items-center justify-between p-4 h-16 border-b border-border">
-        {isOpen && (
-          <span className="font-bold text-xl text-text ml-2 tracking-tight transition-opacity duration-300">
-            Deco Panel
-          </span>
-        )}
-        <div className={cn("flex justify-center w-full", isOpen && "w-auto")}>
+        <Link
+          to="/"
+          onClick={() => trigger("light")}
+          className={cn(
+            "flex min-w-0 items-center gap-3 rounded-lg text-text transition-opacity hover:opacity-90",
+            !isOpen && "justify-center"
+          )}
+          title="Deco Panel"
+        >
+          <AppLogo className="size-9" />
+          {isOpen && (
+            <span className="truncate font-bold text-xl tracking-tight transition-opacity duration-300">
+              Deco Panel
+            </span>
+          )}
+        </Link>
+        <div className={cn("flex justify-center", isOpen ? "w-auto" : "w-full")}>
           <Hamburger
             toggled={isOpen}
             toggle={toggleSidebar}

@@ -85,8 +85,8 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: [
-        'favicon.svg',
-        'icons/*.svg',
+        'favicon.png',
+        'originalIcon.jpeg',
         'icons/*.png',
       ],
       manifest: {
