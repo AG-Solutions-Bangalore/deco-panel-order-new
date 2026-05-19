@@ -1,15 +1,5 @@
-import React, { useState, useEffect } from "react";
-import {
-  useReactTable,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getSortedRowModel,
-  getPaginationRowModel,
-  ColumnDef,
-  flexRender,
-  SortingState,
-  ColumnFiltersState,
-} from "@tanstack/react-table";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -18,28 +8,40 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import {
-  ArrowUpDown,
-  ChevronLeft,
-  ChevronRight,
-  Search,
-  X,
-  SlidersHorizontal,
-  Pencil,
-  FilePlus,
-  Eye,
-} from "lucide-react";
-import { useWebHaptics } from "web-haptics/react";
-import { PendingOrder } from "../types";
-import { Link } from "react-router-dom";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  useReactTable,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getSortedRowModel,
+  getPaginationRowModel,
+  flexRender,
+} from "@tanstack/react-table";
+import type {
+  Cell,
+  ColumnDef,
+  ColumnFiltersState,
+  Header,
+  HeaderGroup,
+  SortingState,
+} from "@tanstack/react-table";
+import {
+  ArrowUpDown,
+  ChevronLeft,
+  ChevronRight,
+  Eye,
+  FilePlus,
+  Pencil
+} from "lucide-react";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { useWebHaptics } from "web-haptics/react";
+import { PendingOrder } from "../types";
 
 interface OrdersTableProps {
   orders: PendingOrder[];
@@ -74,17 +76,22 @@ export default function OrdersTable({ orders }: OrdersTableProps) {
               trigger("light");
               column.toggleSorting(column.getIsSorted() === "asc");
             }}
-            className="-ml-4 hover:bg-primary/5 hover:text-primary font-bold text-xs uppercase tracking-wider text-text-muted"
+            className="-ml-4 hover:bg-primary/5 hover:text-primary font-bold text-xs uppercase tracking-wider text-text-muted transition-colors duration-200"
           >
-            Order No
+            Order
             <ArrowUpDown className="ml-1.5 size-3.5 shrink-0" />
           </Button>
         );
       },
       cell: ({ row }) => (
-        <span className="font-bold text-text text-sm">
-          #{row.getValue("orders_no")}
-        </span>
+        <div className="flex flex-col gap-0.5 py-1">
+          <span className="font-bold text-text text-sm">
+            #{row.getValue("orders_no")}
+          </span>
+          <span className="text-text-muted text-xs font-semibold">
+            {row.original.orders_date}
+          </span>
+        </div>
       ),
     },
     {
@@ -97,51 +104,15 @@ export default function OrdersTable({ orders }: OrdersTableProps) {
               trigger("light");
               column.toggleSorting(column.getIsSorted() === "asc");
             }}
-            className="-ml-4 hover:bg-primary/5 hover:text-primary font-bold text-xs uppercase tracking-wider text-text-muted"
+            className="-ml-4 hover:bg-primary/5 hover:text-primary font-bold text-xs uppercase tracking-wider text-text-muted transition-colors duration-200"
           >
             Customer
             <ArrowUpDown className="ml-1.5 size-3.5 shrink-0" />
           </Button>
         );
       },
-      cell: ({ row }) => (
-        <span className="font-semibold text-text text-sm">
-          {row.getValue("full_name")}
-        </span>
-      ),
-    },
-    {
-      accessorKey: "orders_date",
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => {
-              trigger("light");
-              column.toggleSorting(column.getIsSorted() === "asc");
-            }}
-            className="-ml-4 hover:bg-primary/5 hover:text-primary font-bold text-xs uppercase tracking-wider text-text-muted"
-          >
-            Order Date
-            <ArrowUpDown className="ml-1.5 size-3.5 shrink-0" />
-          </Button>
-        );
-      },
-      cell: ({ row }) => (
-        <span className="text-text-muted text-xs md:text-sm font-medium">
-          {row.getValue("orders_date")}
-        </span>
-      ),
-    },
-    {
-      accessorKey: "orders_status",
-      header: () => (
-        <span className="font-bold text-xs uppercase tracking-wider text-text-muted">
-          Status
-        </span>
-      ),
       cell: ({ row }) => {
-        const status = (row.getValue("orders_status") as string) || "Pending";
+        const status = (row.original.orders_status as string) || "Pending";
 
         let badgeClasses = "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20";
         if (status.toLowerCase().includes("complete") || status.toLowerCase().includes("deliver")) {
@@ -153,11 +124,24 @@ export default function OrdersTable({ orders }: OrdersTableProps) {
         }
 
         return (
-          <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide ${badgeClasses}`}>
-            {status}
-          </span>
+          <div className="flex flex-col gap-1.5 py-1">
+            <span className="font-semibold text-text text-sm leading-tight">
+              {row.getValue("full_name")}
+            </span>
+            <div className="flex items-center">
+              <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${badgeClasses}`}>
+                {status}
+              </span>
+            </div>
+          </div>
         );
       },
+    },
+    {
+      accessorKey: "orders_date",
+    },
+    {
+      accessorKey: "orders_status",
     },
     {
       id: "actions",
@@ -241,6 +225,10 @@ export default function OrdersTable({ orders }: OrdersTableProps) {
       sorting,
       columnFilters,
       globalFilter,
+      columnVisibility: {
+        orders_date: false,
+        orders_status: false,
+      },
     },
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -279,7 +267,7 @@ export default function OrdersTable({ orders }: OrdersTableProps) {
   return (
     <TooltipProvider>
       <div className="flex flex-col gap-4">
-      {/* <div className="flex flex-col gap-4 bg-panel border border-border/80 rounded-2xl p-4 md:p-5 shadow-xs">
+        {/* <div className="flex flex-col gap-4 bg-panel border border-border/80 rounded-2xl p-4 md:p-5 shadow-xs">
         <div className="flex flex-col md:flex-row gap-3 items-center justify-between">
           <div className="relative w-full md:max-w-md group">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4.5 text-text-muted group-focus-within:text-primary transition-colors" />
@@ -343,128 +331,128 @@ export default function OrdersTable({ orders }: OrdersTableProps) {
         </div>
       </div> */}
 
-      {/* Main Table Card */}
-      <Card className="bg-panel py-0 border border-border/80 shadow-sm overflow-hidden rounded-2xl">
-        <CardContent className="p-0">
-          <div className="overflow-x-auto relative scrollbar-thin">
-            <Table>
-              <TableHeader className="bg-muted/40 border-b border-border/60">
-                {table.getHeaderGroups().map((headerGroup) => (
-                  <TableRow key={headerGroup.id} className="hover:bg-transparent">
-                    {headerGroup.headers.map((header) => (
-                      <TableHead
-                        key={header.id}
-                        className="py-3.5 px-4 font-bold align-middle"
-                      >
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                      </TableHead>
-                    ))}
-                  </TableRow>
-                ))}
-              </TableHeader>
-              <TableBody>
-                {table.getRowModel().rows?.length ? (
-                  table.getRowModel().rows.map((row) => (
-                    <TableRow
-                      key={row.id}
-                      onClick={() => {
-                        trigger("light");
-                        if (typeof window !== "undefined") {
-                          window.location.href = `/orders/${row.original.id}`;
-                        }
-                      }}
-                      className="border-b border-border/40 hover:bg-primary/[0.02] transition-colors cursor-pointer group"
-                    >
-                      {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id} className="py-3 px-4 align-middle">
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                          )}
-                        </TableCell>
+        {/* Main Table Card */}
+        <Card className="bg-panel py-0 border border-border/80 shadow-sm overflow-hidden rounded-2xl">
+          <CardContent className="p-0">
+            <div className="overflow-x-auto relative scrollbar-thin">
+              <Table>
+                <TableHeader className="bg-muted/40 border-b border-border/60">
+                  {table.getHeaderGroups().map((headerGroup: HeaderGroup<PendingOrder>) => (
+                    <TableRow key={headerGroup.id} className="hover:bg-transparent">
+                    {headerGroup.headers.map((header: Header<PendingOrder, unknown>) => (
+                        <TableHead
+                          key={header.id}
+                          className="py-3.5 px-4 font-bold align-middle"
+                        >
+                          {header.isPlaceholder
+                            ? null
+                            : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                        </TableHead>
                       ))}
                     </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell
-                      colSpan={columns.length}
-                      className="h-48 text-center text-text-muted p-6"
-                    >
-                      <div className="flex flex-col items-center justify-center gap-2">
-                        <span className="text-3xl">📦</span>
-                        <p className="font-semibold text-text/80">No orders found.</p>
-                        <p className="text-xs text-text-muted max-w-xs">
-                          Try adjusting your search query or status filter to see other orders.
-                        </p>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </div>
-
-          {/* Pagination Controls */}
-          {table.getPageCount() > 1 && (
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-4 py-3.5 border-t border-border/60 bg-muted/20">
-              <div className="text-xs font-semibold text-text-muted">
-                Showing{" "}
-                <span className="font-bold text-text">
-                  {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1}
-                </span>{" "}
-                to{" "}
-                <span className="font-bold text-text">
-                  {Math.min(
-                    (table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize,
-                    table.getFilteredRowModel().rows.length
+                  ))}
+                </TableHeader>
+                <TableBody>
+                  {table.getRowModel().rows?.length ? (
+                    table.getRowModel().rows.map((row) => (
+                      <TableRow
+                        key={row.id}
+                        onClick={() => {
+                          trigger("light");
+                          if (typeof window !== "undefined") {
+                            window.location.href = `/orders/${row.original.id}`;
+                          }
+                        }}
+                        className="border-b border-border/40 hover:bg-primary/[0.03] dark:hover:bg-primary/[0.08] transition-all duration-300 ease-in-out cursor-pointer group"
+                      >
+                      {row.getVisibleCells().map((cell: Cell<PendingOrder, unknown>) => (
+                          <TableCell key={cell.id} className="py-3 px-4 align-middle">
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
+                            )}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell
+                        colSpan={table.getVisibleFlatColumns().length}
+                        className="h-48 text-center text-text-muted p-6"
+                      >
+                        <div className="flex flex-col items-center justify-center gap-2">
+                          <span className="text-3xl">📦</span>
+                          <p className="font-semibold text-text/80">No orders found.</p>
+                          <p className="text-xs text-text-muted max-w-xs">
+                            Try adjusting your search query or status filter to see other orders.
+                          </p>
+                        </div>
+                      </TableCell>
+                    </TableRow>
                   )}
-                </span>{" "}
-                of{" "}
-                <span className="font-bold text-text">
-                  {table.getFilteredRowModel().rows.length}
-                </span>{" "}
-                orders
-              </div>
-
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    trigger("light");
-                    table.previousPage();
-                  }}
-                  disabled={!table.getCanPreviousPage()}
-                  className="h-8.5 rounded-lg border-border hover:bg-background cursor-pointer gap-1"
-                >
-                  <ChevronLeft className="size-4" />
-                  Previous
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    trigger("light");
-                    table.nextPage();
-                  }}
-                  disabled={!table.getCanNextPage()}
-                  className="h-8.5 rounded-lg border-border hover:bg-background cursor-pointer gap-1"
-                >
-                  Next
-                  <ChevronRight className="size-4" />
-                </Button>
-              </div>
+                </TableBody>
+              </Table>
             </div>
-          )}
-        </CardContent>
-      </Card>
-    </div>
+
+            {/* Pagination Controls */}
+            {table.getPageCount() > 1 && (
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-4 py-3.5 border-t border-border/60 bg-muted/20">
+                <div className="text-xs font-semibold text-text-muted">
+                  Showing{" "}
+                  <span className="font-bold text-text">
+                    {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1}
+                  </span>{" "}
+                  to{" "}
+                  <span className="font-bold text-text">
+                    {Math.min(
+                      (table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize,
+                      table.getFilteredRowModel().rows.length
+                    )}
+                  </span>{" "}
+                  of{" "}
+                  <span className="font-bold text-text">
+                    {table.getFilteredRowModel().rows.length}
+                  </span>{" "}
+                  orders
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      trigger("light");
+                      table.previousPage();
+                    }}
+                    disabled={!table.getCanPreviousPage()}
+                    className="h-8.5 rounded-lg border-border hover:bg-background cursor-pointer gap-1"
+                  >
+                    <ChevronLeft className="size-4" />
+                    Previous
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      trigger("light");
+                      table.nextPage();
+                    }}
+                    disabled={!table.getCanNextPage()}
+                    className="h-8.5 rounded-lg border-border hover:bg-background cursor-pointer gap-1"
+                  >
+                    Next
+                    <ChevronRight className="size-4" />
+                  </Button>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </TooltipProvider>
   );
 }

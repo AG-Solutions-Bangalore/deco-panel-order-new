@@ -1,32 +1,12 @@
-import React, { useState } from "react";
-import {
-  useReactTable,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getSortedRowModel,
-  getPaginationRowModel,
-  ColumnDef,
-  flexRender,
-  SortingState,
-  ColumnFiltersState,
-} from "@tanstack/react-table";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
   DialogDescription,
   DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
 import {
   Select,
@@ -36,25 +16,65 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable
+} from "@tanstack/react-table";
+import type {
+  Cell,
+  ColumnDef,
+  Header,
+  HeaderGroup,
+  SortingState,
+} from "@tanstack/react-table";
+import {
+  ArrowRight,
   ArrowUpDown,
+  CheckCircle,
   ChevronLeft,
   ChevronRight,
-  Search,
-  X,
-  SlidersHorizontal,
-  Eye,
   Edit,
-  ArrowRight,
-  CheckCircle,
+  Eye
 } from "lucide-react";
-import { useWebHaptics } from "web-haptics/react";
-import { Quotation } from "../types";
-import {
-  useProceedQuotationMutation,
-  useCompleteQuotationMutation,
-} from "../hooks/use-quotes";
-import { toast } from "sonner";
+import { useState } from "react";
 import { Link } from "react-router-dom";
+import { toast } from "sonner";
+import { useWebHaptics } from "web-haptics/react";
+import {
+  useCompleteQuotationMutation,
+  useProceedQuotationMutation,
+} from "../hooks/use-quotes";
+import { Quotation } from "../types";
+
+function getErrorMessage(error: unknown, fallback: string) {
+  if (
+    typeof error === "object" &&
+    error !== null &&
+    "response" in error &&
+    typeof error.response === "object" &&
+    error.response !== null &&
+    "data" in error.response &&
+    typeof error.response.data === "object" &&
+    error.response.data !== null &&
+    "message" in error.response.data &&
+    typeof error.response.data.message === "string"
+  ) {
+    return error.response.data.message;
+  }
+
+  return fallback;
+}
 
 interface QuotesTableProps {
   quotes: Quotation[];
@@ -101,8 +121,8 @@ export default function QuotesTable({ quotes, type }: QuotesTableProps) {
         }
         handleCloseProceed();
       },
-      onError: (err: any) => {
-        toast.error(err?.response?.data?.message || "Error processing quotation");
+      onError: (err: unknown) => {
+        toast.error(getErrorMessage(err, "Error processing quotation"));
         handleCloseProceed();
       },
     });
@@ -135,8 +155,8 @@ export default function QuotesTable({ quotes, type }: QuotesTableProps) {
           }
           handleCloseStatusUpdate();
         },
-        onError: (err: any) => {
-          toast.error(err?.response?.data?.message || "Error updating quotation");
+        onError: (err: unknown) => {
+          toast.error(getErrorMessage(err, "Error updating quotation"));
           handleCloseStatusUpdate();
         },
       }
@@ -157,16 +177,21 @@ export default function QuotesTable({ quotes, type }: QuotesTableProps) {
             trigger("light");
             column.toggleSorting(column.getIsSorted() === "asc");
           }}
-          className="-ml-4 hover:bg-primary/5 hover:text-primary font-bold text-xs uppercase tracking-wider text-text-muted"
+          className="-ml-4 hover:bg-primary/5 hover:text-primary font-bold text-xs uppercase tracking-wider text-text-muted transition-colors duration-200"
         >
-          Quote No
+          Quote
           <ArrowUpDown className="ml-1.5 size-3.5" />
         </Button>
       ),
       cell: ({ row }) => (
-        <span className="font-bold text-text text-sm">
-          #{row.getValue("quotation_no")}
-        </span>
+        <div className="flex flex-col gap-0.5 py-1">
+          <span className="font-bold text-text text-sm">
+            #{row.getValue("quotation_no")}
+          </span>
+          <span className="text-text-muted text-xs font-semibold">
+            {row.original.quotation_date}
+          </span>
+        </div>
       ),
     },
     {
@@ -178,48 +203,14 @@ export default function QuotesTable({ quotes, type }: QuotesTableProps) {
             trigger("light");
             column.toggleSorting(column.getIsSorted() === "asc");
           }}
-          className="-ml-4 hover:bg-primary/5 hover:text-primary font-bold text-xs uppercase tracking-wider text-text-muted"
+          className="-ml-4 hover:bg-primary/5 hover:text-primary font-bold text-xs uppercase tracking-wider text-text-muted transition-colors duration-200"
         >
           Customer
           <ArrowUpDown className="ml-1.5 size-3.5" />
         </Button>
       ),
-      cell: ({ row }) => (
-        <span className="font-semibold text-text text-sm">
-          {row.getValue("full_name")}
-        </span>
-      ),
-    },
-    {
-      accessorKey: "quotation_date",
-      header: ({ column }) => (
-        <Button
-          variant="ghost"
-          onClick={() => {
-            trigger("light");
-            column.toggleSorting(column.getIsSorted() === "asc");
-          }}
-          className="-ml-4 hover:bg-primary/5 hover:text-primary font-bold text-xs uppercase tracking-wider text-text-muted"
-        >
-          Quote Date
-          <ArrowUpDown className="ml-1.5 size-3.5" />
-        </Button>
-      ),
-      cell: ({ row }) => (
-        <span className="text-text-muted text-xs md:text-sm font-medium">
-          {row.getValue("quotation_date")}
-        </span>
-      ),
-    },
-    {
-      accessorKey: "quotation_status",
-      header: () => (
-        <span className="font-bold text-xs uppercase tracking-wider text-text-muted">
-          Status
-        </span>
-      ),
       cell: ({ row }) => {
-        const status = (row.getValue("quotation_status") as string) || "Quotation";
+        const status = (row.original.quotation_status as string) || "Quotation";
         
         let badgeClasses = "bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20";
         if (status.toLowerCase().includes("complete")) {
@@ -231,11 +222,24 @@ export default function QuotesTable({ quotes, type }: QuotesTableProps) {
         }
 
         return (
-          <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide ${badgeClasses}`}>
-            {status}
-          </span>
+          <div className="flex flex-col gap-1.5 py-1">
+            <span className="font-semibold text-text text-sm leading-tight">
+              {row.getValue("full_name")}
+            </span>
+            <div className="flex items-center">
+              <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${badgeClasses}`}>
+                {status}
+              </span>
+            </div>
+          </div>
         );
       },
+    },
+    {
+      accessorKey: "quotation_date",
+    },
+    {
+      accessorKey: "quotation_status",
     },
     {
       id: "actions",
@@ -321,6 +325,10 @@ export default function QuotesTable({ quotes, type }: QuotesTableProps) {
     state: {
       sorting,
       globalFilter,
+      columnVisibility: {
+        quotation_date: false,
+        quotation_status: false,
+      },
     },
     onSortingChange: setSorting,
     onGlobalFilterChange: setGlobalFilter,
@@ -425,9 +433,9 @@ export default function QuotesTable({ quotes, type }: QuotesTableProps) {
           <div className="overflow-x-auto relative scrollbar-thin">
             <Table>
               <TableHeader className="bg-muted/40 border-b border-border/60">
-                {table.getHeaderGroups().map((headerGroup) => (
+                {table.getHeaderGroups().map((headerGroup: HeaderGroup<Quotation>) => (
                   <TableRow key={headerGroup.id} className="hover:bg-transparent">
-                    {headerGroup.headers.map((header) => (
+                    {headerGroup.headers.map((header: Header<Quotation, unknown>) => (
                       <TableHead
                         key={header.id}
                         className="py-3.5 px-4 font-bold align-middle"
@@ -454,9 +462,9 @@ export default function QuotesTable({ quotes, type }: QuotesTableProps) {
                           window.location.href = `/quotes/${row.original.id}`;
                         }
                       }}
-                      className="border-b border-border/40 hover:bg-primary/[0.02] transition-colors cursor-pointer group"
+                      className="border-b border-border/40 hover:bg-primary/[0.03] dark:hover:bg-primary/[0.08] transition-all duration-300 ease-in-out cursor-pointer group"
                     >
-                      {row.getVisibleCells().map((cell) => (
+                      {row.getVisibleCells().map((cell: Cell<Quotation, unknown>) => (
                         <TableCell key={cell.id} className="py-3 px-4 align-middle">
                           {flexRender(
                             cell.column.columnDef.cell,
@@ -469,7 +477,7 @@ export default function QuotesTable({ quotes, type }: QuotesTableProps) {
                 ) : (
                   <TableRow>
                     <TableCell
-                      colSpan={columns.length}
+                      colSpan={table.getVisibleFlatColumns().length}
                       className="h-48 text-center text-text-muted p-6"
                     >
                       <div className="flex flex-col items-center justify-center gap-2">

@@ -69,12 +69,12 @@ export function ProfilePage() {
       <div className="flex items-center justify-between">
         <PageHeader title="Profile" subtitle="Manage your personal details, credentials, and settings." />
 
-        {!isEditing && profile && (
-          <Button onClick={handleEditToggle} className="flex gap-2">
-            <Edit3 className="size-4" />
-            Edit Profile
-          </Button>
-        )}
+        {/* {!isEditing && profile && (
+          // <Button onClick={handleEditToggle} className="flex gap-2">
+          //   <Edit3 className="size-4" />
+          //   Edit Profile
+          // </Button>
+        )} */}
       </div>
 
       {profile && (
