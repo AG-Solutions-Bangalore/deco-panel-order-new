@@ -167,6 +167,16 @@ export default defineConfig({
         cookieDomainRewrite: '',
         rewrite: (path) => path.replace(/^\/api\/fleet/, '/fleetapi/public/api'),
       },
+      '/api/orders-new': {
+        target: 'https://deco-panel-order-new.vercel.app',
+        changeOrigin: true,
+        secure: true,
+        headers: {
+          Origin: 'https://deco-panel-order-new.vercel.app',
+        },
+        cookieDomainRewrite: '',
+        rewrite: (path) => path.replace(/^\/api\/orders-new/, ''),
+      },
     },
   },
   preview: {
