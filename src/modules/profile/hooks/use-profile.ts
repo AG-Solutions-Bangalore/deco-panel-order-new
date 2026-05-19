@@ -1,12 +1,10 @@
-"use client";
-
 import { useEffect, useState } from "react";
 import { useProfileStore, UserProfile } from "../store/use-profile-store";
 import { useWebHaptics } from "web-haptics/react";
-import { useRouter } from "next/navigation";
+import { useNavigate } from "react-router-dom";
 
 export function useProfile() {
-  const router = useRouter();
+  const navigate = useNavigate();
   const { trigger } = useWebHaptics();
   const { profile, isLoading, fetchProfile, updateProfile } = useProfileStore();
   const [isEditing, setIsEditing] = useState(false);
@@ -80,7 +78,7 @@ export function useProfile() {
       localStorage.removeItem("username");
       localStorage.removeItem("email");
     }
-    router.push("/login");
+    navigate("/login");
   };
 
   return {

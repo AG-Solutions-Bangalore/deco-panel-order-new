@@ -1,6 +1,3 @@
-"use client";
-
-import Image from "next/image";
 import { ForgetPasswordForm } from "../components/forget-password-form";
 
 export function ForgetPasswordPage() {

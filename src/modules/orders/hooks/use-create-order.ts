@@ -1,10 +1,8 @@
-"use client";
-
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/api";
 import { OrderProduct, UserProfile, CreateOrderInput } from "../types";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { useNavigate } from "react-router-dom";
 
 // Fetch users for dropdown
 export function useUsersList() {
@@ -43,7 +41,7 @@ export function useCurrentYear() {
 // Mutation to create order
 export function useCreateOrderMutation() {
   const queryClient = useQueryClient();
-  const router = useRouter();
+  const navigate = useNavigate();
 
   return useMutation({
     mutationFn: async (data: CreateOrderInput) => {
@@ -54,7 +52,7 @@ export function useCreateOrderMutation() {
       toast.success(data?.msg || "Order created successfully");
       queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
       setTimeout(() => {
-        router.push("/");
+        navigate("/");
       }, 500);
     },
     onError: (error: any) => {
@@ -79,7 +77,7 @@ export function useOrderDetail(id: number | string | undefined) {
 // Mutation to update/edit order
 export function useUpdateOrderMutation() {
   const queryClient = useQueryClient();
-  const router = useRouter();
+  const navigate = useNavigate();
 
   return useMutation({
     mutationFn: async ({ id, data }: { id: number | string; data: any }) => {
@@ -92,7 +90,7 @@ export function useUpdateOrderMutation() {
       queryClient.invalidateQueries({ queryKey: ["pending-orders-list"] });
       queryClient.invalidateQueries({ queryKey: ["order-by-id"] });
       setTimeout(() => {
-        router.push("/");
+        navigate("/");
       }, 500);
     },
     onError: (error: any) => {
@@ -101,4 +99,3 @@ export function useUpdateOrderMutation() {
     },
   });
 }
-

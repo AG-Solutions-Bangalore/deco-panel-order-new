@@ -1,11 +1,9 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/page-header";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import OrderListSkeleton from "@/modules/orders/components/OrderListSkeleton";
 import { PlusCircle } from "lucide-react";
-import Link from "next/link";
+import { Link } from "react-router-dom";
 import { useState } from "react";
 import QuotesTable from "../components/QuotesTable";
 import { useCompletedQuotesList, useOpenQuotesList, useProcessingQuotesList } from "../hooks/use-quotes";
@@ -22,7 +20,7 @@ export function QuoteListPage() {
     <div className="flex flex-col gap-1 p-4 md:p-6 w-full max-w-7xl mx-auto pb-24 md:pb-6 animate-fade-in duration-300">
       <PageHeader title="Quotations" subtitle="Manage your company proposals and quotation lifecycles.">
         <Button asChild className="shrink-0">
-          <Link href="/">
+          <Link to="/">
             <PlusCircle data-icon="inline-start" className="size-4" />
             Create Quotation
           </Link>

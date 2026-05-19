@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useRef, useEffect } from "react";
 import { Calendar, ChevronDown, Check } from "lucide-react";
 import { useWebHaptics } from "web-haptics/react";

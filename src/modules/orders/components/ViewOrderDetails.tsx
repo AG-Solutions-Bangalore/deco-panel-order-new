@@ -1,5 +1,3 @@
-"use client";
-
 import React from "react";
 import { useOrderDetail, useUsersList } from "../hooks/use-create-order";
 import { Card, CardContent } from "@/components/ui/card";
@@ -20,7 +18,7 @@ import {
   FileSpreadsheet,
 } from "lucide-react";
 import { useWebHaptics } from "web-haptics/react";
-import Link from "next/link";
+import { Link } from "react-router-dom";
 
 interface ViewOrderDetailsProps {
   orderId: string;
@@ -52,7 +50,7 @@ export default function ViewOrderDetails({ orderId }: ViewOrderDetailsProps) {
         <p className="text-xs text-text-muted max-w-xs">
           The order with ID #{orderId} could not be retrieved. It may have been archived or deleted.
         </p>
-        <Link href="/" className="mt-4">
+        <Link to="/" className="mt-4">
           <Button variant="outline" className="rounded-xl px-5 py-2.5 font-bold text-xs">
             Back to Dashboard
           </Button>
@@ -107,7 +105,7 @@ export default function ViewOrderDetails({ orderId }: ViewOrderDetailsProps) {
       {/* Top Header Card */}
       <div className="flex items-center justify-between bg-panel border border-border/80 p-4 rounded-2xl shadow-xs">
         <div className="flex items-center gap-3">
-          <Link href="/" className="cursor-pointer">
+          <Link to="/" className="cursor-pointer">
             <Button
               variant="outline"
               size="icon"
@@ -181,7 +179,7 @@ export default function ViewOrderDetails({ orderId }: ViewOrderDetailsProps) {
 
               {/* Actions Footer inside card */}
               <div className="flex items-center gap-3 mt-2 pt-2 border-t border-border/40">
-                <Link href={`/quotes/create/${order.id}`} className="w-full">
+                <Link to={`/quotes/create/${order.id}`} className="w-full">
                   <Button className="w-full rounded-xl py-2 font-bold text-xs gap-1.5">
                     <FileSpreadsheet className="size-4" />
                     Generate Quote

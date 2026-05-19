@@ -1,9 +1,7 @@
-"use client";
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import Link from "next/link";
+import { Link } from "react-router-dom";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -82,7 +80,7 @@ export function LoginForm() {
                 Password
               </FieldLabel>
               <Link
-                href="/forget-password"
+                to="/forget-password"
                 className="text-xs font-medium text-primary hover:underline"
               >
                 Forgot password?
@@ -130,7 +128,7 @@ export function LoginForm() {
       
       <p className="text-center text-sm text-text-muted">
         Don&apos;t have an account?{" "}
-        <Link href="/register" className="font-medium text-primary hover:underline">
+        <Link to="/register" className="font-medium text-primary hover:underline">
           Contact Support
         </Link>
       </p>

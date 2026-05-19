@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useEffect, useState } from "react";
 import { PageHeader } from "@/components/ui/page-header";
 import { Card, CardContent } from "@/components/ui/card";
@@ -12,8 +10,8 @@ import { OrderProduct } from "@/modules/orders/types";
 import { ArrowLeft, User, Calendar, Plus, Trash2, ShieldCheck, HelpCircle } from "lucide-react";
 import { useWebHaptics } from "web-haptics/react";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
+import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Spinner } from "@/components/ui/spinner";
 
 interface CreateQuotePageProps {
@@ -21,7 +19,7 @@ interface CreateQuotePageProps {
 }
 
 export function CreateQuotePage({ orderId }: CreateQuotePageProps) {
-  const router = useRouter();
+  const navigate = useNavigate();
   const { trigger } = useWebHaptics();
 
   // Parallel Query Fetching
@@ -193,7 +191,7 @@ export function CreateQuotePage({ orderId }: CreateQuotePageProps) {
         onSuccess: (res) => {
           if (res.code === 200) {
             toast.success("Quotation drafted successfully!");
-            router.push("/quotes");
+            navigate("/quotes");
           } else {
             toast.error(res.msg || "Failed to create quotation");
           }
@@ -219,7 +217,7 @@ export function CreateQuotePage({ orderId }: CreateQuotePageProps) {
   return (
     <div className="flex flex-col gap-6 p-4 md:p-6 w-full max-w-7xl mx-auto pb-24 md:pb-6 animate-fade-in duration-300">
       <div className="flex items-center gap-3">
-        <Link href="/">
+        <Link to="/">
           <Button variant="ghost" size="icon" className="rounded-full bg-panel border border-border/80 text-text hover:text-primary hover:bg-primary/5 cursor-pointer">
             <ArrowLeft className="size-4" />
           </Button>
@@ -368,7 +366,7 @@ export function CreateQuotePage({ orderId }: CreateQuotePageProps) {
 
         {/* Footer controls */}
         <div className="flex items-center justify-center gap-4 mt-6">
-          <Link href="/">
+          <Link to="/">
             <Button type="button" variant="outline" className="px-6 rounded-xl cursor-pointer">
               Back to Orders
             </Button>

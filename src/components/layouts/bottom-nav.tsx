@@ -1,13 +1,10 @@
-"use client";
-
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { Link, useLocation } from "react-router-dom";
 import { Home, PlusCircle, FileText, User } from "lucide-react";
 import { useWebHaptics } from "web-haptics/react";
 import { cn } from "@/lib/utils";
 
 export function BottomNav() {
-  const pathname = usePathname();
+  const { pathname } = useLocation();
   const { trigger } = useWebHaptics();
 
   if (
@@ -47,7 +44,7 @@ export function BottomNav() {
           return (
             <div key={tab.name} className="flex flex-1 items-center justify-center">
               <Link
-                href={tab.href}
+                to={tab.href}
                 onClick={handlePress}
                 className={cn(
                   "flex flex-col items-center justify-center gap-1.5 px-4 py-2 transition-all duration-200",

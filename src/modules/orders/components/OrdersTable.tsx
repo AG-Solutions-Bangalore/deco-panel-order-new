@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useState, useEffect } from "react";
 import {
   useReactTable,
@@ -35,7 +33,7 @@ import {
 } from "lucide-react";
 import { useWebHaptics } from "web-haptics/react";
 import { PendingOrder } from "../types";
-import Link from "next/link";
+import { Link } from "react-router-dom";
 import {
   Tooltip,
   TooltipContent,
@@ -182,7 +180,7 @@ export default function OrdersTable({ orders }: OrdersTableProps) {
                       className="h-8 w-8 text-text-muted hover:text-amber-600 dark:hover:text-amber-400 hover:bg-amber-500/5 rounded-xl transition-all cursor-pointer"
                       asChild
                     >
-                      <Link href={`/orders/edit/${order.id}`} onClick={() => trigger("light")}>
+                      <Link to={`/orders/edit/${order.id}`} onClick={() => trigger("light")}>
                         <Pencil className="size-4" />
                       </Link>
                     </Button>
@@ -200,7 +198,7 @@ export default function OrdersTable({ orders }: OrdersTableProps) {
                       className="h-8 w-8 text-text-muted hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-500/5 rounded-xl transition-all cursor-pointer"
                       asChild
                     >
-                      <Link href={`/quotes/create/${order.id}`} onClick={() => trigger("light")}>
+                      <Link to={`/quotes/create/${order.id}`} onClick={() => trigger("light")}>
                         <FilePlus className="size-4" />
                       </Link>
                     </Button>
@@ -220,7 +218,7 @@ export default function OrdersTable({ orders }: OrdersTableProps) {
                   className="h-8 w-8 text-text-muted hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-500/5 rounded-xl transition-all cursor-pointer"
                   asChild
                 >
-                  <Link href={`/orders/${order.id}`} onClick={() => trigger("light")}>
+                  <Link to={`/orders/${order.id}`} onClick={() => trigger("light")}>
                     <Eye className="size-4" />
                   </Link>
                 </Button>

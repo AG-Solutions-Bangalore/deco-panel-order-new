@@ -1,17 +1,12 @@
-"use client";
-
 import { useEffect, useState } from "react";
-import { useRouter, usePathname } from "next/navigation";
-import { Spinner } from "@/components/ui/spinner";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export function AuthGuard({ children }: { children: React.ReactNode }) {
   const [isChecking, setIsChecking] = useState(true);
-  const router = useRouter();
-  const pathname = usePathname();
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-
     const token = localStorage.getItem("token");
     const isAuthRoute =
       pathname?.startsWith("/login") ||
@@ -19,13 +14,13 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
       pathname?.startsWith("/forget-password");
 
     if (!token && !isAuthRoute) {
-      router.replace("/login");
+      navigate("/login", { replace: true });
     } else if (token && isAuthRoute) {
-      router.replace("/");
+      navigate("/", { replace: true });
     } else {
       setIsChecking(false);
     }
-  }, [pathname, router]);
+  }, [pathname, navigate]);
 
   if (isChecking) {
     return null

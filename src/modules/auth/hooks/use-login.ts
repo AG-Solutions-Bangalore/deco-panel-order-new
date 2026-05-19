@@ -1,13 +1,11 @@
-"use client";
-
 import { useMutation } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import api from "@/lib/api";
 import { LoginInput } from "../schemas/login-schema";
 
 export function useLogin() {
-  const router = useRouter();
+  const navigate = useNavigate();
 
   return useMutation({
     mutationFn: async (data: LoginInput) => {
@@ -36,7 +34,7 @@ export function useLogin() {
         localStorage.setItem("email", user?.email || "");
 
         toast.success("User Logged In Successfully");
-        router.push("/");
+        navigate("/");
       } else {
         toast.error("Login Failed: Token not received.");
       }

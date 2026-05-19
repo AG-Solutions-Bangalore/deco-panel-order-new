@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useState } from "react";
 import { PageHeader } from "@/components/ui/page-header";
 import { Card, CardContent } from "@/components/ui/card";
@@ -8,7 +6,7 @@ import { useQuotationViewDetail } from "../hooks/use-quotes";
 import { ArrowLeft, Printer, Share2, PhoneCall, Truck, MapPin, Layers, FileText } from "lucide-react";
 import { useWebHaptics } from "web-haptics/react";
 import { toast } from "sonner";
-import Link from "next/link";
+import { Link } from "react-router-dom";
 import { Spinner } from "@/components/ui/spinner";
 
 interface ViewQuotePageProps {
@@ -81,7 +79,7 @@ export function ViewQuotePage({ quoteId }: ViewQuotePageProps) {
       <div className="flex flex-col items-center justify-center min-h-[50vh] gap-3">
         <span className="text-4xl">❌</span>
         <p className="text-sm font-extrabold text-text">Quotation Not Found</p>
-        <Link href="/quotes">
+        <Link to="/quotes">
           <Button variant="outline" className="rounded-xl cursor-pointer">Back to Quotations</Button>
         </Link>
       </div>
@@ -98,7 +96,7 @@ export function ViewQuotePage({ quoteId }: ViewQuotePageProps) {
       {/* Header controls (hidden during print) */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-border/40 pb-4 print:hidden">
         <div className="flex items-center gap-3">
-          <Link href="/quotes">
+          <Link to="/quotes">
             <Button variant="ghost" size="icon" className="rounded-full bg-panel border border-border/80 text-text hover:text-primary hover:bg-primary/5 cursor-pointer">
               <ArrowLeft className="size-4" />
             </Button>
@@ -119,7 +117,7 @@ export function ViewQuotePage({ quoteId }: ViewQuotePageProps) {
             variant="outline"
             className="cursor-pointer text-xs font-bold gap-1.5 rounded-xl shrink-0"
           >
-            <Link href={`/quotes/${quoteId}/print`} target="_blank" onClick={() => trigger("medium")}>
+            <Link to={`/quotes/${quoteId}/print`} target="_blank" onClick={() => trigger("medium")}>
               <Printer className="size-4" /> Print Quotation
             </Link>
           </Button>

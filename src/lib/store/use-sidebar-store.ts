@@ -7,10 +7,24 @@ interface SidebarState {
   setOpen: (open: boolean) => void;
 }
 
+function getInitialSidebarState() {
+  if (typeof window === "undefined") return true;
+
+  try {
+    const storedValue = window.localStorage.getItem("sidebar-storage");
+    if (!storedValue) return true;
+
+    const parsedValue = JSON.parse(storedValue);
+    return parsedValue?.state?.isOpen ?? true;
+  } catch {
+    return true;
+  }
+}
+
 export const useSidebarStore = create<SidebarState>()(
   persist(
     (set) => ({
-      isOpen: true, // Default state
+      isOpen: getInitialSidebarState(),
       toggleSidebar: () => set((state) => ({ isOpen: !state.isOpen })),
       setOpen: (open) => set({ isOpen: open }),
     }),

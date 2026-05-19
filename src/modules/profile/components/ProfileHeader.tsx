@@ -1,5 +1,3 @@
-"use client";
-
 import { Card, CardContent } from "@/components/ui/card";
 import { UserProfile } from "../store/use-profile-store";
 import { CheckCircle2 } from "lucide-react";

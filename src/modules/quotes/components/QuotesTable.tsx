@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useState } from "react";
 import {
   useReactTable,
@@ -56,7 +54,7 @@ import {
   useCompleteQuotationMutation,
 } from "../hooks/use-quotes";
 import { toast } from "sonner";
-import Link from "next/link";
+import { Link } from "react-router-dom";
 
 interface QuotesTableProps {
   quotes: Quotation[];
@@ -274,7 +272,7 @@ export default function QuotesTable({ quotes, type }: QuotesTableProps) {
                   className="h-8 w-8 text-text-muted hover:text-primary hover:bg-primary/5 rounded-full transition-colors cursor-pointer"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <Link href={`/quotes/edit/${quote.id}`}>
+                  <Link to={`/quotes/edit/${quote.id}`}>
                     <Edit className="size-4" />
                   </Link>
                 </Button>
@@ -306,7 +304,7 @@ export default function QuotesTable({ quotes, type }: QuotesTableProps) {
               className="h-8 w-8 text-text-muted hover:text-primary hover:bg-primary/5 rounded-full transition-colors cursor-pointer"
               onClick={(e) => e.stopPropagation()}
             >
-              <Link href={`/quotes/${quote.id}`}>
+              <Link to={`/quotes/${quote.id}`}>
                 <Eye className="size-4" />
               </Link>
             </Button>

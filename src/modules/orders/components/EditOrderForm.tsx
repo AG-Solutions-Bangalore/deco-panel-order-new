@@ -1,7 +1,5 @@
-"use client";
-
 import React, { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useNavigate } from "react-router-dom";
 import {
   useUsersList,
   useProductsList,
@@ -28,7 +26,7 @@ import {
 } from "lucide-react";
 import { useWebHaptics } from "web-haptics/react";
 import SelectProductDialog from "./SelectProductDialog";
-import Link from "next/link";
+import { Link } from "react-router-dom";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 
@@ -37,7 +35,7 @@ interface EditOrderFormProps {
 }
 
 export default function EditOrderForm({ orderId }: EditOrderFormProps) {
-  const router = useRouter();
+  const navigate = useNavigate();
   const { trigger } = useWebHaptics();
   const quantityRefs = useRef<(HTMLInputElement | null)[]>([]);
 
@@ -251,7 +249,7 @@ export default function EditOrderForm({ orderId }: EditOrderFormProps) {
     <div className="flex flex-col gap-6">
       {/* Top Header Card */}
       <div className="flex items-center gap-3 bg-panel border border-border/80 p-4 rounded-2xl shadow-xs">
-        <Link href="/" className="cursor-pointer">
+        <Link to="/" className="cursor-pointer">
           <Button
             variant="outline"
             size="icon"
@@ -601,7 +599,7 @@ export default function EditOrderForm({ orderId }: EditOrderFormProps) {
           </Button>
 
           <div className="flex items-center gap-3">
-            <Link href="/">
+            <Link to="/">
               <Button
                 type="button"
                 variant="outline"

@@ -1,5 +1,3 @@
-"use client";
-
 import CreateOrderForm from "../components/CreateOrderForm";
 
 export function CreateOrderPage() {

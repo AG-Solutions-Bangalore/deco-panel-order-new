@@ -1,5 +1,3 @@
-"use client";
-
 import { useProfile } from "../hooks/use-profile";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -10,11 +8,15 @@ import {
   LogOut,
   Edit3,
   Save,
-  XCircle
+  XCircle,
+  Sun,
+  Moon
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useTheme } from "@/components/providers/theme-provider";
 
 export function ProfilePage() {
+  const { resolvedTheme, setTheme } = useTheme();
   const {
     profile,
     isLoading,
@@ -36,6 +38,7 @@ export function ProfilePage() {
     handleSave,
     handleLogout,
   } = useProfile();
+  const isDarkMode = resolvedTheme === "dark";
 
   if (isLoading && !profile) {
     return (
@@ -118,6 +121,16 @@ export function ProfilePage() {
           {/* Settings Section (Log Out) */}
           {!isEditing && (
             <div className="flex flex-col gap-3">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setTheme(isDarkMode ? "light" : "dark")}
+                className="md:hidden flex items-center justify-center gap-2 h-11 rounded-xl border-border bg-transparent text-foreground shadow-none hover:bg-muted/60 active:scale-[0.98] transition-transform"
+              >
+                {isDarkMode ? <Sun className="size-4" /> : <Moon className="size-4" />}
+                {isDarkMode ? "Light Mode" : "Dark Mode"}
+              </Button>
+
               <Button
                 type="button"
                 variant="destructive"
