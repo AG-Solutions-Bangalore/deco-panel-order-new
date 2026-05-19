@@ -7,7 +7,19 @@
   "framework": null,
   "rewrites": [
     {
-      "source": "/((?!api/).*)",
+      "source": "/api/proxy/:path*",
+      "destination": "https://decopanel.in/public/api/:path*"
+    },
+    {
+      "source": "/api/fleet/:path*",
+      "destination": "https://dfcgroup.in/fleetapi/public/api/:path*"
+    },
+    {
+      "source": "/api/orders-new/:path*",
+      "destination": "https://deco-panel-order-new.vercel.app/:path*"
+    },
+    {
+      "source": "/(.*)",
       "destination": "/index.html"
     }
   ],
