@@ -3,6 +3,7 @@ import {
   useDashboardData,
   useDashboardYears,
   usePendingOrdersList,
+  useProcessedOrdersList,
 } from "./use-orders-dashboard";
 
 export function useOrderList() {
@@ -12,6 +13,7 @@ export function useOrderList() {
   const { data: dashboardData, isLoading: isLoadingData, error: dashboardError } = useDashboardData(selectedYear);
   const { data: availableYears, isLoading: isLoadingYears } = useDashboardYears();
   const { data: pendingOrders = [], isLoading: isLoadingPending, error: pendingError } = usePendingOrdersList();
+  const { data: processedOrders = [], isLoading: isLoadingProcessed, error: processedError } = useProcessedOrdersList();
 
   return {
     selectedYear,
@@ -20,9 +22,11 @@ export function useOrderList() {
     setActiveTab,
     dashboardData,
     pendingOrders,
+    processedOrders,
     isLoadingData: isLoadingData || isLoadingYears,
     isLoadingPending,
+    isLoadingProcessed,
     availableYears: availableYears || [],
-    error: dashboardError || pendingError,
+    error: dashboardError || pendingError || processedError,
   };
 }
