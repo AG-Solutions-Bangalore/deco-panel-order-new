@@ -34,8 +34,8 @@ export function LoginForm() {
   } = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      username: "admin",
-      password: "123456",
+      username: "",
+      password: "",
     },
   });
 
@@ -115,22 +115,24 @@ export function LoginForm() {
           </Field>
 
           {/* Submit Button */}
-          <Button
-            type="submit"
-            className="mt-2 w-full"
-            disabled={isPending}
-          >
+          <Button type="submit" className="mt-2 w-full" disabled={isPending}>
             {isPending && (
-              <Spinner data-icon="inline-start" className="size-4 animate-spin" />
+              <Spinner
+                data-icon="inline-start"
+                className="size-4 animate-spin"
+              />
             )}
             {isPending ? "Signing in..." : "Sign in"}
           </Button>
         </FieldGroup>
       </form>
-      
+
       <p className="text-center text-sm text-text-muted">
         Don&apos;t have an account?{" "}
-        <Link to="/register" className="font-medium text-primary hover:underline">
+        <Link
+          to="/register"
+          className="font-medium text-primary hover:underline"
+        >
           Contact Support
         </Link>
       </p>
