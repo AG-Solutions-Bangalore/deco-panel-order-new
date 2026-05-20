@@ -55,13 +55,13 @@ export function OrderListPage() {
               value="recent"
               className="rounded-lg  font-bold text-xs cursor-pointer"
             >
-              Recent Orders
+              Pending Orders
             </TabsTrigger>
             <TabsTrigger
               value="pending"
               className="rounded-lg  font-bold text-xs cursor-pointer"
             >
-              Pending List
+              Processed Orders
             </TabsTrigger>
           </TabsList>
         </div>

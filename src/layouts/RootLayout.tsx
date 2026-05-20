@@ -5,6 +5,7 @@ import { BottomNav } from '@/components/layouts/bottom-nav'
 import { DesktopSidebar } from '@/components/layouts/desktop-sidebar'
 import { QueryProvider } from '@/components/providers/query-provider'
 import { ThemeProvider } from '@/components/providers/theme-provider'
+import { InstallAppPrompt } from '@/components/pwa/install-app-prompt'
 
 export function RootLayout() {
   return (
@@ -20,6 +21,7 @@ export function RootLayout() {
             <DesktopSidebar />
             <main className="flex-1 flex flex-col overflow-y-auto relative bg-bg">
               <Outlet />
+              <InstallAppPrompt />
               <BottomNav />
             </main>
           </div>

@@ -19,12 +19,12 @@ export function QuoteListPage() {
   return (
     <div className="flex flex-col gap-1 p-4 md:p-6 w-full max-w-7xl mx-auto pb-24 md:pb-6 animate-fade-in duration-300">
       <PageHeader title="Quotations" subtitle="Manage your company proposals and quotation lifecycles.">
-        <Button asChild className="shrink-0">
+        {/* <Button asChild className="shrink-0">
           <Link to="/">
             <PlusCircle data-icon="inline-start" className="size-4" />
             Create Quotation
           </Link>
-        </Button>
+        </Button> */}
       </PageHeader>
       {/* Unified life-cycle switcher */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">

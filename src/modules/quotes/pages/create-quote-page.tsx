@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { PageHeader } from "@/components/ui/page-header";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -18,6 +18,42 @@ interface CreateQuotePageProps {
   orderId: string;
 }
 
+type QuoteOrderSubItem = {
+  id?: number | string;
+  orders_sub_product_id?: number | string;
+  orders_sub_quantity?: number | string;
+  orders_sub_rate?: number | string;
+  orders_sub_design_no?: string;
+};
+
+type QuoteItem = {
+  orders_sub_product_id: string | number;
+  orders_sub_quantity: string | number;
+  orders_sub_rate: string | number;
+  orders_sub_design_no: string;
+  id?: number | string;
+  last_rate?: number | string | null;
+};
+
+function getErrorMessage(error: unknown, fallback: string) {
+  if (
+    typeof error === "object" &&
+    error !== null &&
+    "response" in error &&
+    typeof error.response === "object" &&
+    error.response !== null &&
+    "data" in error.response &&
+    typeof error.response.data === "object" &&
+    error.response.data !== null &&
+    "message" in error.response.data &&
+    typeof error.response.data.message === "string"
+  ) {
+    return error.response.data.message;
+  }
+
+  return fallback;
+}
+
 export function CreateQuotePage({ orderId }: CreateQuotePageProps) {
   const navigate = useNavigate();
   const { trigger } = useWebHaptics();
@@ -29,7 +65,7 @@ export function CreateQuotePage({ orderId }: CreateQuotePageProps) {
 
   // Mutations
   const createMutation = useCreateQuotationIndirectMutation();
-  const lastRateMutation = useFetchLastRateMutation();
+  const { mutateAsync: fetchLastRateMutation } = useFetchLastRateMutation();
 
   // Form State
   const [orderState, setOrderState] = useState({
@@ -39,14 +75,7 @@ export function CreateQuotePage({ orderId }: CreateQuotePageProps) {
     orders_count: 0,
   });
 
-  const [items, setItems] = useState<Array<{
-    orders_sub_product_id: string | number;
-    orders_sub_quantity: string | number;
-    orders_sub_rate: string | number;
-    orders_sub_design_no: string;
-    id?: number | string;
-    last_rate?: number | string | null;
-  }>>([
+  const [items, setItems] = useState<QuoteItem[]>([
     {
       orders_sub_product_id: "",
       orders_sub_quantity: "",
@@ -59,6 +88,29 @@ export function CreateQuotePage({ orderId }: CreateQuotePageProps) {
   const [productDialogOpen, setProductDialogOpen] = useState(false);
   const [activeItemIndex, setActiveItemIndex] = useState<number | null>(null);
 
+  const fetchLastRate = useCallback(
+    async (userId: number | string, productId: number | string, index: number) => {
+      if (!userId || !productId) return;
+      try {
+        const lastRate = await fetchLastRateMutation({ userId, productId });
+        setItems((prev) =>
+          prev.map((item, i) =>
+            i === index
+              ? {
+                  ...item,
+                  last_rate: lastRate,
+                  orders_sub_rate: !item.orders_sub_rate && lastRate ? lastRate : item.orders_sub_rate,
+                }
+              : item
+          )
+        );
+      } catch (error) {
+        console.error("Error fetching last paid rate:", error);
+      }
+    },
+    [fetchLastRateMutation],
+  );
+
   // Sync state when orderData loads
   useEffect(() => {
     if (orderData) {
@@ -70,7 +122,7 @@ export function CreateQuotePage({ orderId }: CreateQuotePageProps) {
       });
 
       if (orderData.orderSub && orderData.orderSub.length > 0) {
-        const formattedSub = orderData.orderSub.map((sub: any) => ({
+        const formattedSub = orderData.orderSub.map((sub: QuoteOrderSubItem) => ({
           orders_sub_product_id: sub.orders_sub_product_id || "",
           orders_sub_quantity: sub.orders_sub_quantity || "",
           orders_sub_rate: sub.orders_sub_rate || "",
@@ -81,34 +133,14 @@ export function CreateQuotePage({ orderId }: CreateQuotePageProps) {
         setItems(formattedSub);
 
         // Fetch last rate for pre-populated items
-        formattedSub.forEach((item: any, idx: number) => {
+        formattedSub.forEach((item, idx) => {
           if (orderData.order?.orders_user_id && item.orders_sub_product_id) {
             fetchLastRate(orderData.order.orders_user_id, item.orders_sub_product_id, idx);
           }
         });
       }
     }
-  }, [orderData]);
-
-  const fetchLastRate = async (userId: number | string, productId: number | string, index: number) => {
-    if (!userId || !productId) return;
-    try {
-      const lastRate = await lastRateMutation.mutateAsync({ userId, productId });
-      setItems((prev) =>
-        prev.map((item, i) =>
-          i === index
-            ? {
-                ...item,
-                last_rate: lastRate,
-                orders_sub_rate: !item.orders_sub_rate && lastRate ? lastRate : item.orders_sub_rate,
-              }
-            : item
-        )
-      );
-    } catch (error) {
-      console.error("Error fetching last paid rate:", error);
-    }
-  };
+  }, [fetchLastRate, orderData]);
 
   const handleOpenProductDialog = (index: number) => {
     trigger("light");
@@ -196,8 +228,8 @@ export function CreateQuotePage({ orderId }: CreateQuotePageProps) {
             toast.error(res.msg || "Failed to create quotation");
           }
         },
-        onError: (err: any) => {
-          toast.error(err?.response?.data?.message || "Error submitting quotation");
+        onError: (err: unknown) => {
+          toast.error(getErrorMessage(err, "Error submitting quotation"));
         },
       }
     );

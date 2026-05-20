@@ -18,6 +18,7 @@ import {
   InputGroupButton,
 } from "@/components/ui/input-group";
 import { Spinner } from "@/components/ui/spinner";
+import { AppLogo } from "@/components/brand/app-logo";
 
 import { loginSchema, LoginInput } from "../schemas/login-schema";
 import { useLogin } from "../hooks/use-login";
@@ -45,7 +46,8 @@ export function LoginForm() {
   return (
     <div className="flex w-full flex-col justify-center gap-8">
       {/* Header Area */}
-      <div className="flex flex-col gap-2 text-center lg:text-left">
+      <div className="flex flex-col items-center gap-2 text-center lg:items-start lg:text-left">
+        <AppLogo className="mb-2 size-14 lg:hidden" />
         <h1 className="text-3xl font-semibold tracking-tight text-text">
           Welcome back
         </h1>

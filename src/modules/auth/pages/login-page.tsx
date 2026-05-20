@@ -1,4 +1,5 @@
 import { LoginForm } from "../components/login-form";
+import { AppLogo } from "@/components/brand/app-logo";
 
 export function LoginPage() {
   return (
@@ -7,9 +8,7 @@ export function LoginPage() {
       <div className="hidden lg:flex lg:w-1/2 flex-col justify-between bg-zinc-950 p-10 text-white dark:bg-zinc-950/50 dark:border-r border-border">
         {/* Brand/Logo Area */}
         <div className="flex items-center gap-3 font-semibold text-xl tracking-tight">
-          <div className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <span className="font-bold leading-none">D</span>
-          </div>
+          <AppLogo className="size-9 ring-1 ring-white/15" />
           Deco Panel
         </div>
 

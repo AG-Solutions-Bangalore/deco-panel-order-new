@@ -31,19 +31,13 @@ function OrderListSkeleton() {
             <Table>
               <TableHeader className="bg-muted/40 border-b border-border/60">
                 <TableRow className="hover:bg-transparent border-b border-border/60">
-                  <TableHead className="py-3.5 px-4 font-bold align-middle w-[15%]">
+                  <TableHead className="py-3.5 px-4 font-bold align-middle w-[35%]">
                     <Skeleton className={`h-4 w-16 ${skeletonClass}`} />
                   </TableHead>
-                  <TableHead className="py-3.5 px-4 font-bold align-middle w-[35%]">
+                  <TableHead className="py-3.5 px-4 font-bold align-middle w-[45%]">
                     <Skeleton className={`h-4 w-24 ${skeletonClass}`} />
                   </TableHead>
-                  <TableHead className="py-3.5 px-4 font-bold align-middle w-[25%]">
-                    <Skeleton className={`h-4 w-28 ${skeletonClass}`} />
-                  </TableHead>
-                  <TableHead className="py-3.5 px-4 font-bold align-middle w-[15%]">
-                    <Skeleton className={`h-4 w-16 ${skeletonClass}`} />
-                  </TableHead>
-                  <TableHead className="py-3.5 px-4 font-bold align-middle w-[10%] text-right pr-4">
+                  <TableHead className="py-3.5 px-4 font-bold align-middle w-[20%] text-right pr-4">
                     <div className="flex justify-end pr-4">
                       <Skeleton className={`h-4 w-14 ${skeletonClass}`} />
                     </div>
@@ -56,28 +50,26 @@ function OrderListSkeleton() {
                     key={i}
                     className="border-b border-border/40 hover:bg-transparent transition-colors"
                   >
-                    {/* Order / Quote No */}
-                    <TableCell className="py-4 px-4 align-middle">
-                      <Skeleton className={`h-5 w-14 rounded-lg ${skeletonClass}`} />
+                    {/* Order No & Date */}
+                    <TableCell className="py-3 px-4 align-middle">
+                      <div className="flex flex-col gap-1.5 py-0.5">
+                        <Skeleton className={`h-4.5 w-14 rounded-md ${skeletonClass}`} />
+                        <Skeleton className={`h-3.5 ${row.dateWidth} rounded-md ${skeletonClass}`} />
+                      </div>
                     </TableCell>
 
-                    {/* Customer */}
-                    <TableCell className="py-4 px-4 align-middle">
-                      <Skeleton className={`h-5 ${row.nameWidth} rounded-lg ${skeletonClass}`} />
-                    </TableCell>
-
-                    {/* Date */}
-                    <TableCell className="py-4 px-4 align-middle">
-                      <Skeleton className={`h-4.5 ${row.dateWidth} rounded-lg ${skeletonClass}`} />
-                    </TableCell>
-
-                    {/* Status Pill */}
-                    <TableCell className="py-4 px-4 align-middle">
-                      <Skeleton className={`h-6 ${row.badgeWidth} rounded-full ${skeletonClass}`} />
+                    {/* Customer & Status Badge */}
+                    <TableCell className="py-3 px-4 align-middle">
+                      <div className="flex flex-col gap-2 py-0.5">
+                        <Skeleton className={`h-4.5 ${row.nameWidth} rounded-md ${skeletonClass}`} />
+                        <div className="flex">
+                          <Skeleton className={`h-5 ${row.badgeWidth} rounded-full ${skeletonClass}`} />
+                        </div>
+                      </div>
                     </TableCell>
 
                     {/* Actions */}
-                    <TableCell className="py-4 px-4 align-middle">
+                    <TableCell className="py-3 px-4 align-middle">
                       <div className="flex items-center justify-end gap-1.5 pr-2">
                         {Array.from({ length: row.actionsCount }).map((_, btnIdx) => (
                           <Skeleton
