@@ -17,8 +17,10 @@ export function OrderListPage() {
     setActiveTab,
     dashboardData,
     pendingOrders,
+    processedOrders,
     isLoadingData,
     isLoadingPending,
+    isLoadingProcessed,
     availableYears,
   } = useOrderList();
 
@@ -70,25 +72,6 @@ export function OrderListPage() {
           value="recent"
           className="focus-visible:outline-none focus-visible:ring-0"
         >
-          {isLoadingData ? (
-            <OrderListSkeleton />
-          ) : dashboardData ? (
-            <div className="flex flex-col gap-8 animate-fade-in duration-300">
-              <OrdersTable orders={dashboardData.pendingOrder || []} />
-            </div>
-          ) : (
-            <Card className="bg-panel shadow-sm border-border">
-              <CardContent className="p-12 text-center text-text-muted">
-                <p>Failed to load dashboard data. Please try again.</p>
-              </CardContent>
-            </Card>
-          )}
-        </TabsContent>
-
-        <TabsContent
-          value="pending"
-          className="focus-visible:outline-none focus-visible:ring-0"
-        >
           {isLoadingPending ? (
             <OrderListSkeleton />
           ) : pendingOrders ? (
@@ -99,6 +82,25 @@ export function OrderListPage() {
             <Card className="bg-panel shadow-sm border-border">
               <CardContent className="p-12 text-center text-text-muted">
                 <p>Failed to load pending orders list. Please try again.</p>
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
+
+        <TabsContent
+          value="pending"
+          className="focus-visible:outline-none focus-visible:ring-0"
+        >
+          {isLoadingProcessed ? (
+            <OrderListSkeleton />
+          ) : processedOrders ? (
+            <div className="flex flex-col gap-8 animate-fade-in duration-300">
+              <OrdersTable orders={processedOrders} />
+            </div>
+          ) : (
+            <Card className="bg-panel shadow-sm border-border">
+              <CardContent className="p-12 text-center text-text-muted">
+                <p>Failed to load processed orders list. Please try again.</p>
               </CardContent>
             </Card>
           )}

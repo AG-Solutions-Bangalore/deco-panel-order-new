@@ -35,3 +35,15 @@ export function usePendingOrdersList() {
     },
   });
 }
+
+// Fetch global processed orders list
+export function useProcessedOrdersList() {
+  return useQuery({
+    queryKey: ["processed-orders-list"],
+    queryFn: async () => {
+      const response = await api.get<{ orders: PendingOrder[] }>("/web-fetch-order-list");
+      return response.data?.orders || [];
+    },
+  });
+}
+
