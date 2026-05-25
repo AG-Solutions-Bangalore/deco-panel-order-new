@@ -1,9 +1,8 @@
-import React, { useState } from "react";
-import { PageHeader } from "@/components/ui/page-header";
+import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useQuotationViewDetail } from "../hooks/use-quotes";
-import { ArrowLeft, Printer, Share2, PhoneCall, Truck, MapPin, Layers, FileText } from "lucide-react";
+import { ArrowLeft, Printer, PhoneCall, Truck, MapPin, Layers, FileText } from "lucide-react";
 import { useWebHaptics } from "web-haptics/react";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
@@ -11,6 +10,22 @@ import { Spinner } from "@/components/ui/spinner";
 
 interface ViewQuotePageProps {
   quoteId: string;
+}
+
+function formatPrintDate(date: string) {
+  const parsedDate = new Date(date);
+
+  if (Number.isNaN(parsedDate.getTime())) {
+    return date;
+  }
+
+  return new Intl.DateTimeFormat("en-GB", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  })
+    .format(parsedDate)
+    .replace(/\//g, "-");
 }
 
 export function ViewQuotePage({ quoteId }: ViewQuotePageProps) {
@@ -113,13 +128,11 @@ export function ViewQuotePage({ quoteId }: ViewQuotePageProps) {
 
         <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
           <Button
-            asChild
             variant="outline"
             className="cursor-pointer text-xs font-bold gap-1.5 rounded-xl shrink-0"
+            onClick={handlePrint}
           >
-            <Link to={`/quotes/${quoteId}/print`} target="_blank" onClick={() => trigger("medium")}>
-              <Printer className="size-4" /> Print Quotation
-            </Link>
+            <Printer className="size-4" /> Print Quotation
           </Button>
 
           <Button
@@ -134,7 +147,7 @@ export function ViewQuotePage({ quoteId }: ViewQuotePageProps) {
       </div>
 
       {/* Main Invoice Card */}
-      <Card className="bg-panel border border-border/80 shadow-md rounded-2xl overflow-hidden pt-0 print:border-none print:shadow-none print:bg-transparent">
+      <Card className="quotation-screen-only bg-panel border border-border/80 shadow-md rounded-2xl overflow-hidden pt-0">
         <CardContent className="p-6 md:p-8 flex flex-col gap-8 print:p-0">
           
           {/* Top header stats */}
@@ -265,6 +278,166 @@ export function ViewQuotePage({ quoteId }: ViewQuotePageProps) {
 
         </CardContent>
       </Card>
+
+      <div className="quotation-print-only print-container hidden bg-white text-black">
+        <div className="grid grid-cols-3 gap-4 mb-6 border-b border-black pb-4">
+          <div>
+            <p className="font-semibold text-black">Client:</p>
+            <p className="text-black">{q.full_name}</p>
+          </div>
+          <div className="text-center">
+            <p className="font-semibold text-black">Quote No:</p>
+            <p className="text-black">{q.quotation_no}</p>
+          </div>
+          <div className="text-right">
+            <p className="font-semibold text-black">Quote Date:</p>
+            <p className="text-black">{formatPrintDate(q.quotation_date)}</p>
+          </div>
+        </div>
+
+        <div className="mt-4">
+          <table className="min-w-full table-auto border border-black">
+            <thead className="bg-gray-200">
+              <tr>
+                <th className="text-left p-2 border border-black">Item</th>
+                <th className="text-left p-2 border border-black">Size</th>
+                <th className="text-left p-2 border border-black">Quantity</th>
+                <th className="text-left p-2 border border-black">Rate</th>
+                <th className="text-left p-2 border border-black">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              {items.map((item, index) => {
+                const size1 = Number(item.quotation_sub_size1) || 0;
+                const size2 = Number(item.quotation_sub_size2) || 0;
+                const rate = Number(item.quotation_sub_rate) || 0;
+                const amount =
+                  Number(item.quotation_sub_amount) ||
+                  (Number(item.quotation_sub_quantity) || 0) * rate;
+
+                return (
+                  <tr key={index}>
+                    <td className="p-2 border border-black">
+                      {item.quotation_sub_thickness} - {item.quotation_sub_unit}{" "}
+                      {item.product_category} {item.product_sub_category}
+                      <p className="text-sm text-black">
+                        Brand: {item.quotation_sub_brand}
+                        <br />
+                        {item.quotation_sub_design_no}
+                      </p>
+                    </td>
+                    <td className="p-2 border border-black">
+                      {size1 > 1 && size2 > 1 ? `${size1}x${size2}` : ""}
+                    </td>
+                    <td className="p-2 border border-black">
+                      {item.quotation_sub_quantity}
+                    </td>
+                    <td className="p-2 border border-black">{rate.toFixed(2)}</td>
+                    <td className="p-2 border border-black">{amount.toFixed(2)}</td>
+                  </tr>
+                );
+              })}
+              <tr>
+                <td className="p-4 border border-black font-semibold">
+                  Billing on Address
+                </td>
+                <td className="p-2 border border-black font-bold">Total</td>
+                <td
+                  className="p-2 border border-black font-semibold text-center"
+                  colSpan={3}
+                >
+                  {totalAmount.toFixed(2)}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        {(q.quotation_shipping || q.quotation_delivery) && (
+          <div className="mt-4 flex flex-row gap-4">
+            <div className="h-20 border border-black bg-white w-1/2">
+              <div className="w-full h-full p-2 text-sm text-black whitespace-pre-wrap">
+                {q.quotation_delivery || ""}
+              </div>
+            </div>
+
+            <div className="h-20 border border-black bg-white w-1/2">
+              <div className="w-full h-full p-2 text-sm text-black whitespace-pre-wrap">
+                {q.quotation_shipping || ""}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <style>{`
+        @media print {
+          @page {
+            size: A5;
+            margin: 10mm;
+          }
+
+          aside,
+          nav,
+          header,
+          footer,
+          button,
+          .quotation-screen-only,
+          .print-hidden {
+            display: none !important;
+          }
+
+          html,
+          body,
+          #root {
+            width: 100% !important;
+            min-height: auto !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            background: white !important;
+            color: black !important;
+          }
+
+          .quotation-print-only {
+            display: block !important;
+          }
+
+          .print-container {
+            font-size: 12px;
+            color: black;
+          }
+
+          .print-container p {
+            margin: 0;
+          }
+
+          table {
+            width: 100%;
+            border-collapse: collapse;
+          }
+
+          table,
+          th,
+          td {
+            border: 1px solid black;
+          }
+
+          th,
+          td {
+            padding: 8px;
+            text-align: left;
+          }
+
+          thead {
+            background-color: #f0f0f0;
+          }
+
+          tbody tr:nth-child(even),
+          tbody tr:nth-child(odd) {
+            background-color: white;
+          }
+        }
+      `}</style>
     </div>
   );
 }
