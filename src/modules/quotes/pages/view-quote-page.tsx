@@ -7,6 +7,7 @@ import { useWebHaptics } from "web-haptics/react";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import { Spinner } from "@/components/ui/spinner";
+import type { Quotation, QuotationSubItem } from "../types";
 
 interface ViewQuotePageProps {
   quoteId: string;
@@ -28,6 +29,252 @@ function formatPrintDate(date: string) {
     .replace(/\//g, "-");
 }
 
+function getPrintSizeUnit(item: {
+  quotation_sub_size_unit?: string;
+  orders_sub_size_unit?: string;
+  product_size_unit?: string;
+  products_size_unit?: string;
+}) {
+  return (
+    item.quotation_sub_size_unit ||
+    item.orders_sub_size_unit ||
+    item.product_size_unit ||
+    item.products_size_unit ||
+    ""
+  );
+}
+
+function escapePdfText(value: unknown) {
+  return String(value ?? "")
+    .replace(/\\/g, "\\\\")
+    .replace(/\(/g, "\\(")
+    .replace(/\)/g, "\\)")
+    .replace(/[^\x20-\x7E]/g, "");
+}
+
+function approximateTextWidth(text: string, fontSize: number) {
+  return text.length * fontSize * 0.48;
+}
+
+function wrapPdfText(text: string, maxWidth: number, fontSize: number) {
+  const words = text.trim().split(/\s+/).filter(Boolean);
+  const lines: string[] = [];
+  let current = "";
+
+  for (const word of words) {
+    const next = current ? `${current} ${word}` : word;
+
+    if (approximateTextWidth(next, fontSize) <= maxWidth) {
+      current = next;
+    } else {
+      if (current) lines.push(current);
+      current = word;
+    }
+  }
+
+  if (current) lines.push(current);
+  return lines.length ? lines : [""];
+}
+
+function createPdfBlob(pageStreams: string[]) {
+  const pageWidth = 612;
+  const pageHeight = 792;
+  const objects: string[] = [
+    "<< /Type /Catalog /Pages 2 0 R >>",
+    "",
+    "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>",
+    "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>",
+  ];
+  const pageObjectIds: number[] = [];
+
+  for (const stream of pageStreams) {
+    const pageObjectId = objects.length + 1;
+    const contentObjectId = pageObjectId + 1;
+    pageObjectIds.push(pageObjectId);
+    objects.push(
+      `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pageWidth} ${pageHeight}] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents ${contentObjectId} 0 R >>`,
+      `<< /Length ${stream.length} >>\nstream\n${stream}\nendstream`,
+    );
+  }
+
+  objects[1] = `<< /Type /Pages /Kids [${pageObjectIds
+    .map((id) => `${id} 0 R`)
+    .join(" ")}] /Count ${pageObjectIds.length} >>`;
+
+  let pdf = "%PDF-1.4\n";
+  const offsets = [0];
+
+  objects.forEach((object, index) => {
+    offsets[index + 1] = pdf.length;
+    pdf += `${index + 1} 0 obj\n${object}\nendobj\n`;
+  });
+
+  const xrefOffset = pdf.length;
+  pdf += `xref\n0 ${objects.length + 1}\n0000000000 65535 f \n`;
+  for (let i = 1; i <= objects.length; i += 1) {
+    pdf += `${String(offsets[i]).padStart(10, "0")} 00000 n \n`;
+  }
+  pdf += `trailer\n<< /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${xrefOffset}\n%%EOF`;
+
+  return new Blob([pdf], { type: "application/pdf" });
+}
+
+function buildQuotationPdf(q: Quotation, items: QuotationSubItem[], totalAmount: number) {
+  const pageWidth = 612;
+  const pageHeight = 792;
+  const margin = 72;
+  const contentWidth = 390;
+  const contentLeft = (pageWidth - contentWidth) / 2;
+  const contentRight = contentLeft + contentWidth;
+  const columnX = [
+    contentLeft,
+    contentLeft + 205,
+    contentLeft + 250,
+    contentLeft + 300,
+    contentLeft + 340,
+    contentRight,
+  ];
+  const pageStreams: string[] = [];
+  let commands: string[] = [];
+  let y = pageHeight - 132;
+
+  const add = (command: string) => commands.push(command);
+  const addText = (
+    text: unknown,
+    x: number,
+    textY: number,
+    size = 8,
+    font: "F1" | "F2" = "F1",
+    align: "left" | "center" | "right" = "left",
+  ) => {
+    const value = escapePdfText(text);
+    const width = approximateTextWidth(value, size);
+    const textX = align === "center" ? x - width / 2 : align === "right" ? x - width : x;
+    add(`BT /${font} ${size} Tf 1 0 0 1 ${textX.toFixed(2)} ${textY.toFixed(2)} Tm (${value}) Tj ET`);
+  };
+  const line = (x1: number, y1: number, x2: number, y2: number) =>
+    add(`${x1.toFixed(2)} ${y1.toFixed(2)} m ${x2.toFixed(2)} ${y2.toFixed(2)} l S`);
+  const rect = (x: number, rectY: number, width: number, height: number) =>
+    add(`${x.toFixed(2)} ${rectY.toFixed(2)} ${width.toFixed(2)} ${height.toFixed(2)} re S`);
+  const fillRect = (x: number, rectY: number, width: number, height: number) =>
+    add(`0.9 0.9 0.9 rg ${x.toFixed(2)} ${rectY.toFixed(2)} ${width.toFixed(2)} ${height.toFixed(2)} re f 0 0 0 rg`);
+  const finishPage = () => {
+    pageStreams.push(commands.join("\n"));
+    commands = [];
+  };
+  const drawTableHeader = () => {
+    const headerHeight = 26;
+    fillRect(columnX[0], y - headerHeight, columnX[5] - columnX[0], headerHeight);
+    rect(columnX[0], y - headerHeight, columnX[5] - columnX[0], headerHeight);
+    columnX.slice(1, 5).forEach((x) => line(x, y, x, y - headerHeight));
+    addText("Item", columnX[0] + 6, y - 16, 8, "F2");
+    addText("Size", columnX[1] + 6, y - 16, 8, "F2");
+    addText("Quantity", (columnX[2] + columnX[3]) / 2, y - 16, 8, "F2", "center");
+    addText("Rate", columnX[3] + 6, y - 16, 8, "F2");
+    addText("Amount", columnX[4] + 6, y - 16, 8, "F2");
+    y -= headerHeight;
+  };
+  const newPage = () => {
+    finishPage();
+    y = pageHeight - margin;
+    add("0.5 w");
+    drawTableHeader();
+  };
+
+  add("0.5 w");
+  addText("Client:", contentLeft, y, 8, "F2");
+  addText(q.full_name, contentLeft, y - 14, 8);
+  addText("Quote No:", pageWidth / 2, y, 8, "F2", "center");
+  addText(q.quotation_no, pageWidth / 2, y - 14, 8, "F1", "center");
+  addText("Quote Date:", contentRight, y, 8, "F2", "right");
+  addText(formatPrintDate(q.quotation_date), contentRight, y - 14, 8, "F1", "right");
+  y -= 38;
+  line(contentLeft, y, contentRight, y);
+  y -= 26;
+  drawTableHeader();
+
+  items.forEach((item) => {
+    const size1 = Number(item.quotation_sub_size1) || 0;
+    const size2 = Number(item.quotation_sub_size2) || 0;
+    const rate = Number(item.quotation_sub_rate) || 0;
+    const amount =
+      Number(item.quotation_sub_amount) ||
+      (Number(item.quotation_sub_quantity) || 0) * rate;
+    const thickness = item.quotation_sub_thickness
+      ? `${item.quotation_sub_thickness}${item.quotation_sub_unit || ""}`
+      : "";
+    const sizeUnit = getPrintSizeUnit(item);
+    const sizeLabel =
+      size1 > 1 && size2 > 1 ? `${size1}x${size2}${sizeUnit ? ` ${sizeUnit}` : ""}` : sizeUnit;
+    const itemLines = [
+      ...wrapPdfText(
+        `${thickness} ${item.product_category || ""} ${item.product_sub_category || ""}`,
+        columnX[1] - columnX[0] - 12,
+        8,
+      ),
+      ...(item.quotation_sub_brand ? [String(item.quotation_sub_brand)] : []),
+      ...(item.quotation_sub_design_no ? [String(item.quotation_sub_design_no)] : []),
+    ];
+    const rowHeight = Math.max(34, 12 * itemLines.length + 12);
+
+    if (y - rowHeight < margin + 34) {
+      newPage();
+    }
+
+    rect(columnX[0], y - rowHeight, columnX[5] - columnX[0], rowHeight);
+    columnX.slice(1, 5).forEach((x) => line(x, y, x, y - rowHeight));
+    itemLines.forEach((lineText, index) => {
+      addText(lineText, columnX[0] + 6, y - 13 - index * 11, 8);
+    });
+    addText(sizeLabel, columnX[1] + 6, y - 19, 8);
+    addText(item.quotation_sub_quantity, (columnX[2] + columnX[3]) / 2, y - 19, 8, "F1", "center");
+    addText(rate.toFixed(2), columnX[3] + 6, y - 19, 8);
+    addText(amount.toFixed(2), columnX[4] + 6, y - 19, 8);
+    y -= rowHeight;
+  });
+
+  const totalRowHeight = 34;
+  if (y - totalRowHeight < margin) {
+    newPage();
+  }
+  rect(columnX[0], y - totalRowHeight, columnX[5] - columnX[0], totalRowHeight);
+  line(columnX[1], y, columnX[1], y - totalRowHeight);
+  line(columnX[2], y, columnX[2], y - totalRowHeight);
+  addText("Billing on Address", columnX[0] + 10, y - 20, 8, "F2");
+  addText("Total", columnX[1] + 10, y - 20, 8, "F2");
+  addText(totalAmount.toFixed(2), (columnX[2] + columnX[5]) / 2, y - 20, 9, "F2", "center");
+  finishPage();
+
+  return createPdfBlob(pageStreams);
+}
+
+function printPdfBlob(blob: Blob) {
+  const url = URL.createObjectURL(blob);
+  const iframe = document.createElement("iframe");
+
+  iframe.style.position = "fixed";
+  iframe.style.right = "0";
+  iframe.style.bottom = "0";
+  iframe.style.width = "0";
+  iframe.style.height = "0";
+  iframe.style.border = "0";
+  iframe.src = url;
+
+  iframe.onload = () => {
+    window.setTimeout(() => {
+      iframe.contentWindow?.focus();
+      iframe.contentWindow?.print();
+    }, 300);
+  };
+
+  document.body.appendChild(iframe);
+
+  window.setTimeout(() => {
+    iframe.remove();
+    URL.revokeObjectURL(url);
+  }, 60_000);
+}
+
 export function ViewQuotePage({ quoteId }: ViewQuotePageProps) {
   const { trigger } = useWebHaptics();
   const [whatsappLoading, setWhatsappLoading] = useState(false);
@@ -36,8 +283,16 @@ export function ViewQuotePage({ quoteId }: ViewQuotePageProps) {
   const { data: quoteData, isLoading } = useQuotationViewDetail(quoteId);
 
   const handlePrint = () => {
+    if (!quoteData?.quotation) return;
+
     trigger("medium");
-    window.print();
+    printPdfBlob(
+      buildQuotationPdf(
+        quoteData.quotation,
+        quoteData.quotationSub || [],
+        Number(quoteData.quotationSubSum) || 0,
+      ),
+    );
   };
 
   const handleWhatsAppShare = async () => {
@@ -301,7 +556,7 @@ export function ViewQuotePage({ quoteId }: ViewQuotePageProps) {
               <tr>
                 <th className="text-left p-2 border border-black">Item</th>
                 <th className="text-left p-2 border border-black">Size</th>
-                <th className="text-left p-2 border border-black">Quantity</th>
+                <th className="text-center p-2 border border-black">Quantity</th>
                 <th className="text-left p-2 border border-black">Rate</th>
                 <th className="text-left p-2 border border-black">Amount</th>
               </tr>
@@ -314,22 +569,29 @@ export function ViewQuotePage({ quoteId }: ViewQuotePageProps) {
                 const amount =
                   Number(item.quotation_sub_amount) ||
                   (Number(item.quotation_sub_quantity) || 0) * rate;
+                const thickness = item.quotation_sub_thickness
+                  ? `${item.quotation_sub_thickness}${item.quotation_sub_unit || ""}`
+                  : "";
+                const sizeUnit = item.quotation_sub_size_unit || "";
+                const sizeLabel =
+                  size1 > 1 && size2 > 1
+                    ? `${size1}x${size2}${sizeUnit ? ` ${sizeUnit}` : ""}`
+                    : sizeUnit;
 
                 return (
                   <tr key={index}>
                     <td className="p-2 border border-black">
-                      {item.quotation_sub_thickness} - {item.quotation_sub_unit}{" "}
-                      {item.product_category} {item.product_sub_category}
+                      {thickness} {item.product_category} {item.product_sub_category}
                       <p className="text-sm text-black">
-                        Brand: {item.quotation_sub_brand}
+                        {item.quotation_sub_brand}
                         <br />
                         {item.quotation_sub_design_no}
                       </p>
                     </td>
                     <td className="p-2 border border-black">
-                      {size1 > 1 && size2 > 1 ? `${size1}x${size2}` : ""}
+                      {sizeLabel}
                     </td>
-                    <td className="p-2 border border-black">
+                    <td className="p-2 border border-black text-center">
                       {item.quotation_sub_quantity}
                     </td>
                     <td className="p-2 border border-black">{rate.toFixed(2)}</td>
@@ -374,7 +636,7 @@ export function ViewQuotePage({ quoteId }: ViewQuotePageProps) {
         @media print {
           @page {
             size: A5;
-            margin: 10mm;
+            margin: 0;
           }
 
           aside,
@@ -400,6 +662,7 @@ export function ViewQuotePage({ quoteId }: ViewQuotePageProps) {
 
           .quotation-print-only {
             display: block !important;
+            padding: 10mm !important;
           }
 
           .print-container {

@@ -23,6 +23,7 @@ export interface QuotationSubItem {
   quotation_sub_brand?: string;
   quotation_sub_size1?: number | string;
   quotation_sub_size2?: number | string;
+  quotation_sub_size_unit?: string;
   quotation_sub_amount?: number | string;
   product_category?: string;
   product_sub_category?: string;
