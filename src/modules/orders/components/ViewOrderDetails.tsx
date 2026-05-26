@@ -1,5 +1,5 @@
 import React from "react";
-import { useOrderDetail, useUsersList } from "../hooks/use-create-order";
+import { useOrderDetail, useUsersList, useProductsList } from "../hooks/use-create-order";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
@@ -31,8 +31,9 @@ export default function ViewOrderDetails({ orderId }: ViewOrderDetailsProps) {
   // Parallel Query Fetching
   const { data: orderData, isLoading: isLoadingOrder } = useOrderDetail(orderId);
   const { data: users = [], isLoading: isLoadingUsers } = useUsersList();
+  const { data: products = [], isLoading: isLoadingProducts } = useProductsList();
 
-  if (isLoadingOrder || isLoadingUsers) {
+  if (isLoadingOrder || isLoadingUsers || isLoadingProducts) {
     return (
       <div className="h-96 flex flex-col items-center justify-center gap-3">
         <Spinner className="size-8 text-primary" />
@@ -63,6 +64,16 @@ export default function ViewOrderDetails({ orderId }: ViewOrderDetailsProps) {
   const order = orderData.order;
   const items = orderData.orderSub || [];
   const customerName = users.find((u) => String(u.id) === String(order.orders_user_id))?.full_name || "Unknown Customer";
+
+  const getProductCategory = (item: any) => {
+    const prod = products.find((p) => String(p.id) === String(item.orders_sub_product_id));
+    return prod?.product_category || item.orders_sub_catg_id || "Category N/A";
+  };
+
+  const getProductSubCategory = (item: any) => {
+    const prod = products.find((p) => String(p.id) === String(item.orders_sub_product_id));
+    return prod?.product_sub_category || item.orders_sub_sub_catg_id || "SubCategory N/A";
+  };
 
   // Status Badge classes helper
   const getStatusBadge = (status: string) => {
@@ -212,10 +223,10 @@ export default function ViewOrderDetails({ orderId }: ViewOrderDetailsProps) {
                           {item.orders_sub_brand || "Brand N/A"}
                         </span>
                         <span className="text-xs font-extrabold text-text">
-                          {item.orders_sub_sub_catg_id || "SubCategory N/A"}
+                          {getProductSubCategory(item)}
                         </span>
                         <span className="text-text-muted text-xs font-semibold">
-                          ({item.orders_sub_catg_id || "Category N/A"})
+                          ({getProductCategory(item)})
                         </span>
                       </div>
 

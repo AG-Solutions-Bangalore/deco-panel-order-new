@@ -5,6 +5,54 @@ import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { withProductSizeUnit } from "@/utils/product";
 
+function isOrderUpdateDebugEnabled() {
+  return (
+    typeof window !== "undefined" &&
+    (import.meta.env.DEV || window.localStorage.getItem("debug_order_update") === "1")
+  );
+}
+
+function getProductId(product: any) {
+  return product?.id ?? product?.product_id ?? product?.products_id;
+}
+
+function getProductCategoryId(product: any) {
+  return (
+    product?.products_catg_id ??
+    product?.product_catg_id ??
+    product?.products_category_id ??
+    product?.product_category_id ??
+    product?.category_id ??
+    product?.catg_id
+  );
+}
+
+function getProductSubCategoryId(product: any) {
+  return (
+    product?.products_sub_catg_id ??
+    product?.product_sub_catg_id ??
+    product?.products_sub_category_id ??
+    product?.product_sub_category_id ??
+    product?.sub_category_id ??
+    product?.sub_catg_id
+  );
+}
+
+function normalizeOrderProduct(product: OrderProduct, fallbackProduct?: any) {
+  const mergedProduct = {
+    ...(fallbackProduct || {}),
+    ...product,
+  };
+  const normalizedProduct = withProductSizeUnit(mergedProduct);
+
+  return {
+    ...normalizedProduct,
+    id: getProductId(normalizedProduct),
+    products_catg_id: getProductCategoryId(normalizedProduct),
+    products_sub_catg_id: getProductSubCategoryId(normalizedProduct),
+  };
+}
+
 // Fetch users for dropdown
 export function useUsersList() {
   return useQuery({
@@ -22,7 +70,31 @@ export function useProductsList() {
     queryKey: ["products-list"],
     queryFn: async () => {
       const response = await api.get<{ products: OrderProduct[] }>("/web-fetch-product");
-      return (response.data?.products || []).map(withProductSizeUnit);
+      const products = response.data?.products || [];
+      let fallbackProductsById = new Map<string, any>();
+
+      if (
+        products.some(
+          (product) => !getProductCategoryId(product) || !getProductSubCategoryId(product),
+        )
+      ) {
+        try {
+          const fallbackResponse = await api.get<{ products: any[] }>("/web-fetch-product-list");
+          fallbackProductsById = new Map(
+            (fallbackResponse.data?.products || [])
+              .map((product) => [String(getProductId(product) || ""), product])
+              .filter(([productId]) => productId),
+          );
+        } catch (error) {
+          if (isOrderUpdateDebugEnabled()) {
+            console.warn("[Order Update Debug] Product id fallback fetch failed", error);
+          }
+        }
+      }
+
+      return products.map((product) =>
+        normalizeOrderProduct(product, fallbackProductsById.get(String(getProductId(product) || ""))),
+      );
     },
   });
 }
@@ -115,6 +187,20 @@ export function useUpdateOrderMutation() {
   return useMutation({
     mutationFn: async ({ id, data }: { id: number | string; data: any }) => {
       const response = await api.put<{ code: number; msg?: string }>(`/web-update-order/${id}`, data);
+      if (typeof window !== "undefined") {
+        const debugData = {
+          ...((window as any).__lastOrderUpdateDebug || {}),
+          response: response.data,
+        };
+        (window as any).__lastOrderUpdateDebug = debugData;
+
+        if (isOrderUpdateDebugEnabled()) {
+          console.groupCollapsed("[Order Update Debug] API response");
+          console.log("Response:", response.data);
+          console.log("Last debug object:", debugData);
+          console.groupEnd();
+        }
+      }
       return response.data;
     },
     onSuccess: (data) => {
@@ -128,6 +214,25 @@ export function useUpdateOrderMutation() {
     },
     onError: (error: any) => {
       const errMsg = error.response?.data?.message || error.message || "Failed to update order";
+      const errorMessage = error.response?.data?.message || "";
+      const backendDiagnosis = errorMessage.includes("Attempt to assign property")
+        ? "Laravel likely tried to update an order_sub row using an empty/nonexistent id. Add a create branch for order_sub_data rows where id is empty."
+        : undefined;
+      if (typeof window !== "undefined") {
+        const debugData = {
+          ...((window as any).__lastOrderUpdateDebug || {}),
+          backendDiagnosis,
+          error: error.response?.data || error.message || error,
+        };
+        (window as any).__lastOrderUpdateDebug = debugData;
+
+        if (isOrderUpdateDebugEnabled()) {
+          console.groupCollapsed("[Order Update Debug] API error");
+          console.error("Error:", error.response?.data || error);
+          console.log("Last debug object:", debugData);
+          console.groupEnd();
+        }
+      }
       toast.error(errMsg);
     },
   });

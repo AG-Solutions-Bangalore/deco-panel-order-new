@@ -21,6 +21,18 @@ export interface DashboardDataResponse {
 
 export interface OrderProduct {
   id: number;
+  products_catg_id?: string | number;
+  product_catg_id?: string | number;
+  products_category_id?: string | number;
+  product_category_id?: string | number;
+  category_id?: string | number;
+  catg_id?: string | number;
+  products_sub_catg_id?: string | number;
+  product_sub_catg_id?: string | number;
+  products_sub_category_id?: string | number;
+  product_sub_category_id?: string | number;
+  sub_category_id?: string | number;
+  sub_catg_id?: string | number;
   product_category: string;
   product_sub_category: string;
   products_brand: string;
@@ -53,8 +65,8 @@ export interface CreateOrderItemInput {
   id?: string | number;
   orders_sub_product_id: string | number;
   orders_sub_design_no: string;
-  orders_sub_catg_id: string;
-  orders_sub_sub_catg_id: string;
+  orders_sub_catg_id: string | number;
+  orders_sub_sub_catg_id: string | number;
   orders_sub_brand: string;
   orders_sub_thickness: string;
   orders_sub_unit: string;

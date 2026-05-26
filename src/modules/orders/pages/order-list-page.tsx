@@ -95,7 +95,7 @@ export function OrderListPage() {
             <OrderListSkeleton />
           ) : processedOrders ? (
             <div className="flex flex-col gap-8 animate-fade-in duration-300">
-              <OrdersTable orders={processedOrders} />
+              <OrdersTable orders={processedOrders} isProcessed={true} />
             </div>
           ) : (
             <Card className="bg-panel shadow-sm border-border">

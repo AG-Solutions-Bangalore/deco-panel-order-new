@@ -314,15 +314,7 @@ export function EditQuotePage({ quoteId }: EditQuotePageProps) {
           <h3 className="text-base font-extrabold text-text flex items-center gap-2">
             📋 Quotation Items ({items.length})
           </h3>
-          <Button
-            type="button"
-            onClick={handleAddItem}
-            className="cursor-pointer text-xs font-bold gap-1 rounded-xl"
-            variant="outline"
-            size="sm"
-          >
-            <Plus className="size-3.5" /> Add Row
-          </Button>
+
         </div>
 
         {/* Dynamic sub items editing */}
