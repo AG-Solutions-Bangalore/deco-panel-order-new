@@ -46,9 +46,10 @@ import { formatOrderDate } from "../utils/date";
 
 interface OrdersTableProps {
   orders: PendingOrder[];
+  isProcessed?: boolean;
 }
 
-export default function OrdersTable({ orders }: OrdersTableProps) {
+export default function OrdersTable({ orders, isProcessed = false }: OrdersTableProps) {
   const { trigger } = useWebHaptics();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -155,7 +156,7 @@ export default function OrdersTable({ orders }: OrdersTableProps) {
         const order = row.original;
         return (
           <div className="flex items-center justify-end gap-1.5 pr-2" onClick={(e) => e.stopPropagation()}>
-            {userTypeId !== "1" && (
+            {userTypeId !== "1" && !isProcessed && (
               <>
                 <Tooltip>
                   <TooltipTrigger asChild>

@@ -18,6 +18,18 @@ import { CreateOrderItemCard } from "./CreateOrderItemCard";
 import { CustomerSelect } from "./CustomerSelect";
 import { OrderDatePicker } from "./OrderDatePicker";
 
+function getProductCategoryId(product?: OrderProduct) {
+  return (
+    product?.products_catg_id ??
+    product?.product_catg_id ??
+    product?.products_category_id ??
+    product?.product_category_id ??
+    product?.category_id ??
+    product?.catg_id ??
+    ""
+  );
+}
+
 function getTodayDateString() {
   const today = new Date();
   const dd = String(today.getDate()).padStart(2, "0");
@@ -109,14 +121,24 @@ export default function CreateOrderForm() {
 
   const handleSelectProduct = (product: OrderProduct) => {
     if (activeEditIndex !== null) {
+      let catgId = getProductCategoryId(product);
+      let subCatgId = getProductSubCategoryId(product);
+
+      if (
+        product.product_sub_category === "Commercial Plywood" ||
+        String(subCatgId) === "Commercial Plywood"
+      ) {
+        subCatgId = catgId;
+      }
+
       setItems((prev) =>
         prev.map((item, index) =>
           index === activeEditIndex
             ? {
                 orders_sub_product_id: product.id,
                 orders_sub_design_no: item.orders_sub_design_no || "",
-                orders_sub_catg_id: product.product_category,
-                orders_sub_sub_catg_id: product.product_sub_category,
+                orders_sub_catg_id: catgId,
+                orders_sub_sub_catg_id: subCatgId,
                 orders_sub_brand: product.products_brand,
                 orders_sub_thickness: product.products_thickness,
                 orders_sub_unit: product.products_unit,
@@ -141,12 +163,31 @@ export default function CreateOrderForm() {
     event.preventDefault();
     trigger("heavy");
 
+    const mappedItems = items.map((item) => {
+      const prod = products.find((p) => String(p.id) === String(item.orders_sub_product_id));
+      let catgId = getProductCategoryId(prod) || item.orders_sub_catg_id;
+      let subCatgId = getProductSubCategoryId(prod) || item.orders_sub_sub_catg_id;
+
+      if (
+        prod?.product_sub_category === "Commercial Plywood" ||
+        subCatgId === "Commercial Plywood"
+      ) {
+        subCatgId = catgId;
+      }
+
+      return {
+        ...item,
+        orders_sub_catg_id: catgId,
+        orders_sub_sub_catg_id: subCatgId,
+      };
+    });
+
     createOrderMutation.mutate({
       orders_user_id: userId,
       orders_year: currentYear,
       orders_date: orderDate,
-      orders_count: items.length,
-      order_sub_data: items,
+      orders_count: mappedItems.length,
+      order_sub_data: mappedItems,
     });
   };
 

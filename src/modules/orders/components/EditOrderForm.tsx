@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import {
   useUsersList,
   useProductsList,
@@ -30,13 +29,16 @@ import { Link } from "react-router-dom";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { formatOrderDate } from "../utils/date";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import api from "@/lib/api";
+import { toast } from "sonner";
+import DeleteConfirmationDialog from "./DeleteConfirmationDialog";
 
 interface EditOrderFormProps {
   orderId: string;
 }
 
 export default function EditOrderForm({ orderId }: EditOrderFormProps) {
-  const navigate = useNavigate();
   const { trigger } = useWebHaptics();
   const quantityRefs = useRef<(HTMLInputElement | null)[]>([]);
 
@@ -92,20 +94,27 @@ export default function EditOrderForm({ orderId }: EditOrderFormProps) {
   // Master Order State
   const [userId, setUserId] = useState("");
   const [orderDate, setOrderDate] = useState("");
+  const [orderStatus, setOrderStatus] = useState("");
 
   // Order Items State
   const [items, setItems] = useState<CreateOrderItemInput[]>([]);
+
+  // Deletion confirmation state
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [indexToDelete, setIndexToDelete] = useState<number | null>(null);
 
   // Sync state when orderData and products load
   useEffect(() => {
     if (orderData && products.length > 0) {
       setUserId(String(orderData.order?.orders_user_id || ""));
       setOrderDate(orderData.order?.orders_date || "");
+      setOrderStatus(orderData.order?.orders_status || "");
 
       if (orderData.orderSub && orderData.orderSub.length > 0) {
         const formattedSub = orderData.orderSub.map((sub: any) => {
           const prod = products.find((p) => String(p.id) === String(sub.orders_sub_product_id));
           return {
+            id: sub.id ?? sub.orders_sub_id ?? "",
             orders_sub_product_id: sub.orders_sub_product_id || "",
             orders_sub_design_no: sub.orders_sub_design_no || "",
             orders_sub_catg_id: sub.orders_sub_catg_id || prod?.product_category || "",
@@ -138,6 +147,7 @@ export default function EditOrderForm({ orderId }: EditOrderFormProps) {
     setItems([
       ...items,
       {
+        id: "",
         orders_sub_product_id: "",
         orders_sub_design_no: "",
         orders_sub_catg_id: "",
@@ -154,11 +164,36 @@ export default function EditOrderForm({ orderId }: EditOrderFormProps) {
   };
 
   const removeItem = (index: number) => {
+    trigger("light");
+    setIndexToDelete(index);
+    setDeleteConfirmOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (indexToDelete === null) return;
+
     trigger("medium");
-    setItems(items.filter((_, i) => i !== index));
+    const itemToRemove = items[indexToDelete];
+
+    if (itemToRemove && itemToRemove.id) {
+      try {
+        await api.delete(`/web-delete-order-sub-by-Id/${itemToRemove.id}`);
+        toast.success("Item deleted successfully");
+      } catch (error: any) {
+        toast.error(error?.response?.data?.message || "Failed to delete item from database");
+        setIndexToDelete(null);
+        setDeleteConfirmOpen(false);
+        return;
+      }
+    }
+
+    setItems(items.filter((_, i) => i !== indexToDelete));
     const updatedVisibility = { ...showDetails };
-    delete updatedVisibility[index];
+    delete updatedVisibility[indexToDelete];
     setShowDetails(updatedVisibility);
+
+    setIndexToDelete(null);
+    setDeleteConfirmOpen(false);
   };
 
   const toggleDetails = (index: number) => {
@@ -179,6 +214,7 @@ export default function EditOrderForm({ orderId }: EditOrderFormProps) {
     if (activeEditIndex !== null) {
       const updatedItems = [...items];
       updatedItems[activeEditIndex] = {
+        ...updatedItems[activeEditIndex],
         orders_sub_product_id: product.id,
         orders_sub_design_no: updatedItems[activeEditIndex].orders_sub_design_no || "",
         orders_sub_catg_id: product.product_category,
@@ -205,11 +241,22 @@ export default function EditOrderForm({ orderId }: EditOrderFormProps) {
     e.preventDefault();
     trigger("heavy");
 
+    const orderSubData = items.map((item) => {
+      return {
+        id: item.id ? String(item.id) : null,
+        orders_sub_product_id: String(item.orders_sub_product_id),
+        orders_sub_quantity: String(item.orders_sub_quantity),
+        orders_sub_design_no: item.orders_sub_design_no || "",
+      };
+    });
+
     const payload = {
-      orders_user_id: userId,
+      orders_user_id: userId ? Number(userId) : 1,
       orders_date: orderDate,
-      orders_count: items.length,
-      order_sub_data: items,
+      orders_status: orderStatus,
+      orders_count: String(orderSubData.length),
+      orders_no: orderData?.order?.orders_no ?? "",
+      order_sub_data: orderSubData,
     };
 
     updateOrderMutation.mutate({ id: orderId, data: payload });
@@ -261,7 +308,7 @@ export default function EditOrderForm({ orderId }: EditOrderFormProps) {
       <form onSubmit={handleSubmit} autoComplete="off" className="flex flex-col gap-6">
         {/* Core Details Grid */}
         <Card className="bg-panel border border-border/80 shadow-sm rounded-2xl relative overflow-visible z-30 pt-0">
-          <CardContent className="p-5 md:p-6 grid grid-cols-1 md:grid-cols-2 gap-5">
+          <CardContent className="p-5 md:p-6 grid grid-cols-1 md:grid-cols-3 gap-5">
             {/* Custom User/Customer Selection */}
             <div className="flex flex-col gap-1.5 relative" ref={dropdownRef}>
               <label className="text-xs font-bold text-text-muted uppercase tracking-wider flex items-center gap-1.5 select-none">
@@ -378,6 +425,34 @@ export default function EditOrderForm({ orderId }: EditOrderFormProps) {
                   />
                 </PopoverContent>
               </Popover>
+            </div>
+
+            {/* Order Status Selection */}
+            <div className="flex flex-col gap-1.5 relative">
+              <label className="text-xs font-bold text-text-muted uppercase tracking-wider flex items-center gap-1.5 select-none">
+                <ShoppingBag className="size-3.5 text-primary" />
+                Order Status
+              </label>
+              
+              <Select
+                value={orderStatus}
+                onValueChange={(val) => {
+                  trigger("light");
+                  setOrderStatus(val);
+                }}
+              >
+                <SelectTrigger className="w-full bg-background border border-border hover:border-border-hover focus:border-primary/80 focus:ring-1 focus:ring-primary/45 rounded-xl h-[42px] px-3.5 text-sm font-semibold text-text">
+                  <SelectValue placeholder="Select Status..." />
+                </SelectTrigger>
+                <SelectContent className="bg-popover border border-border rounded-xl z-50">
+                  <SelectItem value="Order" className="text-xs font-semibold rounded-lg cursor-pointer">
+                    Order
+                  </SelectItem>
+                  <SelectItem value="Cancel" className="text-xs font-semibold rounded-lg cursor-pointer">
+                    Cancel
+                  </SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </CardContent>
         </Card>
@@ -632,6 +707,13 @@ export default function EditOrderForm({ orderId }: EditOrderFormProps) {
         products={products}
         isLoading={isLoadingProducts}
         onSelect={handleSelectProduct}
+      />
+
+      {/* Delete Confirmation Dialog Box */}
+      <DeleteConfirmationDialog
+        open={deleteConfirmOpen}
+        onOpenChange={setDeleteConfirmOpen}
+        onConfirm={handleConfirmDelete}
       />
     </div>
   );
