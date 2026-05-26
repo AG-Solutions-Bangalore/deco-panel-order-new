@@ -11,6 +11,23 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { PlusCircle, Pencil, Search, X, Loader2, ArrowUpDown } from "lucide-react";
 import { useWebHaptics } from "web-haptics/react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { getProductSizeUnit } from "@/utils/product";
+
+function formatProductSize(product: {
+  products_size1?: string | number | null;
+  products_size2?: string | number | null;
+  products_size_unit?: string | null;
+  product_size_unit?: string | null;
+  size_unit?: string | null;
+  sizeUnit?: string | null;
+}) {
+  const size1 = product.products_size1 || "-";
+  const size2 = product.products_size2 || "-";
+  const hasSize = size1 !== "-" || size2 !== "-";
+  const unit = getProductSizeUnit(product) || (hasSize ? "Feet" : "");
+
+  return `${size1} x ${size2}${unit ? ` ${unit}` : ""}`;
+}
 
 export function ProductsListPage() {
   const { trigger } = useWebHaptics();
@@ -281,7 +298,7 @@ export function ProductsListPage() {
                               {product.products_thickness} {product.products_unit}
                             </TableCell>
                             <TableCell className="py-3.5 px-4 text-text font-semibold text-sm whitespace-nowrap">
-                              {product.products_size1} x {product.products_size2} {product.products_size_unit}
+                              {formatProductSize(product)}
                             </TableCell>
                             <TableCell className="py-3.5 px-4 text-text font-bold text-sm font-mono">
                               ₹{Number(product.products_rate).toFixed(2)}

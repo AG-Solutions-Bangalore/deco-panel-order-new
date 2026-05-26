@@ -56,6 +56,7 @@ import {
   useProceedQuotationMutation,
 } from "../hooks/use-quotes";
 import { Quotation } from "../types";
+import { formatQuotationDate } from "../utils/date";
 
 function getErrorMessage(error: unknown, fallback: string) {
   if (
@@ -189,7 +190,7 @@ export default function QuotesTable({ quotes, type }: QuotesTableProps) {
             #{row.getValue("quotation_no")}
           </span>
           <span className="text-text-muted text-xs font-semibold">
-            {row.original.quotation_date}
+            {formatQuotationDate(row.original.quotation_date)}
           </span>
         </div>
       ),

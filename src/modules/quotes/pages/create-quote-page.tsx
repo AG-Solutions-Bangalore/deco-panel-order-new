@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { Spinner } from "@/components/ui/spinner";
+import { formatOrderDate } from "@/modules/orders/utils/date";
 
 interface CreateQuotePageProps {
   orderId: string;
@@ -279,7 +280,7 @@ export function CreateQuotePage({ orderId }: CreateQuotePageProps) {
                 Order Date
               </label>
               <Input
-                value={orderState.orders_date}
+                value={formatOrderDate(orderState.orders_date)}
                 readOnly
                 className="bg-muted/10 border-border/80 cursor-not-allowed font-semibold text-text"
               />
@@ -319,9 +320,15 @@ export function CreateQuotePage({ orderId }: CreateQuotePageProps) {
                     <button
                       type="button"
                       onClick={() => handleOpenProductDialog(index)}
-                      className="w-full bg-background border border-border hover:border-border-hover focus:border-primary/80 focus:ring-1 focus:ring-primary/45 rounded-xl px-3 py-2.5 text-xs font-semibold outline-none transition-all cursor-pointer text-left flex items-center justify-between text-text truncate"
+                      className="w-full min-h-12 bg-background border border-border hover:border-border-hover focus:border-primary/80 focus:ring-1 focus:ring-primary/45 rounded-xl px-3 py-2.5 text-xs font-semibold outline-none transition-all cursor-pointer text-left flex items-start text-text"
                     >
-                      <span className={item.orders_sub_product_id ? "text-text" : "text-text-muted font-normal"}>
+                      <span
+                        className={`leading-5 overflow-hidden break-words [display:-webkit-box] [-webkit-line-clamp:2] [-webkit-box-orient:vertical] ${
+                          item.orders_sub_product_id
+                            ? "text-text"
+                            : "text-text-muted font-normal"
+                        }`}
+                      >
                         {getProductLabel(item.orders_sub_product_id)}
                       </span>
                     </button>

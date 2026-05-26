@@ -1,8 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/api";
-import { OrderProduct, UserProfile, CreateOrderInput } from "../types";
+import { OrderProduct, UserProfile, CreateOrderInput, CreateUserInput } from "../types";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { withProductSizeUnit } from "@/utils/product";
 
 // Fetch users for dropdown
 export function useUsersList() {
@@ -21,7 +22,7 @@ export function useProductsList() {
     queryKey: ["products-list"],
     queryFn: async () => {
       const response = await api.get<{ products: OrderProduct[] }>("/web-fetch-product");
-      return response.data?.products || [];
+      return (response.data?.products || []).map(withProductSizeUnit);
     },
   });
 }
@@ -34,6 +35,38 @@ export function useCurrentYear() {
       const response = await api.get("/web-fetch-year");
       // Responds with res.data.year.current_year as in the old code
       return response.data?.year?.current_year || response.data?.year || "";
+    },
+  });
+}
+
+// Mutation to create customer inline from order form
+export function useCreateUserMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: CreateUserInput) => {
+      const formData = new FormData();
+      formData.append("name", data.name);
+      formData.append("email", data.email);
+      formData.append("mobile", data.mobile);
+      if (data.address) formData.append("address", data.address);
+      if (data.state) formData.append("state", data.state);
+      if (data.pincode) formData.append("pincode", data.pincode);
+      if (data.user_image) formData.append("user_image", data.user_image);
+
+      const response = await api.post("/web-create-user", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      return response.data;
+    },
+    onSuccess: (data) => {
+      toast.success(data?.msg || "Customer created successfully");
+      queryClient.invalidateQueries({ queryKey: ["users-list"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard-data"] });
+    },
+    onError: (error: any) => {
+      const errMsg = error.response?.data?.message || error.message || "Failed to create customer";
+      toast.error(errMsg);
     },
   });
 }

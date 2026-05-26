@@ -35,6 +35,18 @@ export interface UserProfile {
   id: number;
   full_name: string;
   user_name?: string;
+  email?: string;
+  mobile?: string;
+}
+
+export interface CreateUserInput {
+  name: string;
+  email: string;
+  mobile: string;
+  address?: string;
+  state?: string;
+  pincode?: string;
+  user_image?: File | null;
 }
 
 export interface CreateOrderItemInput {
@@ -58,4 +70,3 @@ export interface CreateOrderInput {
   orders_count: number;
   order_sub_data: CreateOrderItemInput[];
 }
-

@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { useWebHaptics } from "web-haptics/react";
 import { Link } from "react-router-dom";
+import { formatOrderDate } from "../utils/date";
 
 interface ViewOrderDetailsProps {
   orderId: string;
@@ -62,18 +63,6 @@ export default function ViewOrderDetails({ orderId }: ViewOrderDetailsProps) {
   const order = orderData.order;
   const items = orderData.orderSub || [];
   const customerName = users.find((u) => String(u.id) === String(order.orders_user_id))?.full_name || "Unknown Customer";
-
-  // Formatter for display date
-  const getDisplayDate = (dateStr: string) => {
-    if (!dateStr) return "N/A";
-    const [year, month, day] = dateStr.split("-").map(Number);
-    const dateObj = new Date(year, month - 1, day);
-    return dateObj.toLocaleDateString("en-US", {
-      month: "long",
-      day: "numeric",
-      year: "numeric",
-    });
-  };
 
   // Status Badge classes helper
   const getStatusBadge = (status: string) => {
@@ -162,7 +151,7 @@ export default function ViewOrderDetails({ orderId }: ViewOrderDetailsProps) {
                   Submission Date
                 </span>
                 <span className="text-sm font-extrabold text-text bg-background border border-border/60 rounded-xl px-3.5 py-2.5">
-                  {getDisplayDate(order.orders_date)}
+                  {formatOrderDate(order.orders_date) || "N/A"}
                 </span>
               </div>
 

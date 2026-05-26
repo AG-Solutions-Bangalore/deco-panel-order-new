@@ -282,7 +282,7 @@ export function ProductReportPage() {
                         {p.products_thickness || "-"} {p.products_unit || ""}
                       </TableCell>
                       <TableCell className="px-4 py-3 text-muted-foreground font-mono text-xs">
-                        {p.products_size1 || "-"}x{p.products_size2 || "-"}
+                        {formatProductSize(p)}
                       </TableCell>
                       <TableCell className="px-4 py-3 font-mono font-bold text-foreground">
                         {p.products_rate || "0.00"}

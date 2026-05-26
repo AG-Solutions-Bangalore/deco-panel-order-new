@@ -1,4 +1,5 @@
 import api from "@/lib/api";
+import { withProductSizeUnit } from "@/utils/product";
 import type {
   ClientsResponse,
   OrderReportPayload,
@@ -14,7 +15,7 @@ export const reportService = {
 
   async fetchProductReport() {
     const response = await api.get<ProductReportResponse>("/web-fetch-product-report-list");
-    return response.data?.products || [];
+    return (response.data?.products || []).map(withProductSizeUnit);
   },
 
   async downloadOrderReport(payload: OrderReportPayload, responseType: "blob" | "text" = "blob") {

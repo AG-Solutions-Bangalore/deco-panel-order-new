@@ -11,6 +11,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { useViewReport } from "../hooks/use-view-report";
+import { formatReportCell } from "../utils/report-utils";
 
 export function QuotationViewReportPage() {
   const { trigger } = useWebHaptics();
@@ -196,6 +197,7 @@ export function QuotationViewReportPage() {
                   <TableRow key={rowIdx} className="border-b border-border/40 hover:bg-muted/10 transition-colors">
                     {row.map((cell, cellIdx) => {
                       const isAmount = cell.includes("₹") || /^\d+\.\d{2}$/.test(cell);
+                      const displayCell = formatReportCell(headers[cellIdx] || "", cell);
                       return (
                         <TableCell
                           key={cellIdx}
@@ -203,7 +205,7 @@ export function QuotationViewReportPage() {
                             isAmount ? "font-mono font-bold text-foreground" : "text-muted-foreground"
                           }`}
                         >
-                          {cell || "-"}
+                          {displayCell}
                         </TableCell>
                       );
                     })}

@@ -4,6 +4,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
+import { formatDisplayDate } from "@/utils/date";
 
 interface DatePickerProps {
   date: Date | undefined;
@@ -15,11 +16,7 @@ interface DatePickerProps {
 export function DatePicker({ date, setDate, placeholder = "Pick a date", className }: DatePickerProps) {
   const displayDate = (d: Date | undefined) => {
     if (!d) return placeholder;
-    return d.toLocaleDateString("en-US", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    });
+    return formatDisplayDate(d);
   };
 
   return (

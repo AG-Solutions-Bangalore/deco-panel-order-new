@@ -19,6 +19,7 @@ import { useWebHaptics } from "web-haptics/react";
 import { toast } from "sonner";
 import { Link, useNavigate } from "react-router-dom";
 import { Spinner } from "@/components/ui/spinner";
+import { formatQuotationDate } from "../utils/date";
 
 interface EditQuotePageProps {
   quoteId: string;
@@ -237,7 +238,7 @@ export function EditQuotePage({ quoteId }: EditQuotePageProps) {
                 Date
               </label>
               <Input
-                value={quotation.quotation_date}
+                value={formatQuotationDate(quotation.quotation_date)}
                 readOnly
                 className="bg-muted/10 border-border/80 cursor-not-allowed font-semibold text-text"
               />
@@ -340,9 +341,15 @@ export function EditQuotePage({ quoteId }: EditQuotePageProps) {
                     <button
                       type="button"
                       onClick={() => handleOpenProductDialog(index)}
-                      className="w-full bg-background border border-border hover:border-border-hover focus:border-primary/80 focus:ring-1 focus:ring-primary/45 rounded-xl px-3 py-2.5 text-xs font-semibold outline-none transition-all cursor-pointer text-left flex items-center justify-between text-text truncate"
+                      className="w-full min-h-12 bg-background border border-border hover:border-border-hover focus:border-primary/80 focus:ring-1 focus:ring-primary/45 rounded-xl px-3 py-2.5 text-xs font-semibold outline-none transition-all cursor-pointer text-left flex items-start text-text"
                     >
-                      <span className={item.quotation_sub_product_id ? "text-text" : "text-text-muted font-normal"}>
+                      <span
+                        className={`leading-5 overflow-hidden break-words [display:-webkit-box] [-webkit-line-clamp:2] [-webkit-box-orient:vertical] ${
+                          item.quotation_sub_product_id
+                            ? "text-text"
+                            : "text-text-muted font-normal"
+                        }`}
+                      >
                         {getProductLabel(item.quotation_sub_product_id)}
                       </span>
                     </button>
