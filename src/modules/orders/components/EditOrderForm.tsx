@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import {
   useUsersList,
   useProductsList,
@@ -36,7 +35,6 @@ interface EditOrderFormProps {
 }
 
 export default function EditOrderForm({ orderId }: EditOrderFormProps) {
-  const navigate = useNavigate();
   const { trigger } = useWebHaptics();
   const quantityRefs = useRef<(HTMLInputElement | null)[]>([]);
 
@@ -106,6 +104,7 @@ export default function EditOrderForm({ orderId }: EditOrderFormProps) {
         const formattedSub = orderData.orderSub.map((sub: any) => {
           const prod = products.find((p) => String(p.id) === String(sub.orders_sub_product_id));
           return {
+            id: sub.id ?? sub.orders_sub_id ?? "",
             orders_sub_product_id: sub.orders_sub_product_id || "",
             orders_sub_design_no: sub.orders_sub_design_no || "",
             orders_sub_catg_id: sub.orders_sub_catg_id || prod?.product_category || "",
@@ -138,6 +137,7 @@ export default function EditOrderForm({ orderId }: EditOrderFormProps) {
     setItems([
       ...items,
       {
+        id: "",
         orders_sub_product_id: "",
         orders_sub_design_no: "",
         orders_sub_catg_id: "",
@@ -179,6 +179,7 @@ export default function EditOrderForm({ orderId }: EditOrderFormProps) {
     if (activeEditIndex !== null) {
       const updatedItems = [...items];
       updatedItems[activeEditIndex] = {
+        ...updatedItems[activeEditIndex],
         orders_sub_product_id: product.id,
         orders_sub_design_no: updatedItems[activeEditIndex].orders_sub_design_no || "",
         orders_sub_catg_id: product.product_category,
@@ -209,7 +210,7 @@ export default function EditOrderForm({ orderId }: EditOrderFormProps) {
       orders_user_id: userId,
       orders_date: orderDate,
       orders_count: items.length,
-      order_sub_data: items,
+      order_sub_data: items.map((item) => ({ ...item, id: item.id ?? "" })),
     };
 
     updateOrderMutation.mutate({ id: orderId, data: payload });

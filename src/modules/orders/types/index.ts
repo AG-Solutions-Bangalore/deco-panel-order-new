@@ -50,6 +50,7 @@ export interface CreateUserInput {
 }
 
 export interface CreateOrderItemInput {
+  id?: string | number;
   orders_sub_product_id: string | number;
   orders_sub_design_no: string;
   orders_sub_catg_id: string;
