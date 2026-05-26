@@ -10,6 +10,7 @@ import {
   Moon,
   Users,
   BarChart3,
+  Package,
 } from "lucide-react";
 import { Squash as Hamburger } from "hamburger-react";
 import { Button } from "@/components/ui/button";
@@ -22,6 +23,7 @@ const menuItems = [
   { name: "Orders", href: "/", icon: Home },
   { name: "Create Order", href: "/orders/create", icon: PlusCircle },
   { name: "Quotes", href: "/quotes", icon: FileText },
+  { name: "Master", href: "/products", icon: Package },
   { name: "Users", href: "/users", icon: Users },
   { name: "Reports", href: "/product-report", icon: BarChart3 },
   { name: "Profile", href: "/profile", icon: User },
@@ -92,10 +94,28 @@ export function DesktopSidebar() {
       {/* Navigation Links */}
       <nav className="flex-1 flex flex-col gap-2 p-3 overflow-y-auto mt-2">
         {menuItems.map((item) => {
-          const isActive =
+          let isActive =
             item.href === "/"
               ? pathname === "/"
               : pathname?.startsWith(item.href);
+
+          if (item.href === "/products") {
+            const masterRoutes = [
+              "/products",
+              "/add-product",
+              "/edit-product",
+              "/categories",
+              "/add-categories",
+              "/edit-categories",
+              "/sub-categories",
+              "/add-sub-categories",
+              "/edit-sub-categories",
+              "/brand",
+              "/add-brand",
+              "/edit-brand"
+            ];
+            isActive = masterRoutes.some((route) => pathname?.startsWith(route));
+          }
 
           return (
             <Link

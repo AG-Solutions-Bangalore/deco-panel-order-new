@@ -1,10 +1,10 @@
 import { Link, useLocation } from "react-router-dom";
-import { Home, PlusCircle, FileText, User, Users, BarChart3 } from "lucide-react";
+import { Home, PlusCircle, FileText, User, Users, BarChart3, Package } from "lucide-react";
 import { useWebHaptics } from "web-haptics/react";
 import { cn } from "@/lib/utils";
 
 export function BottomNav() {
-  const { pathname } = useLocation();
+  const pathname = useLocation().pathname;
   const { trigger } = useWebHaptics();
 
   if (
@@ -25,11 +25,17 @@ export function BottomNav() {
   const isUsersActive = pathname?.startsWith("/users");
   const isReportsActive = pathname?.includes("report");
   const isProfileActive = pathname?.startsWith("/profile");
+  const isProductsActive =
+    pathname?.startsWith("/products") ||
+    pathname?.startsWith("/categories") ||
+    pathname?.startsWith("/sub-categories") ||
+    pathname?.startsWith("/brand");
 
   const tabs = [
     { name: "Orders", href: "/", icon: Home, active: isOrdersActive },
     { name: "Order", href: "/orders/create", icon: PlusCircle, active: isCreateOrderActive },
     { name: "Quotes", href: "/quotes", icon: FileText, active: isQuotesActive },
+    { name: "Master", href: "/products", icon: Package, active: isProductsActive },
     { name: "Users", href: "/users", icon: Users, active: isUsersActive },
     { name: "Reports", href: "/product-report", icon: BarChart3, active: isReportsActive },
     { name: "Profile", href: "/profile", icon: User, active: isProfileActive },
