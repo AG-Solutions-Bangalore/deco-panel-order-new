@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { Layers } from "lucide-react";
 import { Spinner } from "@/components/ui/spinner";
 import { useQuotationViewDetail } from "../hooks/use-quotes";
+import { formatQuotationDate } from "../utils/date";
 
 export function QuotePrintPage({ quoteId }: { quoteId: string }) {
   const { data: quoteData, isLoading } = useQuotationViewDetail(quoteId);
@@ -65,7 +66,7 @@ export function QuotePrintPage({ quoteId }: { quoteId: string }) {
                 Proposal Date
               </h2>
               <span className="mt-0.5 block text-sm font-bold text-black">
-                {q.quotation_date}
+                {formatQuotationDate(q.quotation_date)}
               </span>
             </div>
           </div>

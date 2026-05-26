@@ -42,6 +42,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useWebHaptics } from "web-haptics/react";
 import { PendingOrder } from "../types";
+import { formatOrderDate } from "../utils/date";
 
 interface OrdersTableProps {
   orders: PendingOrder[];
@@ -89,7 +90,7 @@ export default function OrdersTable({ orders }: OrdersTableProps) {
             #{row.getValue("orders_no")}
           </span>
           <span className="text-text-muted text-xs font-semibold">
-            {row.original.orders_date}
+            {formatOrderDate(row.original.orders_date)}
           </span>
         </div>
       ),

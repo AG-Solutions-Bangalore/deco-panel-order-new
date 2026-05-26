@@ -1,5 +1,7 @@
 import jsPDF from "jspdf";
 import type { ProductReportItem } from "../types";
+import { formatDisplayDate } from "@/utils/date";
+import { getProductSizeUnit } from "@/utils/product";
 
 export const formatToYMD = (date: Date | undefined) => {
   if (!date) return "";
@@ -64,11 +66,33 @@ export function parseCSV(text: string): string[][] {
   return lines.filter((line) => line.length > 0 && line.some((cell) => cell.trim() !== ""));
 }
 
+function isDateColumn(header: string) {
+  return /\bdate\b/i.test(header) || /_date$/i.test(header);
+}
+
+function isDateLikeCell(value: string) {
+  return /^\d{4}-\d{1,2}-\d{1,2}/.test(value) || /^\d{1,2}[-/]\d{1,2}[-/]\d{2,4}$/.test(value);
+}
+
+export function formatReportCell(header: string, value: string) {
+  const trimmedValue = String(value || "").trim();
+
+  if (!trimmedValue) return "-";
+
+  if (isDateColumn(header) || isDateLikeCell(trimmedValue)) {
+    return formatDisplayDate(trimmedValue);
+  }
+
+  return trimmedValue;
+}
+
 export const formatProductThickness = (product: ProductReportItem) =>
   `${product.products_thickness || ""} ${product.products_unit || ""}`.trim() || "-";
 
 export const formatProductSize = (product: ProductReportItem) =>
-  `${product.products_size1 || "-"}x${product.products_size2 || "-"}`;
+  `${product.products_size1 || "-"}x${product.products_size2 || "-"}${
+    getProductSizeUnit(product) ? ` ${getProductSizeUnit(product)}` : ""
+  }`;
 
 export function productReportToCSV(products: ProductReportItem[]) {
   const headersList = ["Category", "Sub Category", "Brand", "Thickness", "Size", "Rate", "Status"];

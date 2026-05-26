@@ -29,6 +29,7 @@ import SelectProductDialog from "./SelectProductDialog";
 import { Link } from "react-router-dom";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
+import { formatOrderDate } from "../utils/date";
 
 interface EditOrderFormProps {
   orderId: string;
@@ -85,14 +86,7 @@ export default function EditOrderForm({ orderId }: EditOrderFormProps) {
 
   // Helper to format date string to human-readable string
   const getDisplayDateString = (dateStr: string) => {
-    if (!dateStr) return "Select date";
-    const dateObj = getDateObject(dateStr);
-    if (!dateObj) return "Select date";
-    return dateObj.toLocaleDateString("en-US", {
-      month: "long",
-      day: "numeric",
-      year: "numeric",
-    });
+    return formatOrderDate(dateStr) || "Select date";
   };
 
   // Master Order State

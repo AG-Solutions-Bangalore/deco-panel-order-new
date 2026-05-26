@@ -3,6 +3,7 @@ import api from "@/lib/api";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import type { Category, SubCategory, Brand, Product } from "../types";
+import { withProductSizeUnit } from "@/utils/product";
 
 // ==========================================
 // CATEGORIES HOOKS
@@ -346,8 +347,8 @@ export function useProductsList() {
       const response = await api.get<{ products: Product[] }>("/web-fetch-product-list");
       const list = response.data?.products || [];
       return list.map((p: any) => ({
-        ...p,
-        id: p.id ?? p.product_id ?? p.products_id
+        ...withProductSizeUnit(p),
+        id: p.id ?? p.product_id ?? p.products_id,
       }));
     },
   });
@@ -365,6 +366,7 @@ export function useProductDetail(id: number | string | undefined) {
         finalProduct.id = finalProduct.id ?? finalProduct.product_id ?? finalProduct.products_id;
         finalProduct.products_catg_id = finalProduct.products_catg_id ?? finalProduct.product_category_id ?? finalProduct.category_id;
         finalProduct.products_sub_catg_id = finalProduct.products_sub_catg_id ?? finalProduct.product_sub_category_id ?? finalProduct.sub_category_id;
+        finalProduct.products_size_unit = withProductSizeUnit(finalProduct).products_size_unit;
       }
       return finalProduct;
     },
