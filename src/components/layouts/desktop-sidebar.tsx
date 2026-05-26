@@ -1,6 +1,16 @@
 import { Link, useLocation } from "react-router-dom";
 import { useTheme } from "@/components/providers/theme-provider";
-import { Home, FileText, PlusCircle, User, LogOut, Sun, Moon } from "lucide-react";
+import {
+  Home,
+  FileText,
+  PlusCircle,
+  User,
+  LogOut,
+  Sun,
+  Moon,
+  Users,
+  BarChart3,
+} from "lucide-react";
 import { Squash as Hamburger } from "hamburger-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -9,10 +19,11 @@ import { useSidebarStore } from "@/lib/store/use-sidebar-store";
 import { AppLogo } from "@/components/brand/app-logo";
 
 const menuItems = [
-
   { name: "Orders", href: "/", icon: Home },
   { name: "Create Order", href: "/orders/create", icon: PlusCircle },
   { name: "Quotes", href: "/quotes", icon: FileText },
+  { name: "Users", href: "/users", icon: Users },
+  { name: "Reports", href: "/product-report", icon: BarChart3 },
   { name: "Profile", href: "/profile", icon: User },
 ];
 
@@ -43,8 +54,8 @@ export function DesktopSidebar() {
   return (
     <aside
       className={cn(
-        "hidden md:flex flex-col h-full bg-panel border-r border-border transition-all duration-300 ease-in-out shrink-0",
-        isOpen ? "w-64" : "w-20"
+        "hidden md:flex flex-col h-full bg-panel border-r border-border transition-all duration-300 ease-in-out shrink-0 print:hidden",
+        isOpen ? "w-64" : "w-20",
       )}
     >
       {/* Top Header Area */}
@@ -54,7 +65,7 @@ export function DesktopSidebar() {
           onClick={() => trigger("light")}
           className={cn(
             "flex min-w-0 items-center gap-3 rounded-lg text-text transition-opacity hover:opacity-90",
-            !isOpen && "justify-center"
+            !isOpen && "justify-center",
           )}
           title="Deco Panel"
         >
@@ -65,7 +76,9 @@ export function DesktopSidebar() {
             </span>
           )}
         </Link>
-        <div className={cn("flex justify-center", isOpen ? "w-auto" : "w-full")}>
+        <div
+          className={cn("flex justify-center", isOpen ? "w-auto" : "w-full")}
+        >
           <Hamburger
             toggled={isOpen}
             toggle={toggleSidebar}
@@ -79,9 +92,10 @@ export function DesktopSidebar() {
       {/* Navigation Links */}
       <nav className="flex-1 flex flex-col gap-2 p-3 overflow-y-auto mt-2">
         {menuItems.map((item) => {
-          const isActive = item.href === "/"
-            ? pathname === "/"
-            : pathname?.startsWith(item.href);
+          const isActive =
+            item.href === "/"
+              ? pathname === "/"
+              : pathname?.startsWith(item.href);
 
           return (
             <Link
@@ -89,17 +103,19 @@ export function DesktopSidebar() {
               to={item.href}
               onClick={() => trigger("light")}
               className={cn(
-                "flex items-center gap-4 rounded-lg px-3 py-3 transition-all duration-300",
+                "flex items-center gap-4 rounded-sm px-3 py-3 transition-all duration-300",
                 isActive
                   ? "bg-primary text-primary-foreground font-medium shadow-sm"
                   : "text-text-muted hover:bg-muted hover:text-text",
-                !isOpen && "justify-center px-0"
+                !isOpen && "justify-center px-0",
               )}
               title={!isOpen ? item.name : undefined}
             >
               <item.icon className="size-5 shrink-0" />
               {isOpen && (
-                <span className="transition-opacity duration-300">{item.name}</span>
+                <span className="transition-opacity duration-300">
+                  {item.name}
+                </span>
               )}
             </Link>
           );
@@ -115,19 +131,27 @@ export function DesktopSidebar() {
           }}
           className={cn(
             "flex items-center gap-4 rounded-lg px-3 py-3 text-text-muted hover:bg-muted hover:text-text transition-all duration-300 w-full text-left",
-            !isOpen && "justify-center px-0"
+            !isOpen && "justify-center px-0",
           )}
           title={!isOpen ? "Toggle Theme" : undefined}
         >
           {resolvedTheme === "dark" ? (
             <>
               <Sun className="size-5 shrink-0" />
-              {isOpen && <span className="font-medium transition-opacity duration-300">Light Mode</span>}
+              {isOpen && (
+                <span className="font-medium transition-opacity duration-300">
+                  Light Mode
+                </span>
+              )}
             </>
           ) : (
             <>
               <Moon className="size-5 shrink-0" />
-              {isOpen && <span className="font-medium transition-opacity duration-300">Dark Mode</span>}
+              {isOpen && (
+                <span className="font-medium transition-opacity duration-300">
+                  Dark Mode
+                </span>
+              )}
             </>
           )}
         </button>
@@ -137,12 +161,16 @@ export function DesktopSidebar() {
           onClick={handleLogout}
           className={cn(
             "flex items-center gap-4 rounded-lg px-3 py-3 text-destructive hover:bg-destructive/10 transition-all duration-300",
-            !isOpen && "justify-center px-0"
+            !isOpen && "justify-center px-0",
           )}
           title={!isOpen ? "Logout" : undefined}
         >
           <LogOut className="size-5 shrink-0" />
-          {isOpen && <span className="font-medium transition-opacity duration-300">Logout</span>}
+          {isOpen && (
+            <span className="font-medium transition-opacity duration-300">
+              Logout
+            </span>
+          )}
         </Link>
       </div>
     </aside>

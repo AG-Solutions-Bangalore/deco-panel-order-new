@@ -166,3 +166,53 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+@media print {
+  /* Prevent scroll and height restrictions on layout wrappers during print */
+  html, body, #root, .flex.h-dvh.overflow-hidden, main.overflow-y-auto {
+    height: auto !important;
+    min-height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    overflow-y: visible !important;
+    position: static !important;
+  }
+
+  main {
+    display: block !important;
+    height: auto !important;
+    min-height: auto !important;
+    overflow: visible !important;
+    position: static !important;
+  }
+
+  /* Force background colors to print correctly in modern browsers */
+  body {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    background-color: white !important;
+    color: black !important;
+  }
+
+  /* Make containers print-friendly without shadows or borders */
+  .bg-panel {
+    background-color: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+    overflow: visible !important;
+  }
+
+  /* Prevent elements from breaking awkwardly across page edges */
+  tr, th, td, blockquote, pre {
+    page-break-inside: avoid !important;
+  }
+
+  /* Ensure text stands out clearly in black and white */
+  .text-text, .text-foreground {
+    color: #000000 !important;
+  }
+
+  .text-text-muted, .text-muted-foreground {
+    color: #4b5563 !important;
+  }
+}

@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { Home, PlusCircle, FileText, User } from "lucide-react";
+import { Home, PlusCircle, FileText, User, Users, BarChart3 } from "lucide-react";
 import { useWebHaptics } from "web-haptics/react";
 import { cn } from "@/lib/utils";
 
@@ -22,13 +22,16 @@ export function BottomNav() {
   const isCreateOrderActive = pathname === "/orders/create";
   const isOrdersActive = pathname === "/";
   const isQuotesActive = pathname?.startsWith("/quotes");
+  const isUsersActive = pathname?.startsWith("/users");
+  const isReportsActive = pathname?.includes("report");
   const isProfileActive = pathname?.startsWith("/profile");
 
   const tabs = [
-
     { name: "Orders", href: "/", icon: Home, active: isOrdersActive },
     { name: "Order", href: "/orders/create", icon: PlusCircle, active: isCreateOrderActive },
     { name: "Quotes", href: "/quotes", icon: FileText, active: isQuotesActive },
+    { name: "Users", href: "/users", icon: Users, active: isUsersActive },
+    { name: "Reports", href: "/product-report", icon: BarChart3, active: isReportsActive },
     { name: "Profile", href: "/profile", icon: User, active: isProfileActive },
   ];
 
@@ -47,7 +50,7 @@ export function BottomNav() {
                 to={tab.href}
                 onClick={handlePress}
                 className={cn(
-                  "flex flex-col items-center justify-center gap-1.5 px-4 py-2 transition-all duration-200",
+                  "flex flex-col items-center justify-center gap-1.5 px-2 py-2 transition-all duration-200",
                   tab.active
                     ? "text-primary scale-105"
                     : "text-muted-foreground hover:text-foreground active:scale-95"

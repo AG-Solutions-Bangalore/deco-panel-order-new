@@ -39,8 +39,29 @@ const ForgetPasswordRoute = lazy(() =>
 const ProfileRoute = lazy(() =>
   import('@/pages/ProfileRoute').then((module) => ({ default: module.ProfileRoute })),
 )
+const AppUsersRoute = lazy(() =>
+  import('@/pages/UsersRoute').then((module) => ({ default: module.AppUsersRoute })),
+)
+const TeamUsersRoute = lazy(() =>
+  import('@/pages/UsersRoute').then((module) => ({ default: module.TeamUsersRoute })),
+)
 const NotFoundRoute = lazy(() =>
   import('@/pages/NotFoundRoute').then((module) => ({ default: module.NotFoundRoute })),
+)
+const ProductReportRoute = lazy(() =>
+  import('@/pages/ProductReportRoute').then((module) => ({ default: module.ProductReportRoute })),
+)
+const OrderReportRoute = lazy(() =>
+  import('@/pages/OrderReportRoute').then((module) => ({ default: module.OrderReportRoute })),
+)
+const QuotationReportRoute = lazy(() =>
+  import('@/pages/QuotationReportRoute').then((module) => ({ default: module.QuotationReportRoute })),
+)
+const OrderViewReportRoute = lazy(() =>
+  import('@/pages/OrderViewReportRoute').then((module) => ({ default: module.OrderViewReportRoute })),
+)
+const QuotationViewReportRoute = lazy(() =>
+  import('@/pages/QuotationViewReportRoute').then((module) => ({ default: module.QuotationViewReportRoute })),
 )
 
 export const routes = [
@@ -75,6 +96,18 @@ export const routes = [
           { path: 'edit/:id', element: <EditQuoteRoute /> },
         ],
       },
+      {
+        path: 'users',
+        children: [
+          { index: true, element: <AppUsersRoute /> },
+          { path: 'team', element: <TeamUsersRoute /> },
+        ],
+      },
+      { path: 'product-report', element: <ProductReportRoute /> },
+      { path: 'order-report', element: <OrderReportRoute /> },
+      { path: 'quotation-report', element: <QuotationReportRoute /> },
+      { path: 'order-view-report', element: <OrderViewReportRoute /> },
+      { path: 'quotation-view-report', element: <QuotationViewReportRoute /> },
       { path: 'profile', element: <ProfileRoute /> },
       { path: '*', element: <NotFoundRoute /> },
     ],

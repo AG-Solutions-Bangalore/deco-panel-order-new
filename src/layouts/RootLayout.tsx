@@ -17,9 +17,9 @@ export function RootLayout() {
     >
       <QueryProvider>
         <AuthGuard>
-          <div className="flex h-dvh overflow-hidden">
+          <div className="flex h-dvh overflow-hidden print:h-auto print:overflow-visible print:block">
             <DesktopSidebar />
-            <main className="flex-1 flex flex-col overflow-y-auto relative bg-bg">
+            <main className="flex-1 flex flex-col overflow-y-auto relative bg-bg print:h-auto print:overflow-visible print:block">
               <Outlet />
               <InstallAppPrompt />
               <BottomNav />
