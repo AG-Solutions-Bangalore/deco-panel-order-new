@@ -28,7 +28,8 @@ function isAuthRoute(pathname: string) {
 
 export function InstallAppPrompt() {
   const { pathname } = useLocation();
-  const [installEvent, setInstallEvent] = useState<BeforeInstallPromptEvent | null>(null);
+  const [installEvent, setInstallEvent] =
+    useState<BeforeInstallPromptEvent | null>(null);
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -52,7 +53,10 @@ export function InstallAppPrompt() {
     window.addEventListener("appinstalled", handleInstalled);
 
     return () => {
-      window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+      window.removeEventListener(
+        "beforeinstallprompt",
+        handleBeforeInstallPrompt,
+      );
       window.removeEventListener("appinstalled", handleInstalled);
     };
   }, []);
@@ -89,7 +93,9 @@ export function InstallAppPrompt() {
       <div className="flex items-center gap-3">
         <AppLogo className="size-11 rounded-xl" />
         <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-bold text-foreground">Install Deco Panel</p>
+          <p className="truncate text-sm font-bold text-foreground">
+            Install Deco Panel
+          </p>
           <p className="text-xs font-medium text-muted-foreground">
             Add it to your device for faster app-like access.
           </p>
@@ -106,7 +112,11 @@ export function InstallAppPrompt() {
         </Button>
       </div>
 
-      <Button type="button" onClick={installApp} className="mt-3 w-full rounded-xl">
+      <Button
+        type="button"
+        onClick={installApp}
+        className="mt-3 w-full rounded-xl"
+      >
         <Download data-icon="inline-start" />
         Install App
       </Button>

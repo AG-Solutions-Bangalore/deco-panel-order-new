@@ -64,6 +64,44 @@ const QuotationViewReportRoute = lazy(() =>
   import('@/pages/QuotationViewReportRoute').then((module) => ({ default: module.QuotationViewReportRoute })),
 )
 
+// Master Routes
+const ProductsListPage = lazy(() =>
+  import('@/pages/ProductsListPage').then((module) => ({ default: module.ProductsListPage })),
+)
+const AddProductPage = lazy(() =>
+  import('@/pages/AddProductPage').then((module) => ({ default: module.AddProductPage })),
+)
+const EditProductPage = lazy(() =>
+  import('@/pages/EditProductPage').then((module) => ({ default: module.EditProductPage })),
+)
+const CategoriesListPage = lazy(() =>
+  import('@/pages/CategoriesListPage').then((module) => ({ default: module.CategoriesListPage })),
+)
+const AddCategoryPage = lazy(() =>
+  import('@/pages/AddCategoryPage').then((module) => ({ default: module.AddCategoryPage })),
+)
+const EditCategoryPage = lazy(() =>
+  import('@/pages/EditCategoryPage').then((module) => ({ default: module.EditCategoryPage })),
+)
+const SubCategoriesListPage = lazy(() =>
+  import('@/pages/SubCategoriesListPage').then((module) => ({ default: module.SubCategoriesListPage })),
+)
+const AddSubCategoryPage = lazy(() =>
+  import('@/pages/AddSubCategoryPage').then((module) => ({ default: module.AddSubCategoryPage })),
+)
+const EditSubCategoryPage = lazy(() =>
+  import('@/pages/EditSubCategoryPage').then((module) => ({ default: module.EditSubCategoryPage })),
+)
+const BrandListPage = lazy(() =>
+  import('@/pages/BrandListPage').then((module) => ({ default: module.BrandListPage })),
+)
+const AddBrandPage = lazy(() =>
+  import('@/pages/AddBrandPage').then((module) => ({ default: module.AddBrandPage })),
+)
+const EditBrandPage = lazy(() =>
+  import('@/pages/EditBrandPage').then((module) => ({ default: module.EditBrandPage })),
+)
+
 export const routes = [
   {
     element: <PrintLayout />,
@@ -103,6 +141,21 @@ export const routes = [
           { path: 'team', element: <TeamUsersRoute /> },
         ],
       },
+      
+      // Master Paths
+      { path: 'products', element: <ProductsListPage /> },
+      { path: 'add-product', element: <AddProductPage /> },
+      { path: 'edit-product/:id', element: <EditProductPage /> },
+      { path: 'categories', element: <CategoriesListPage /> },
+      { path: 'add-categories', element: <AddCategoryPage /> },
+      { path: 'edit-categories/:id', element: <EditCategoryPage /> },
+      { path: 'sub-categories', element: <SubCategoriesListPage /> },
+      { path: 'add-sub-categories', element: <AddSubCategoryPage /> },
+      { path: 'edit-sub-categories/:id', element: <EditSubCategoryPage /> },
+      { path: 'brand', element: <BrandListPage /> },
+      { path: 'add-brand', element: <AddBrandPage /> },
+      { path: 'edit-brand/:id', element: <EditBrandPage /> },
+
       { path: 'product-report', element: <ProductReportRoute /> },
       { path: 'order-report', element: <OrderReportRoute /> },
       { path: 'quotation-report', element: <QuotationReportRoute /> },
