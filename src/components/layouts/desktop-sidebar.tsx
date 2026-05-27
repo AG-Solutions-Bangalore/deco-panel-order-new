@@ -11,6 +11,7 @@ import {
   Users,
   BarChart3,
   Package,
+  LayoutDashboard,
 } from "lucide-react";
 import { Squash as Hamburger } from "hamburger-react";
 import { Button } from "@/components/ui/button";
@@ -20,6 +21,7 @@ import { useSidebarStore } from "@/lib/store/use-sidebar-store";
 import { AppLogo } from "@/components/brand/app-logo";
 
 const menuItems = [
+  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { name: "Orders", href: "/", icon: Home },
   { name: "Create Order", href: "/orders/create", icon: PlusCircle },
   { name: "Quotes", href: "/quotes", icon: FileText },

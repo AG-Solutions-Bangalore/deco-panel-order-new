@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { Home, PlusCircle, FileText, User, Users, BarChart3, Package } from "lucide-react";
+import { Home, PlusCircle, FileText, User, Users, BarChart3, Package, LayoutDashboard } from "lucide-react";
 import { useWebHaptics } from "web-haptics/react";
 import { cn } from "@/lib/utils";
 
@@ -19,6 +19,7 @@ export function BottomNav() {
     trigger("light");
   };
 
+  const isDashboardActive = pathname?.startsWith("/dashboard");
   const isCreateOrderActive = pathname === "/orders/create";
   const isOrdersActive = pathname === "/";
   const isQuotesActive = pathname?.startsWith("/quotes");
@@ -32,6 +33,7 @@ export function BottomNav() {
     pathname?.startsWith("/brand");
 
   const tabs = [
+    { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard, active: isDashboardActive },
     { name: "Orders", href: "/", icon: Home, active: isOrdersActive },
     { name: "Order", href: "/orders/create", icon: PlusCircle, active: isCreateOrderActive },
     { name: "Quotes", href: "/quotes", icon: FileText, active: isQuotesActive },
