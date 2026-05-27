@@ -33,6 +33,12 @@ const QuotePrintRoute = lazy(() =>
 const LoginRoute = lazy(() =>
   import('@/pages/LoginRoute').then((module) => ({ default: module.LoginRoute })),
 )
+const DashboardPage = lazy(() =>
+  import('@/pages/DashboardPage').then((module) => ({ default: module.DashboardPage })),
+)
+const FormPage = lazy(() =>
+  import('@/pages/FormPage').then((module) => ({ default: module.FormPage })),
+)
 const ForgetPasswordRoute = lazy(() =>
   import('@/pages/ForgetPasswordRoute').then((module) => ({ default: module.ForgetPasswordRoute })),
 )
@@ -113,6 +119,8 @@ export const routes = [
     element: <RootLayout />,
     children: [
       { index: true, element: <OrdersPage /> },
+      { path: 'dashboard', element: <DashboardPage /> },
+      { path: 'form', element: <FormPage /> },
       { path: 'login', element: <LoginRoute /> },
       { path: 'forget-password', element: <ForgetPasswordRoute /> },
       {
