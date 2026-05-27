@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import axios from "axios";
 import { toast } from "sonner";
+import api from "@/lib/api";
 
 export interface UserProfile {
   id?: number;
@@ -34,14 +35,7 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
   fetchProfile: async () => {
     set({ isLoading: true, error: null });
     try {
-      const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
-      
-      // Use the proxy configured in next.config.ts to avoid CORS issues
-      const response = await axios.get("/api/fleet/panel-fetch-profile", {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+      const response = await api.get("/web-fetch-profile");
       
       const profileData = response.data?.data || response.data?.user || response.data;
       
@@ -81,13 +75,11 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
   updateProfile: async (data) => {
     set({ isLoading: true, error: null });
     try {
-      const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
       const isFormData = data instanceof FormData;
       
-      const response = await axios.post("/api/fleet/panel-update-profile", data, {
+      const response = await api.post("/web-update-profile", data, {
         headers: {
-          Authorization: `Bearer ${token}`,
-          ...(isFormData ? {} : { "Content-Type": "application/json" }),
+          ...(isFormData ? { "Content-Type": "multipart/form-data" } : {}),
         }
       });
       

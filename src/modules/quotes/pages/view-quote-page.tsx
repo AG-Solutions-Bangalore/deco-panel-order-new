@@ -535,7 +535,7 @@ export function ViewQuotePage({ quoteId }: ViewQuotePageProps) {
                           <div className="flex flex-col">
                             <span className="font-bold text-text print:text-black">
                               {item.quotation_sub_thickness
-                                ? `${item.quotation_sub_thickness} — `
+                                ? `${item.quotation_sub_thickness}${item.quotation_sub_unit || ""} — `
                                 : ""}
                               {item.product_category || ""}{" "}
                               {item.product_sub_category || ""}

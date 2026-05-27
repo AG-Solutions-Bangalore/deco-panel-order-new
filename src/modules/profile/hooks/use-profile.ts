@@ -8,6 +8,21 @@ export function useProfile() {
   const { trigger } = useWebHaptics();
   const { profile, isLoading, fetchProfile, updateProfile } = useProfileStore();
   const [isEditing, setIsEditing] = useState(false);
+  const [userImageFile, setUserImageFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState("");
+
+  const handleImageChange = (file: File) => {
+    setUserImageFile(file);
+    setPreviewUrl(URL.createObjectURL(file));
+  };
+
+  useEffect(() => {
+    return () => {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
   
   // Local form state
   const [fullName, setFullName] = useState("");
@@ -48,6 +63,11 @@ export function useProfile() {
       setState(profile.state || "");
       setPincode(profile.pincode || "");
     }
+    setUserImageFile(null);
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+      setPreviewUrl("");
+    }
     setIsEditing(false);
   };
 
@@ -55,17 +75,25 @@ export function useProfile() {
     e.preventDefault();
     trigger("heavy");
 
-    const updatedData: Partial<UserProfile> = {
-      full_name: fullName,
-      name: fullName,
-      email,
-      mobile,
-      address,
-      state,
-      pincode,
-    };
+    const formData = new FormData();
+    formData.append("full_name", fullName);
+    formData.append("name", fullName);
+    formData.append("email", email);
+    formData.append("mobile", mobile);
+    formData.append("address", address);
+    formData.append("state", state);
+    formData.append("pincode", pincode);
+    
+    if (userImageFile) {
+      formData.append("user_image", userImageFile);
+    }
 
-    await updateProfile(updatedData);
+    await updateProfile(formData);
+    setUserImageFile(null);
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+      setPreviewUrl("");
+    }
     setIsEditing(false);
   };
 
@@ -91,12 +119,15 @@ export function useProfile() {
     address,
     state,
     pincode,
+    userImageFile,
+    previewUrl,
     setFullName,
     setEmail,
     setMobile,
     setAddress,
     setState,
     setPincode,
+    handleImageChange,
     handleEditToggle,
     handleCancel,
     handleSave,

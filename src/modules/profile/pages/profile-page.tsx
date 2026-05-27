@@ -33,6 +33,8 @@ export function ProfilePage() {
     setAddress,
     setState,
     setPincode,
+    previewUrl,
+    handleImageChange,
     handleEditToggle,
     handleCancel,
     handleSave,
@@ -69,12 +71,12 @@ export function ProfilePage() {
       <div className="flex items-center justify-between">
         <PageHeader title="Profile" subtitle="Manage your personal details, credentials, and settings." />
 
-        {/* {!isEditing && profile && (
-          // <Button onClick={handleEditToggle} className="flex gap-2">
-          //   <Edit3 className="size-4" />
-          //   Edit Profile
-          // </Button>
-        )} */}
+        {!isEditing && profile && (
+          <Button onClick={handleEditToggle} className="flex gap-2 shrink-0">
+            <Edit3 className="size-4" />
+            Edit Profile
+          </Button>
+        )}
       </div>
 
       {profile && (
@@ -84,6 +86,9 @@ export function ProfilePage() {
             profile={profile}
             fullName={fullName}
             email={email}
+            isEditing={isEditing}
+            previewUrl={previewUrl}
+            onImageSelect={handleImageChange}
           />
 
           {/* Form details cards */}
