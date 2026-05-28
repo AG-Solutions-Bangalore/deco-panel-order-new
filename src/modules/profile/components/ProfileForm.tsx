@@ -2,13 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { UserProfile } from "../store/use-profile-store";
-import { 
-  User, 
-  Mail, 
-  Phone, 
-  MapPin, 
-  ShieldCheck 
-} from "lucide-react";
+import { User, Mail, Phone, MapPin, ShieldCheck } from "lucide-react";
 
 interface ProfileFormProps {
   profile: UserProfile;
@@ -55,7 +49,12 @@ export function ProfileForm({
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex flex-col gap-2">
-              <Label htmlFor="full_name" className="text-xs font-bold text-text/80">Full Name</Label>
+              <Label
+                htmlFor="full_name"
+                className="text-xs font-bold text-text/80"
+              >
+                Full Name
+              </Label>
               <div className="relative">
                 <User className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-text-muted" />
                 <Input
@@ -71,7 +70,9 @@ export function ProfileForm({
             </div>
 
             <div className="flex flex-col gap-2">
-              <Label htmlFor="email" className="text-xs font-bold text-text/80">Email Address</Label>
+              <Label htmlFor="email" className="text-xs font-bold text-text/80">
+                Email Address
+              </Label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-text-muted" />
                 <Input
@@ -88,7 +89,12 @@ export function ProfileForm({
             </div>
 
             <div className="flex flex-col gap-2">
-              <Label htmlFor="mobile" className="text-xs font-bold text-text/80">Mobile Number</Label>
+              <Label
+                htmlFor="mobile"
+                className="text-xs font-bold text-text/80"
+              >
+                Mobile Number
+              </Label>
               <div className="relative">
                 <Phone className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-text-muted" />
                 <Input
@@ -104,7 +110,7 @@ export function ProfileForm({
               </div>
             </div>
 
-            <div className="flex flex-col gap-2">
+            {/* <div className="flex flex-col gap-2">
               <Label className="text-xs font-bold text-text/80">User Type</Label>
               <div className="relative">
                 <ShieldCheck className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-text-muted" />
@@ -114,7 +120,7 @@ export function ProfileForm({
                   className="pl-10 bg-muted/40 opacity-80 font-medium text-text border-border"
                 />
               </div>
-            </div>
+            </div> */}
           </div>
         </CardContent>
       </Card>
@@ -128,7 +134,9 @@ export function ProfileForm({
           </h3>
 
           <div className="flex flex-col gap-2">
-            <Label htmlFor="address" className="text-xs font-bold text-text/80">Street Address</Label>
+            <Label htmlFor="address" className="text-xs font-bold text-text/80">
+              Street Address
+            </Label>
             <div className="relative">
               <MapPin className="absolute left-3 top-3 size-4 text-text-muted" />
               <textarea
@@ -144,7 +152,9 @@ export function ProfileForm({
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex flex-col gap-2">
-              <Label htmlFor="state" className="text-xs font-bold text-text/80">State / Region</Label>
+              <Label htmlFor="state" className="text-xs font-bold text-text/80">
+                State / Region
+              </Label>
               <Input
                 id="state"
                 value={state}
@@ -156,7 +166,12 @@ export function ProfileForm({
             </div>
 
             <div className="flex flex-col gap-2">
-              <Label htmlFor="pincode" className="text-xs font-bold text-text/80">Pincode / Postal Code</Label>
+              <Label
+                htmlFor="pincode"
+                className="text-xs font-bold text-text/80"
+              >
+                Pincode / Postal Code
+              </Label>
               <Input
                 id="pincode"
                 value={pincode}
