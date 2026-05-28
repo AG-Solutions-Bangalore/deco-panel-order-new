@@ -21,7 +21,6 @@ export function EditBrandPage() {
   const updateMutation = useUpdateBrandMutation(id);
 
   const [name, setName] = useState("");
-  const [sort, setSort] = useState("");
   const [status, setStatus] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
@@ -29,7 +28,6 @@ export function EditBrandPage() {
   useEffect(() => {
     if (brand) {
       setName(brand.brands_name || "");
-      setSort(brand.brands_sort !== undefined && brand.brands_sort !== null ? String(brand.brands_sort) : "");
       setStatus(brand.brands_status || "Active");
     }
   }, [brand]);
@@ -44,10 +42,7 @@ export function EditBrandPage() {
     formData.append("brands_name", name);
     formData.append("brand_status", status);
     formData.append("brands_status", status);
-    if (sort) {
-      formData.append("brand_sort", sort);
-      formData.append("brands_sort", sort);
-    }
+
     if (selectedFile) {
       formData.append("brand_image", selectedFile);
       formData.append("brands_image", selectedFile);
@@ -112,22 +107,7 @@ export function EditBrandPage() {
               />
             </div>
 
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="brand-sort" className="text-xs font-bold text-text-muted uppercase tracking-wider">
-                Sort Order
-              </Label>
-              <Input
-                id="brand-sort"
-                type="text"
-                pattern="[0-9]*"
-                value={sort}
-                onChange={(e) => {
-                  if (/^\d*$/.test(e.target.value)) setSort(e.target.value);
-                }}
-                placeholder="e.g. 1"
-                className="bg-background border-border rounded-xl"
-              />
-            </div>
+
 
             <div className="flex flex-col gap-1.5">
               <Label className="text-xs font-bold text-text-muted uppercase tracking-wider">Status</Label>

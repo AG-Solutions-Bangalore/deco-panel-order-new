@@ -3,6 +3,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -272,12 +273,12 @@ export function EditQuotePage({ quoteId }: EditQuotePageProps) {
               <label className="text-xs font-bold text-text-muted uppercase tracking-wider select-none">
                 Remark
               </label>
-              <Input
+              <Textarea
                 value={quotation.quotation_remarks}
                 onChange={(e) => handleInputChange("quotation_remarks", e.target.value)}
                 maxLength={200}
                 placeholder="Enter remarks..."
-                className="border-border hover:border-border-hover focus:border-primary/80 rounded-xl px-3 py-2 text-sm font-semibold outline-none text-text bg-background"
+                className="border-border hover:border-border-hover focus:border-primary/80 rounded-xl px-3 py-2 text-sm font-semibold outline-none text-text bg-background min-h-[80px] resize-none"
               />
             </div>
 
@@ -285,12 +286,12 @@ export function EditQuotePage({ quoteId }: EditQuotePageProps) {
               <label className="text-xs font-bold text-text-muted uppercase tracking-wider select-none">
                 Delivery Address
               </label>
-              <Input
+              <Textarea
                 value={quotation.quotation_delivery}
                 onChange={(e) => handleInputChange("quotation_delivery", e.target.value)}
                 maxLength={200}
                 placeholder="Delivery instructions..."
-                className="border-border hover:border-border-hover focus:border-primary/80 rounded-xl px-3 py-2 text-sm font-semibold outline-none text-text bg-background"
+                className="border-border hover:border-border-hover focus:border-primary/80 rounded-xl px-3 py-2 text-sm font-semibold outline-none text-text bg-background min-h-[80px] resize-none"
               />
             </div>
 
@@ -298,12 +299,12 @@ export function EditQuotePage({ quoteId }: EditQuotePageProps) {
               <label className="text-xs font-bold text-text-muted uppercase tracking-wider select-none">
                 Billing Address
               </label>
-              <Input
+              <Textarea
                 value={quotation.quotation_shipping}
                 onChange={(e) => handleInputChange("quotation_shipping", e.target.value)}
                 maxLength={200}
                 placeholder="Billing instructions..."
-                className="border-border hover:border-border-hover focus:border-primary/80 rounded-xl px-3 py-2 text-sm font-semibold outline-none text-text bg-background"
+                className="border-border hover:border-border-hover focus:border-primary/80 rounded-xl px-3 py-2 text-sm font-semibold outline-none text-text bg-background min-h-[80px] resize-none"
               />
             </div>
           </CardContent>
@@ -353,12 +354,18 @@ export function EditQuotePage({ quoteId }: EditQuotePageProps) {
                       Quantity *
                     </label>
                     <Input
-                      type="number"
+                      type="text"
                       placeholder="Qty"
-                      min="1"
                       required
                       value={item.quotation_sub_quantity}
-                      onChange={(e) => handleItemChange(index, "quotation_sub_quantity", e.target.value)}
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        if (/^\d*$/.test(val)) {
+                          handleItemChange(index, "quotation_sub_quantity", val);
+                        }
+                      }}
                       className="border-border hover:border-border-hover focus:border-primary/80 rounded-xl px-3 py-2 text-sm font-semibold outline-none text-text bg-background"
                     />
                   </div>
@@ -369,11 +376,18 @@ export function EditQuotePage({ quoteId }: EditQuotePageProps) {
                       Rate *
                     </label>
                     <Input
-                      type="number"
+                      type="text"
                       placeholder="Rate"
                       required
                       value={item.quotation_sub_rate}
-                      onChange={(e) => handleItemChange(index, "quotation_sub_rate", e.target.value)}
+                      inputMode="decimal"
+                      pattern="[0-9]*\.?[0-9]*"
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        if (/^\d*\.?\d*$/.test(val)) {
+                          handleItemChange(index, "quotation_sub_rate", val);
+                        }
+                      }}
                       className="border-border hover:border-border-hover focus:border-primary/80 rounded-xl px-3 py-2 text-sm font-semibold outline-none text-text bg-background"
                     />
                   </div>

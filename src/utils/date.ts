@@ -48,7 +48,11 @@ export function formatDisplayDate(value?: string | Date | null) {
 
   const day = parts.day.padStart(2, "0");
   const month = parts.month.padStart(2, "0");
-  const year = parts.year.slice(-2).padStart(2, "0");
+  let year = parts.year;
+  if (year.length === 2) {
+    year = "20" + year;
+  }
+  year = year.padStart(4, "0");
 
   return `${day}-${month}-${year}`;
 }

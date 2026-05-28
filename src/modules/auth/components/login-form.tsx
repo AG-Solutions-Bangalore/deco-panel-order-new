@@ -129,12 +129,12 @@ export function LoginForm() {
 
       <p className="text-center text-sm text-text-muted">
         Don&apos;t have an account?{" "}
-        <Link
-          to="/register"
+        <a
+          href="mailto:support@decopanel.in"
           className="font-medium text-primary hover:underline"
         >
           Contact Support
-        </Link>
+        </a>
       </p>
     </div>
   );

@@ -16,7 +16,6 @@ interface CreateBrandProps {
 export default function CreateBrand({ open, onClick, populateBrand }: CreateBrandProps) {
   const { trigger } = useWebHaptics();
   const [brandName, setBrandName] = useState("");
-  const [sort, setSort] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -31,10 +30,7 @@ export default function CreateBrand({ open, onClick, populateBrand }: CreateBran
     const formData = new FormData();
     formData.append("brand_name", brandName);
     formData.append("brands_name", brandName);
-    if (sort) {
-      formData.append("brand_sort", sort);
-      formData.append("brands_sort", sort);
-    }
+
     if (selectedFile) {
       formData.append("brand_image", selectedFile);
       formData.append("brands_image", selectedFile);
@@ -47,7 +43,6 @@ export default function CreateBrand({ open, onClick, populateBrand }: CreateBran
       if (response.data.code === 200) {
         toast.success(response.data.msg || "Brand created successfully");
         setBrandName("");
-        setSort("");
         setSelectedFile(null);
         populateBrand(response.data.id);
       } else {
@@ -82,22 +77,7 @@ export default function CreateBrand({ open, onClick, populateBrand }: CreateBran
             />
           </div>
 
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="brand-sort" className="text-xs font-bold text-text-muted uppercase tracking-wider">
-              Sort Order
-            </Label>
-            <Input
-              id="brand-sort"
-              type="text"
-              pattern="[0-9]*"
-              value={sort}
-              onChange={(e) => {
-                if (/^\d*$/.test(e.target.value)) setSort(e.target.value);
-              }}
-              placeholder="e.g. 1"
-              className="bg-background border-border rounded-xl"
-            />
-          </div>
+
 
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="brand-image" className="text-xs font-bold text-text-muted uppercase tracking-wider">
