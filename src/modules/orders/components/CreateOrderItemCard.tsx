@@ -94,9 +94,14 @@ export function CreateOrderItemCard({
               placeholder="Quantity"
               required
               value={item.orders_sub_quantity}
-              onChange={(event) =>
-                onInputChange(index, "orders_sub_quantity", event.target.value)
-              }
+              inputMode="numeric"
+              pattern="[0-9]*"
+              onChange={(event) => {
+                const val = event.target.value;
+                if (/^\d*$/.test(val)) {
+                  onInputChange(index, "orders_sub_quantity", val);
+                }
+              }}
               maxLength={6}
               className="w-full bg-background border border-border focus:border-primary/80 rounded-xl px-3 py-2.5 text-sm font-medium outline-none"
             />
@@ -206,13 +211,14 @@ export function CreateOrderItemCard({
                 placeholder="Quantity"
                 required
                 value={item.orders_sub_quantity}
-                onChange={(event) =>
-                  onInputChange(
-                    index,
-                    "orders_sub_quantity",
-                    event.target.value,
-                  )
-                }
+                inputMode="numeric"
+                pattern="[0-9]*"
+                onChange={(event) => {
+                  const val = event.target.value;
+                  if (/^\d*$/.test(val)) {
+                    onInputChange(index, "orders_sub_quantity", val);
+                  }
+                }}
                 maxLength={6}
                 className="w-full bg-background border border-border focus:border-primary/80 focus:ring-1 focus:ring-primary/45 rounded-xl px-3 py-2.5 text-xs font-bold outline-none text-text text-center transition-all"
               />

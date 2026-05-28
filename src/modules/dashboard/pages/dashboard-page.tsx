@@ -1,4 +1,5 @@
 import { Package, Users, FileSpreadsheet, RefreshCw } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { DashboardYearSelect } from "@/modules/orders/components/DashboardYearSelect";
 import { useDashboard } from "../hooks/use-dashboard";
@@ -62,11 +63,11 @@ export function DashboardPage() {
         </div>
 
         <div className="flex items-center gap-3">
-          <DashboardYearSelect
+          {/* <DashboardYearSelect
             selectedYear={selectedYear}
             setSelectedYear={setSelectedYear}
             availableYears={availableYears}
-          />
+          /> */}
           <Button
             type="button"
             variant="outline"
@@ -86,34 +87,49 @@ export function DashboardPage() {
       {/* KPI Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         {/* Products KPI */}
-        <KPICard
-          title="Total Products"
-          value={dashboardData?.productsCount || 0}
-          icon={Package}
-          colorClass="text-primary"
-          bgIconClass="bg-primary/10"
-          isLoading={isLoadingData}
-        />
+        <Link
+          to="/products"
+          className="block focus:outline-none focus:ring-2 focus:ring-primary rounded-2xl"
+        >
+          <KPICard
+            title="Total Products"
+            value={dashboardData?.productsCount || 0}
+            icon={Package}
+            colorClass="text-primary"
+            bgIconClass="bg-primary/10"
+            isLoading={isLoadingData}
+          />
+        </Link>
 
         {/* Clients KPI */}
-        <KPICard
-          title="Active Clients"
-          value={dashboardData?.usersCount || 0}
-          icon={Users}
-          colorClass="text-info"
-          bgIconClass="bg-info/10"
-          isLoading={isLoadingData}
-        />
+        <Link
+          to="/users"
+          className="block focus:outline-none focus:ring-2 focus:ring-info rounded-2xl"
+        >
+          <KPICard
+            title="Active Clients"
+            value={dashboardData?.usersCount || 0}
+            icon={Users}
+            colorClass="text-info"
+            bgIconClass="bg-info/10"
+            isLoading={isLoadingData}
+          />
+        </Link>
 
         {/* Orders KPI */}
-        <KPICard
-          title="Total Orders"
-          value={dashboardData?.ordersCount || 0}
-          icon={FileSpreadsheet}
-          colorClass="text-success"
-          bgIconClass="bg-success/10"
-          isLoading={isLoadingData}
-        />
+        <Link
+          to="/"
+          className="block focus:outline-none focus:ring-2 focus:ring-success rounded-2xl"
+        >
+          <KPICard
+            title="Total Orders"
+            value={dashboardData?.ordersCount || 0}
+            icon={FileSpreadsheet}
+            colorClass="text-success"
+            bgIconClass="bg-success/10"
+            isLoading={isLoadingData}
+          />
+        </Link>
       </div>
 
       {/* Main Operations Split Layout Grid */}

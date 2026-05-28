@@ -30,6 +30,18 @@ function getProductCategoryId(product?: OrderProduct) {
   );
 }
 
+function getProductSubCategoryId(product?: OrderProduct) {
+  return (
+    product?.products_sub_catg_id ??
+    product?.product_sub_catg_id ??
+    product?.products_sub_category_id ??
+    product?.product_sub_category_id ??
+    product?.sub_category_id ??
+    product?.sub_catg_id ??
+    ""
+  );
+}
+
 function getTodayDateString() {
   const today = new Date();
   const dd = String(today.getDate()).padStart(2, "0");
@@ -121,7 +133,7 @@ export default function CreateOrderForm() {
 
   const handleSelectProduct = (product: OrderProduct) => {
     if (activeEditIndex !== null) {
-      let catgId = getProductCategoryId(product);
+      const catgId = getProductCategoryId(product);
       let subCatgId = getProductSubCategoryId(product);
 
       if (
@@ -165,7 +177,7 @@ export default function CreateOrderForm() {
 
     const mappedItems = items.map((item) => {
       const prod = products.find((p) => String(p.id) === String(item.orders_sub_product_id));
-      let catgId = getProductCategoryId(prod) || item.orders_sub_catg_id;
+      const catgId = getProductCategoryId(prod) || item.orders_sub_catg_id;
       let subCatgId = getProductSubCategoryId(prod) || item.orders_sub_sub_catg_id;
 
       if (

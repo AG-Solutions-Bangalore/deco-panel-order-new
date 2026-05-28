@@ -17,10 +17,10 @@ export function BrandListPage() {
   const { data: brands = [], isLoading } = useBrandsList();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
-  const [sortField, setSortField] = useState<"brands_name" | "brands_sort" | null>(null);
+  const [sortField, setSortField] = useState<"brands_name" | null>(null);
   const [sortAsc, setSortAsc] = useState(true);
 
-  const handleSort = (field: "brands_name" | "brands_sort") => {
+  const handleSort = (field: "brands_name") => {
     trigger("light");
     if (sortField === field) {
       setSortAsc(!sortAsc);
@@ -41,12 +41,6 @@ export function BrandListPage() {
       if (!sortField) return 0;
       const valA = a[sortField];
       const valB = b[sortField];
-
-      if (sortField === "brands_sort") {
-        const numA = Number(valA) || 0;
-        const numB = Number(valB) || 0;
-        return sortAsc ? numA - numB : numB - numA;
-      }
 
       const strA = String(valA || "").toLowerCase();
       const strB = String(valB || "").toLowerCase();
@@ -127,16 +121,6 @@ export function BrandListPage() {
                           <ArrowUpDown className="ml-1.5 size-3.5 shrink-0" />
                         </Button>
                       </TableHead>
-                      <TableHead className="py-3.5 px-4 font-bold text-xs uppercase tracking-wider text-text-muted w-32">
-                        <Button
-                          variant="ghost"
-                          onClick={() => handleSort("brands_sort")}
-                          className="-ml-4 hover:bg-primary/5 hover:text-primary font-bold text-xs uppercase tracking-wider text-text-muted transition-colors duration-200"
-                        >
-                          Sort Order
-                          <ArrowUpDown className="ml-1.5 size-3.5 shrink-0" />
-                        </Button>
-                      </TableHead>
                       <TableHead className="py-3.5 px-4 font-bold text-xs uppercase tracking-wider text-text-muted w-32">Status</TableHead>
                       <TableHead className="py-3.5 px-4 font-bold text-xs uppercase tracking-wider text-text-muted text-right pr-6 w-28">Actions</TableHead>
                     </TableRow>
@@ -163,9 +147,6 @@ export function BrandListPage() {
                             </TableCell>
                             <TableCell className="py-3.5 px-4 font-semibold text-text text-sm">
                               {brand.brands_name}
-                            </TableCell>
-                            <TableCell className="py-3.5 px-4 text-text-muted text-xs font-mono font-bold">
-                              {brand.brands_sort || "—"}
                             </TableCell>
                             <TableCell className="py-3.5 px-4">
                               <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider border ${
@@ -213,7 +194,7 @@ export function BrandListPage() {
                       })
                     ) : (
                       <TableRow>
-                        <TableCell colSpan={5} className="h-48 text-center text-text-muted p-6">
+                        <TableCell colSpan={4} className="h-48 text-center text-text-muted p-6">
                           <div className="flex flex-col items-center justify-center gap-2">
                             <span className="text-3xl">🏷️</span>
                             <p className="font-semibold text-text/80">No brands found.</p>

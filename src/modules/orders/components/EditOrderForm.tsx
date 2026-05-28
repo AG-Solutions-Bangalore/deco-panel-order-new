@@ -516,7 +516,14 @@ export default function EditOrderForm({ orderId }: EditOrderFormProps) {
                       placeholder="Quantity"
                       required
                       value={item.orders_sub_quantity}
-                      onChange={(e) => handleInputChange(index, "orders_sub_quantity", e.target.value)}
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        if (/^\d*$/.test(val)) {
+                          handleInputChange(index, "orders_sub_quantity", val);
+                        }
+                      }}
                       maxLength={6}
                       className="w-full bg-background border border-border focus:border-primary/80 rounded-xl px-3 py-2.5 text-sm font-medium outline-none"
                     />
@@ -617,7 +624,6 @@ export default function EditOrderForm({ orderId }: EditOrderFormProps) {
                       />
                     </div>
 
-                    {/* Editable Quantity */}
                     <div className="w-[90px] shrink-0">
                       <input
                         ref={(el) => {
@@ -626,7 +632,14 @@ export default function EditOrderForm({ orderId }: EditOrderFormProps) {
                         placeholder="Quantity"
                         required
                         value={item.orders_sub_quantity}
-                        onChange={(e) => handleInputChange(index, "orders_sub_quantity", e.target.value)}
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          if (/^\d*$/.test(val)) {
+                            handleInputChange(index, "orders_sub_quantity", val);
+                          }
+                        }}
                         maxLength={6}
                         className="w-full bg-background border border-border focus:border-primary/80 focus:ring-1 focus:ring-primary/45 rounded-xl px-3 py-2.5 text-xs font-bold outline-none text-text text-center transition-all"
                       />

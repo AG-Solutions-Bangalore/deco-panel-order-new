@@ -12,7 +12,6 @@ export function AddBrandPage() {
   const { trigger } = useWebHaptics();
   const createMutation = useCreateBrandMutation();
   const [name, setName] = useState("");
-  const [sort, setSort] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -23,10 +22,7 @@ export function AddBrandPage() {
     const formData = new FormData();
     formData.append("brand_name", name);
     formData.append("brands_name", name);
-    if (sort) {
-      formData.append("brand_sort", sort);
-      formData.append("brands_sort", sort);
-    }
+
     if (selectedFile) {
       formData.append("brand_image", selectedFile);
       formData.append("brands_image", selectedFile);
@@ -63,22 +59,7 @@ export function AddBrandPage() {
               />
             </div>
 
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="brand-sort" className="text-xs font-bold text-text-muted uppercase tracking-wider">
-                Sort Order
-              </Label>
-              <Input
-                id="brand-sort"
-                type="text"
-                pattern="[0-9]*"
-                value={sort}
-                onChange={(e) => {
-                  if (/^\d*$/.test(e.target.value)) setSort(e.target.value);
-                }}
-                placeholder="e.g. 1 (use integer digit)"
-                className="bg-background border-border rounded-xl"
-              />
-            </div>
+
 
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="brand-image" className="text-xs font-bold text-text-muted uppercase tracking-wider">

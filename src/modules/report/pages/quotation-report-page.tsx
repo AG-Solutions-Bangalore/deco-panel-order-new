@@ -19,6 +19,7 @@ const statusOptions = [
   { value: "Quotation", label: "Quotation" },
   { value: "Processing", label: "Processing" },
   { value: "Cancel", label: "Cancel" },
+  { value: "Completed", label: "Completed" },
 ];
 
 export function QuotationReportPage() {
@@ -60,7 +61,9 @@ export function QuotationReportPage() {
 
       <Card className="bg-panel border border-border/80 shadow-sm overflow-hidden rounded-2xl">
         <div className="p-4 md:p-6 border-b border-border/60">
-          <h3 className="font-bold text-lg text-text">Quotation Detailed Report</h3>
+          <h3 className="font-bold text-lg text-text">
+            Quotation Detailed Report
+          </h3>
         </div>
 
         <CardContent className="p-6">
@@ -71,14 +74,14 @@ export function QuotationReportPage() {
                 <label className="text-xs font-bold uppercase tracking-wider text-text-muted">
                   Client <span className="text-destructive">*</span>
                 </label>
-                <Select
-                  value={ordersUserId}
-                  onValueChange={setOrdersUserId}
-                >
+                <Select value={ordersUserId} onValueChange={setOrdersUserId}>
                   <SelectTrigger className="!w-full !h-11 rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-ring focus:ring-1 focus:ring-ring">
                     <SelectValue placeholder="Select Client" />
                   </SelectTrigger>
-                  <SelectContent position="popper" className="w-[--radix-select-trigger-width] max-h-60 overflow-y-auto z-50">
+                  <SelectContent
+                    position="popper"
+                    className="w-[--radix-select-trigger-width] max-h-60 overflow-y-auto z-50"
+                  >
                     {clients.map((c) => (
                       <SelectItem key={c.id} value={String(c.id)}>
                         {c.full_name}
@@ -88,7 +91,8 @@ export function QuotationReportPage() {
                 </Select>
                 {loadingClients && (
                   <span className="text-[10px] text-muted-foreground flex items-center gap-1 mt-0.5">
-                    <Loader2 className="size-3 animate-spin" /> Loading clients...
+                    <Loader2 className="size-3 animate-spin" /> Loading
+                    clients...
                   </span>
                 )}
               </div>
@@ -124,12 +128,17 @@ export function QuotationReportPage() {
                 </label>
                 <Select
                   value={quotationStatus || "ALL_STATUS"}
-                  onValueChange={(val) => setQuotationStatus(val === "ALL_STATUS" ? "" : val)}
+                  onValueChange={(val) =>
+                    setQuotationStatus(val === "ALL_STATUS" ? "" : val)
+                  }
                 >
                   <SelectTrigger className="!w-full !h-11 rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-ring focus:ring-1 focus:ring-ring">
                     <SelectValue placeholder="All Statuses" />
                   </SelectTrigger>
-                  <SelectContent position="popper" className="w-[--radix-select-trigger-width] z-50">
+                  <SelectContent
+                    position="popper"
+                    className="w-[--radix-select-trigger-width] z-50"
+                  >
                     <SelectItem value="ALL_STATUS">All Statuses</SelectItem>
                     {statusOptions.map((opt) => (
                       <SelectItem key={opt.value} value={opt.value}>
