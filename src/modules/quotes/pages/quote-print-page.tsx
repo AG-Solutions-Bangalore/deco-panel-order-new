@@ -1,6 +1,7 @@
 import { useEffect } from "react";
-import { Layers } from "lucide-react";
+import { Layers, ArrowLeft, Printer } from "lucide-react";
 import { Spinner } from "@/components/ui/spinner";
+import { Button } from "@/components/ui/button";
 import { useQuotationViewDetail } from "../hooks/use-quotes";
 import { formatQuotationDate } from "../utils/date";
 
@@ -44,6 +45,31 @@ export function QuotePrintPage({ quoteId }: { quoteId: string }) {
   return (
     <div className="quote-print-page min-h-dvh w-full bg-white p-6 text-black font-sans print:min-h-0 print:p-0">
       <div className="mx-auto w-full max-w-5xl print:max-w-none">
+        
+        {/* Navigation / Control Header (Hidden when printing) */}
+        <div className="mb-6 flex items-center justify-between border-b border-black/10 pb-4 print:hidden">
+          <Button
+            variant="outline"
+            className="flex items-center gap-1.5 rounded-xl border border-black/20 text-black hover:bg-black/5 font-bold text-xs cursor-pointer"
+            onClick={() => {
+              if (window.history.length > 1) {
+                window.history.back();
+              } else {
+                window.close();
+              }
+            }}
+          >
+            <ArrowLeft className="size-4" /> Back
+          </Button>
+
+          <Button
+            className="flex items-center gap-1.5 rounded-xl bg-black text-white hover:bg-black/90 font-bold text-xs cursor-pointer"
+            onClick={() => window.print()}
+          >
+            <Printer className="size-4" /> Print again
+          </Button>
+        </div>
+
         <div className="mb-6 flex items-start justify-between border-b border-black/20 pb-4">
           <div>
             <h2 className="text-[10px] font-bold uppercase tracking-wider text-black/60">
