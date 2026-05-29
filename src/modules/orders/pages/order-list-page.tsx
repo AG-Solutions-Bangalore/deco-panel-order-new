@@ -1,13 +1,8 @@
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { PageHeader } from "@/components/ui/page-header";
-import { useOrderList } from "../hooks/use-order-list";
-import { PlusCircle } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import OrderListSkeleton from "../components/OrderListSkeleton";
 import OrdersTable from "../components/OrdersTable";
-import DashboardYearSelect from "../components/DashboardYearSelect";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { useOrderList } from "../hooks/use-order-list";
 
 export function OrderListPage() {
   const {
@@ -26,26 +21,6 @@ export function OrderListPage() {
 
   return (
     <div className="flex gap-5 p-4 md:p-6 w-full max-w-7xl mx-auto pb-24 md:pb-6 animate-fade-in duration-300">
-      {/* <PageHeader title="Orders" subtitle="Manage your orders and operations">
-        <div className="flex items-start md:items-center gap-2.5 w-full sm:w-auto sm:justify-start">
-
-          {activeTab === "recent" && (
-            <DashboardYearSelect
-              selectedYear={selectedYear}
-              setSelectedYear={setSelectedYear}
-              availableYears={availableYears}
-            />
-          )}
-
-          <Button asChild className="shrink-0">
-            <Link to="/orders/create">
-              <PlusCircle data-icon="inline-start" className="size-4" />
-              Create Order
-            </Link>
-          </Button>
-        </div>
-      </PageHeader> */}
-
       <Tabs
         value={activeTab}
         onValueChange={setActiveTab}

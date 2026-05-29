@@ -33,13 +33,13 @@ export function BottomNav() {
     pathname?.startsWith("/brand");
 
   const tabs = [
-    { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard, active: isDashboardActive },
+    // { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard, active: isDashboardActive },
     { name: "Orders", href: "/", icon: Home, active: isOrdersActive },
     { name: "Order", href: "/orders/create", icon: PlusCircle, active: isCreateOrderActive },
     { name: "Quotes", href: "/quotes", icon: FileText, active: isQuotesActive },
-    { name: "Master", href: "/products", icon: Package, active: isProductsActive },
-    { name: "Users", href: "/users", icon: Users, active: isUsersActive },
-    { name: "Reports", href: "/product-report", icon: BarChart3, active: isReportsActive },
+    // { name: "Master", href: "/products", icon: Package, active: isProductsActive },
+    // { name: "Users", href: "/users", icon: Users, active: isUsersActive },
+    // { name: "Reports", href: "/product-report", icon: BarChart3, active: isReportsActive },
     { name: "Profile", href: "/profile", icon: User, active: isProfileActive },
   ];
 

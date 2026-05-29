@@ -333,13 +333,19 @@ export function ViewQuotePage({ quoteId }: ViewQuotePageProps) {
     if (!quoteData?.quotation) return;
 
     trigger("medium");
-    printPdfBlob(
-      buildQuotationPdf(
-        quoteData.quotation,
-        quoteData.quotationSub || [],
-        Number(quoteData.quotationSubSum) || 0,
-      ),
-    );
+
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    if (isMobile) {
+      window.print();
+    } else {
+      printPdfBlob(
+        buildQuotationPdf(
+          quoteData.quotation,
+          quoteData.quotationSub || [],
+          Number(quoteData.quotationSubSum) || 0,
+        ),
+      );
+    }
   };
 
   const handleWhatsAppShare = async () => {

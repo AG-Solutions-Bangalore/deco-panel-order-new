@@ -180,7 +180,7 @@ export default function QuotesTable({ quotes, type }: QuotesTableProps) {
           }}
           className="-ml-4 hover:bg-primary/5 hover:text-primary font-bold text-xs uppercase tracking-wider text-text-muted transition-colors duration-200"
         >
-          Quote
+          Quote No
           <ArrowUpDown className="ml-1.5 size-3.5" />
         </Button>
       ),
@@ -189,10 +189,31 @@ export default function QuotesTable({ quotes, type }: QuotesTableProps) {
           <span className="font-bold text-text text-sm">
             #{row.getValue("quotation_no")}
           </span>
-          <span className="text-text-muted text-xs font-semibold">
+          <span className="text-text-muted text-xs font-semibold md:hidden">
             {formatQuotationDate(row.original.quotation_date)}
           </span>
         </div>
+      ),
+    },
+    {
+      accessorKey: "quotation_date",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => {
+            trigger("light");
+            column.toggleSorting(column.getIsSorted() === "asc");
+          }}
+          className="-ml-4 hover:bg-primary/5 hover:text-primary font-bold text-xs uppercase tracking-wider text-text-muted transition-colors duration-200"
+        >
+          Date
+          <ArrowUpDown className="ml-1.5 size-3.5" />
+        </Button>
+      ),
+      cell: ({ row }) => (
+        <span className="text-text text-sm font-medium">
+          {formatQuotationDate(row.getValue("quotation_date"))}
+        </span>
       ),
     },
     {
@@ -227,7 +248,7 @@ export default function QuotesTable({ quotes, type }: QuotesTableProps) {
             <span className="font-semibold text-text text-sm leading-tight">
               {row.getValue("full_name")}
             </span>
-            <div className="flex items-center">
+            <div className="flex items-center md:hidden">
               <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${badgeClasses}`}>
                 {status}
               </span>
@@ -237,10 +258,38 @@ export default function QuotesTable({ quotes, type }: QuotesTableProps) {
       },
     },
     {
-      accessorKey: "quotation_date",
-    },
-    {
       accessorKey: "quotation_status",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => {
+            trigger("light");
+            column.toggleSorting(column.getIsSorted() === "asc");
+          }}
+          className="-ml-4 hover:bg-primary/5 hover:text-primary font-bold text-xs uppercase tracking-wider text-text-muted transition-colors duration-200"
+        >
+          Status
+          <ArrowUpDown className="ml-1.5 size-3.5" />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const status = (row.getValue("quotation_status") as string) || "Quotation";
+        
+        let badgeClasses = "bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20";
+        if (status.toLowerCase().includes("complete")) {
+          badgeClasses = "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20";
+        } else if (status.toLowerCase().includes("cancel")) {
+          badgeClasses = "bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20";
+        } else if (status.toLowerCase().includes("process")) {
+          badgeClasses = "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20";
+        }
+
+        return (
+          <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${badgeClasses}`}>
+            {status}
+          </span>
+        );
+      },
     },
     {
       id: "actions",
@@ -326,10 +375,6 @@ export default function QuotesTable({ quotes, type }: QuotesTableProps) {
     state: {
       sorting,
       globalFilter,
-      columnVisibility: {
-        quotation_date: false,
-        quotation_status: false,
-      },
     },
     onSortingChange: setSorting,
     onGlobalFilterChange: setGlobalFilter,
@@ -365,69 +410,6 @@ export default function QuotesTable({ quotes, type }: QuotesTableProps) {
 
   return (
     <div className="flex flex-col gap-4">
-      {/* <div className="flex flex-col gap-4 bg-panel border border-border/80 rounded-2xl p-4 md:p-5 shadow-xs">
-        <div className="flex flex-col md:flex-row gap-3 items-center justify-between">
-          <div className="relative w-full md:max-w-md group">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4.5 text-text-muted group-focus-within:text-primary transition-colors" />
-            <input
-              type="text"
-              placeholder="Search by Quote # or Customer name..."
-              value={globalFilter}
-              onChange={(e) => setGlobalFilter(e.target.value)}
-              className="w-full bg-background border border-border hover:border-border-hover focus:border-primary/80 focus:ring-1 focus:ring-primary/45 rounded-xl pl-10 pr-10 py-2.5 text-sm font-medium outline-none transition-all placeholder:text-text-muted text-text"
-            />
-            {globalFilter && (
-              <button
-                onClick={() => {
-                  trigger("light");
-                  setGlobalFilter("");
-                }}
-                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-text-muted hover:text-text rounded-full p-0.5 hover:bg-muted transition-colors cursor-pointer"
-              >
-                <X className="size-3.5" />
-              </button>
-            )}
-          </div>
-
-          {hasActiveFilters && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={clearAllFilters}
-              className="text-xs text-rose-500 hover:text-rose-600 hover:bg-rose-500/5 font-semibold self-end md:self-auto cursor-pointer"
-            >
-              Clear Filters
-              <X className="ml-1 size-3" />
-            </Button>
-          )}
-        </div>
-
-        <div className="flex flex-col gap-2">
-          <div className="flex items-center gap-1.5 text-xs font-bold text-text-muted uppercase tracking-wider">
-            <SlidersHorizontal className="size-3.5 text-primary" />
-            <span>Filter Status</span>
-          </div>
-          <div className="flex flex-wrap gap-2 pt-1">
-            {availableStatuses.map((status) => {
-              const isActive = selectedStatus === status;
-              return (
-                <button
-                  key={status}
-                  onClick={() => handleStatusFilter(status)}
-                  className={`px-3 py-1.5 text-xs font-bold rounded-full border transition-all cursor-pointer ${
-                    isActive
-                      ? "bg-primary border-primary text-primary-foreground shadow-xs scale-102"
-                      : "bg-background border-border text-text-muted hover:text-text hover:border-border-hover"
-                  }`}
-                >
-                  {status}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      </div> */}
-
       {/* Main Table Card */}
       <Card className="bg-panel py-0 border border-border/80 shadow-sm overflow-hidden rounded-2xl">
         <CardContent className="p-0">
@@ -436,19 +418,23 @@ export default function QuotesTable({ quotes, type }: QuotesTableProps) {
               <TableHeader className="bg-muted/40 border-b border-border/60">
                 {table.getHeaderGroups().map((headerGroup: HeaderGroup<Quotation>) => (
                   <TableRow key={headerGroup.id} className="hover:bg-transparent">
-                    {headerGroup.headers.map((header: Header<Quotation, unknown>) => (
-                      <TableHead
-                        key={header.id}
-                        className="py-3.5 px-4 font-bold align-middle"
-                      >
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
-                      </TableHead>
-                    ))}
+                    {headerGroup.headers.map((header: Header<Quotation, unknown>) => {
+                      const columnId = header.column.id;
+                      const isResponsive = columnId === "quotation_date" || columnId === "quotation_status";
+                      return (
+                        <TableHead
+                          key={header.id}
+                          className={`py-3.5 px-4 font-bold align-middle ${isResponsive ? "hidden md:table-cell" : ""}`}
+                        >
+                          {header.isPlaceholder
+                            ? null
+                            : flexRender(
+                                header.column.columnDef.header,
+                                header.getContext()
+                              )}
+                        </TableHead>
+                      );
+                    })}
                   </TableRow>
                 ))}
               </TableHeader>
@@ -465,14 +451,21 @@ export default function QuotesTable({ quotes, type }: QuotesTableProps) {
                       }}
                       className="border-b border-border/40 hover:bg-primary/[0.03] dark:hover:bg-primary/[0.08] transition-all duration-300 ease-in-out cursor-pointer group"
                     >
-                      {row.getVisibleCells().map((cell: Cell<Quotation, unknown>) => (
-                        <TableCell key={cell.id} className="py-3 px-4 align-middle">
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                          )}
-                        </TableCell>
-                      ))}
+                      {row.getVisibleCells().map((cell: Cell<Quotation, unknown>) => {
+                        const columnId = cell.column.id;
+                        const isResponsive = columnId === "quotation_date" || columnId === "quotation_status";
+                        return (
+                          <TableCell 
+                            key={cell.id} 
+                            className={`py-3 px-4 align-middle ${isResponsive ? "hidden md:table-cell" : ""}`}
+                          >
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
+                            )}
+                          </TableCell>
+                        );
+                      })}
                     </TableRow>
                   ))
                 ) : (

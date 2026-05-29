@@ -80,7 +80,7 @@ export default function OrdersTable({ orders, isProcessed = false }: OrdersTable
             }}
             className="-ml-4 hover:bg-primary/5 hover:text-primary font-bold text-xs uppercase tracking-wider text-text-muted transition-colors duration-200"
           >
-            Order
+            Order No
             <ArrowUpDown className="ml-1.5 size-3.5 shrink-0" />
           </Button>
         );
@@ -90,10 +90,33 @@ export default function OrdersTable({ orders, isProcessed = false }: OrdersTable
           <span className="font-bold text-text text-sm">
             #{row.getValue("orders_no")}
           </span>
-          <span className="text-text-muted text-xs font-semibold">
+          <span className="text-text-muted text-xs font-semibold md:hidden">
             {formatOrderDate(row.original.orders_date)}
           </span>
         </div>
+      ),
+    },
+    {
+      accessorKey: "orders_date",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => {
+              trigger("light");
+              column.toggleSorting(column.getIsSorted() === "asc");
+            }}
+            className="-ml-4 hover:bg-primary/5 hover:text-primary font-bold text-xs uppercase tracking-wider text-text-muted transition-colors duration-200"
+          >
+            Date
+            <ArrowUpDown className="ml-1.5 size-3.5 shrink-0" />
+          </Button>
+        );
+      },
+      cell: ({ row }) => (
+        <span className="text-text text-sm font-medium">
+          {formatOrderDate(row.getValue("orders_date"))}
+        </span>
       ),
     },
     {
@@ -130,7 +153,7 @@ export default function OrdersTable({ orders, isProcessed = false }: OrdersTable
             <span className="font-semibold text-text text-sm leading-tight">
               {row.getValue("full_name")}
             </span>
-            <div className="flex items-center">
+            <div className="flex items-center md:hidden">
               <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${badgeClasses}`}>
                 {status}
               </span>
@@ -140,10 +163,40 @@ export default function OrdersTable({ orders, isProcessed = false }: OrdersTable
       },
     },
     {
-      accessorKey: "orders_date",
-    },
-    {
       accessorKey: "orders_status",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => {
+              trigger("light");
+              column.toggleSorting(column.getIsSorted() === "asc");
+            }}
+            className="-ml-4 hover:bg-primary/5 hover:text-primary font-bold text-xs uppercase tracking-wider text-text-muted transition-colors duration-200"
+          >
+            Status
+            <ArrowUpDown className="ml-1.5 size-3.5 shrink-0" />
+          </Button>
+        );
+      },
+      cell: ({ row }) => {
+        const status = (row.getValue("orders_status") as string) || "Pending";
+
+        let badgeClasses = "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20";
+        if (status.toLowerCase().includes("complete") || status.toLowerCase().includes("deliver")) {
+          badgeClasses = "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20";
+        } else if (status.toLowerCase().includes("cancel")) {
+          badgeClasses = "bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20";
+        } else if (status.toLowerCase().includes("progress") || status.toLowerCase().includes("process")) {
+          badgeClasses = "bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20";
+        }
+
+        return (
+          <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${badgeClasses}`}>
+            {status}
+          </span>
+        );
+      },
     },
     {
       id: "actions",
@@ -227,10 +280,6 @@ export default function OrdersTable({ orders, isProcessed = false }: OrdersTable
       sorting,
       columnFilters,
       globalFilter,
-      columnVisibility: {
-        orders_date: false,
-        orders_status: false,
-      },
     },
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -341,19 +390,23 @@ export default function OrdersTable({ orders, isProcessed = false }: OrdersTable
                 <TableHeader className="bg-muted/40 border-b border-border/60">
                   {table.getHeaderGroups().map((headerGroup: HeaderGroup<PendingOrder>) => (
                     <TableRow key={headerGroup.id} className="hover:bg-transparent">
-                    {headerGroup.headers.map((header: Header<PendingOrder, unknown>) => (
-                        <TableHead
-                          key={header.id}
-                          className="py-3.5 px-4 font-bold align-middle"
-                        >
-                          {header.isPlaceholder
-                            ? null
-                            : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
-                        </TableHead>
-                      ))}
+                    {headerGroup.headers.map((header: Header<PendingOrder, unknown>) => {
+                        const columnId = header.column.id;
+                        const isResponsive = columnId === "orders_date" || columnId === "orders_status";
+                        return (
+                          <TableHead
+                            key={header.id}
+                            className={`py-3.5 px-4 font-bold align-middle ${isResponsive ? "hidden md:table-cell" : ""}`}
+                          >
+                            {header.isPlaceholder
+                              ? null
+                              : flexRender(
+                                header.column.columnDef.header,
+                                header.getContext()
+                              )}
+                          </TableHead>
+                        );
+                      })}
                     </TableRow>
                   ))}
                 </TableHeader>
@@ -370,14 +423,21 @@ export default function OrdersTable({ orders, isProcessed = false }: OrdersTable
                         }}
                         className="border-b border-border/40 hover:bg-primary/[0.03] dark:hover:bg-primary/[0.08] transition-all duration-300 ease-in-out cursor-pointer group"
                       >
-                      {row.getVisibleCells().map((cell: Cell<PendingOrder, unknown>) => (
-                          <TableCell key={cell.id} className="py-3 px-4 align-middle">
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext()
-                            )}
-                          </TableCell>
-                        ))}
+                      {row.getVisibleCells().map((cell: Cell<PendingOrder, unknown>) => {
+                          const columnId = cell.column.id;
+                          const isResponsive = columnId === "orders_date" || columnId === "orders_status";
+                          return (
+                            <TableCell 
+                              key={cell.id} 
+                              className={`py-3 px-4 align-middle ${isResponsive ? "hidden md:table-cell" : ""}`}
+                            >
+                              {flexRender(
+                                cell.column.columnDef.cell,
+                                cell.getContext()
+                              )}
+                            </TableCell>
+                          );
+                        })}
                       </TableRow>
                     ))
                   ) : (
