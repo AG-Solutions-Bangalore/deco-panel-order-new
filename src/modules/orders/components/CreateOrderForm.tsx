@@ -18,27 +18,36 @@ import { CreateOrderItemCard } from "./CreateOrderItemCard";
 import { CustomerSelect } from "./CustomerSelect";
 import { OrderDatePicker } from "./OrderDatePicker";
 
+function pickFirstPresent(...values: unknown[]) {
+  return values.find(
+    (value) =>
+      value !== undefined && value !== null && String(value).trim() !== "",
+  );
+}
+
 function getProductCategoryId(product?: OrderProduct) {
   return (
-    product?.products_catg_id ??
-    product?.product_catg_id ??
-    product?.products_category_id ??
-    product?.product_category_id ??
-    product?.category_id ??
-    product?.catg_id ??
-    ""
+    pickFirstPresent(
+      product?.products_catg_id,
+      product?.product_catg_id,
+      product?.products_category_id,
+      product?.product_category_id,
+      product?.category_id,
+      product?.catg_id,
+    ) ?? ""
   );
 }
 
 function getProductSubCategoryId(product?: OrderProduct) {
   return (
-    product?.products_sub_catg_id ??
-    product?.product_sub_catg_id ??
-    product?.products_sub_category_id ??
-    product?.product_sub_category_id ??
-    product?.sub_category_id ??
-    product?.sub_catg_id ??
-    ""
+    pickFirstPresent(
+      product?.products_sub_catg_id,
+      product?.product_sub_catg_id,
+      product?.products_sub_category_id,
+      product?.product_sub_category_id,
+      product?.sub_category_id,
+      product?.sub_catg_id,
+    ) ?? ""
   );
 }
 
@@ -133,24 +142,14 @@ export default function CreateOrderForm() {
 
   const handleSelectProduct = (product: OrderProduct) => {
     if (activeEditIndex !== null) {
-      const catgId = getProductCategoryId(product);
-      let subCatgId = getProductSubCategoryId(product);
-
-      if (
-        product.product_sub_category === "Commercial Plywood" ||
-        String(subCatgId) === "Commercial Plywood"
-      ) {
-        subCatgId = catgId;
-      }
-
       setItems((prev) =>
         prev.map((item, index) =>
           index === activeEditIndex
             ? {
                 orders_sub_product_id: product.id,
                 orders_sub_design_no: item.orders_sub_design_no || "",
-                orders_sub_catg_id: catgId,
-                orders_sub_sub_catg_id: subCatgId,
+                orders_sub_catg_id: product.product_category,
+                orders_sub_sub_catg_id: product.product_sub_category,
                 orders_sub_brand: product.products_brand,
                 orders_sub_thickness: product.products_thickness,
                 orders_sub_unit: product.products_unit,
