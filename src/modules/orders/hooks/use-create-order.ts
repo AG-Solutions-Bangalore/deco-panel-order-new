@@ -284,7 +284,7 @@ export function useCreateUserMutation() {
       const formData = new FormData();
       formData.append("name", data.name);
       formData.append("email", data.email || "");
-      formData.append("mobile", data.mobile);
+      formData.append("mobile", data.mobile || "");
       if (data.address) formData.append("address", data.address);
       if (data.state) formData.append("state", data.state);
       if (data.pincode) formData.append("pincode", data.pincode);
