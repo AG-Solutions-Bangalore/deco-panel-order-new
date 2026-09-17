@@ -84,7 +84,8 @@ export function CreateCustomerDialog({
             ) ||
             usersResult.data?.find(
               (user) =>
-                user.mobile === newUserForm.mobile ||
+                (Boolean(newUserForm.mobile) &&
+                  user.mobile === newUserForm.mobile) ||
                 (Boolean(newUserForm.email) && user.email === newUserForm.email) ||
                 user.full_name?.toLowerCase() ===
                   newUserForm.name.toLowerCase(),
@@ -141,13 +142,13 @@ export function CreateCustomerDialog({
 
             <div className="flex flex-col gap-1.5">
               <label className="text-xs font-bold text-text-muted uppercase tracking-wider">
-                Mobile *
+                Mobile
               </label>
               <Input
-                required
                 inputMode="numeric"
                 maxLength={10}
                 pattern="[0-9]{10}"
+                title="Enter 10 digit mobile number (optional)"
                 value={newUserForm.mobile}
                 onChange={(event) =>
                   setNewUserForm((prev) => ({
