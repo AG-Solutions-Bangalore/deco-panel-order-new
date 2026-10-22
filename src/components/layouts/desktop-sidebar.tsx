@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useTheme } from "@/components/providers/theme-provider";
 import {
@@ -14,28 +15,49 @@ import {
   LayoutDashboard,
 } from "lucide-react";
 import { Squash as Hamburger } from "hamburger-react";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useWebHaptics } from "web-haptics/react";
 import { useSidebarStore } from "@/lib/store/use-sidebar-store";
 import { AppLogo } from "@/components/brand/app-logo";
-
-const menuItems = [
-  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { name: "Orders", href: "/", icon: Home },
-  { name: "Create Order", href: "/orders/create", icon: PlusCircle },
-  { name: "Quotes", href: "/quotes", icon: FileText },
-  { name: "Master", href: "/products", icon: Package },
-  { name: "Users", href: "/users", icon: Users },
-  { name: "Reports", href: "/product-report", icon: BarChart3 },
-  { name: "Profile", href: "/profile", icon: User },
-];
+import { useUserRole } from "@/hooks/use-user-role";
 
 export function DesktopSidebar() {
   const { isOpen, toggleSidebar } = useSidebarStore();
   const { pathname } = useLocation();
   const { trigger } = useWebHaptics();
   const { resolvedTheme, setTheme } = useTheme();
+  const { isUser4, isUser5 } = useUserRole();
+
+  const menuItems = useMemo(() => {
+    if (isUser4) {
+      // user_type = 4: dashboard, orders, create orders, quotes
+      return [
+        { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+        { name: "Orders", href: "/", icon: Home },
+        { name: "Create Order", href: "/orders/create", icon: PlusCircle },
+        { name: "Quotes", href: "/quotes", icon: FileText },
+      ];
+    }
+
+    if (isUser5) {
+      // user_type = 5: dashboard, master (inside master only product)
+      return [
+        { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+        { name: "Master", href: "/products", icon: Package },
+      ];
+    }
+
+    // Default for user_type = 2, 3 (and other admins): unchanged
+    return [
+      { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+      { name: "Orders", href: "/", icon: Home },
+      { name: "Create Order", href: "/orders/create", icon: PlusCircle },
+      { name: "Quotes", href: "/quotes", icon: FileText },
+      { name: "Master", href: "/products", icon: Package },
+      { name: "Users", href: "/users", icon: Users },
+      { name: "Reports", href: "/product-report", icon: BarChart3 },
+    ];
+  }, [isUser4, isUser5]);
 
   // Hide on auth routes
   if (
@@ -53,6 +75,7 @@ export function DesktopSidebar() {
     localStorage.removeItem("id");
     localStorage.removeItem("username");
     localStorage.removeItem("email");
+    window.dispatchEvent(new Event("user_role_changed"));
   };
 
   return (
@@ -65,7 +88,7 @@ export function DesktopSidebar() {
       {/* Top Header Area */}
       <div className="flex items-center justify-between p-4 h-16 border-b border-border">
         <Link
-          to="/"
+          to={isUser5 ? "/dashboard" : "/"}
           onClick={() => trigger("light")}
           className={cn(
             "flex min-w-0 items-center gap-3 rounded-lg text-text transition-opacity hover:opacity-90",
@@ -114,7 +137,7 @@ export function DesktopSidebar() {
               "/edit-sub-categories",
               "/brand",
               "/add-brand",
-              "/edit-brand"
+              "/edit-brand",
             ];
             isActive = masterRoutes.some((route) => pathname?.startsWith(route));
           }
@@ -144,15 +167,38 @@ export function DesktopSidebar() {
         })}
       </nav>
 
-      {/* Footer Area with Theme Toggle and Logout */}
-      <div className="p-3 border-t border-border flex flex-col gap-2">
+      {/* Common division for all user_types: Profile, Dark Mode, and Logout */}
+      <div className="p-3 border-t border-border flex flex-col gap-1.5">
+        {/* Profile */}
+        <Link
+          to="/profile"
+          onClick={() => trigger("light")}
+          className={cn(
+            "flex items-center gap-4 rounded-lg px-3 py-2.5 transition-all duration-300",
+            pathname?.startsWith("/profile")
+              ? "bg-primary text-primary-foreground font-medium shadow-sm"
+              : "text-text-muted hover:bg-muted hover:text-text",
+            !isOpen && "justify-center px-0",
+          )}
+          title={!isOpen ? "Profile" : undefined}
+        >
+          <User className="size-5 shrink-0" />
+          {isOpen && (
+            <span className="font-medium transition-opacity duration-300">
+              Profile
+            </span>
+          )}
+        </Link>
+
+        {/* Dark Mode Toggle */}
         <button
+          type="button"
           onClick={() => {
             trigger("light");
             setTheme(resolvedTheme === "dark" ? "light" : "dark");
           }}
           className={cn(
-            "flex items-center gap-4 rounded-lg px-3 py-3 text-text-muted hover:bg-muted hover:text-text transition-all duration-300 w-full text-left",
+            "flex items-center gap-4 rounded-lg px-3 py-2.5 text-text-muted hover:bg-muted hover:text-text transition-all duration-300 w-full text-left cursor-pointer",
             !isOpen && "justify-center px-0",
           )}
           title={!isOpen ? "Toggle Theme" : undefined}
@@ -178,11 +224,12 @@ export function DesktopSidebar() {
           )}
         </button>
 
+        {/* Logout */}
         <Link
           to="/login"
           onClick={handleLogout}
           className={cn(
-            "flex items-center gap-4 rounded-lg px-3 py-3 text-destructive hover:bg-destructive/10 transition-all duration-300",
+            "flex items-center gap-4 rounded-lg px-3 py-2.5 text-destructive hover:bg-destructive/10 transition-all duration-300",
             !isOpen && "justify-center px-0",
           )}
           title={!isOpen ? "Logout" : undefined}

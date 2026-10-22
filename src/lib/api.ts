@@ -20,11 +20,30 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+const isAuthUrl = (url?: string) => {
+  if (!url) return false;
+  return (
+    url.includes("/web-login") ||
+    url.includes("/login") ||
+    url.includes("/send-password")
+  );
+};
+
+const isAuthRoute = () => {
+  if (typeof window === "undefined") return false;
+  const path = window.location.pathname;
+  return (
+    path.startsWith("/login") ||
+    path.startsWith("/register") ||
+    path.startsWith("/forget-password")
+  );
+};
+
 api.interceptors.response.use(
   (res) => {
     // Handle cases where the API returns HTTP 200 but contains an error code in the body
     if (res.data && res.data.code === 501) {
-      if (typeof window !== "undefined") {
+      if (typeof window !== "undefined" && !isAuthUrl(res.config?.url) && !isAuthRoute()) {
         localStorage.removeItem("token");
         localStorage.removeItem("user_type_id");
         localStorage.removeItem("id");
@@ -42,12 +61,14 @@ api.interceptors.response.use(
       (err.response?.status === 401 || err.response?.status === 501) && 
       typeof window !== "undefined"
     ) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("user_type_id");
-      localStorage.removeItem("id");
-      localStorage.removeItem("username");
-      localStorage.removeItem("email");
-      window.location.href = "/login";
+      if (!isAuthUrl(err.config?.url) && !isAuthRoute()) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user_type_id");
+        localStorage.removeItem("id");
+        localStorage.removeItem("username");
+        localStorage.removeItem("email");
+        window.location.href = "/login";
+      }
     }
     return Promise.reject(err);
   }

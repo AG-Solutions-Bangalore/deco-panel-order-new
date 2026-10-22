@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link } from "react-router-dom";
-import { EyeIcon, EyeOffIcon } from "lucide-react";
+import { AlertCircle, EyeIcon, EyeOffIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -21,15 +21,16 @@ import { Spinner } from "@/components/ui/spinner";
 import { AppLogo } from "@/components/brand/app-logo";
 
 import { loginSchema, LoginInput } from "../schemas/login-schema";
-import { useLogin } from "../hooks/use-login";
+import { useLogin, extractBackendErrorMessage } from "../hooks/use-login";
 
 export function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
-  const { mutate: login, isPending } = useLogin();
+  const { mutate: login, isPending, isError, error } = useLogin();
 
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
@@ -40,7 +41,19 @@ export function LoginForm() {
   });
 
   const onSubmit = (data: LoginInput) => {
-    login(data);
+    login(data, {
+      onError: () => {
+        reset({
+          username: "",
+          password: "",
+        });
+      },
+    });
+  };
+
+  const getErrorMessage = () => {
+    if (!error) return null;
+    return extractBackendErrorMessage(error);
   };
 
   return (
@@ -59,6 +72,17 @@ export function LoginForm() {
       {/* Form Area */}
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
         <FieldGroup className="gap-5">
+          {/* Unauthorised / Login Error Banner */}
+          {isError && (
+            <div
+              role="alert"
+              className="flex items-start gap-2.5 rounded-lg border border-destructive/20 bg-destructive/10 p-3 text-sm text-destructive"
+            >
+              <AlertCircle className="mt-0.5 size-4 shrink-0" />
+              <span>{getErrorMessage()}</span>
+            </div>
+          )}
+
           {/* Username Field */}
           <Field data-invalid={!!errors.username} data-disabled={isPending}>
             <FieldLabel htmlFor="username">Username</FieldLabel>
