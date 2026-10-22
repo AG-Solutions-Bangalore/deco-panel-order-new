@@ -55,6 +55,7 @@ export function AddProductPage() {
   const [breadth, setBreadth] = useState("");
   const [sizeUnit, setSizeUnit] = useState("");
   const [sizeSum, setSizeSum] = useState("");
+  const [isSizeSumManuallyEdited, setIsSizeSumManuallyEdited] = useState(false);
   const [rate, setRate] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
@@ -69,25 +70,53 @@ export function AddProductPage() {
     }
   }, [categoryId, refetchSubCategories]);
 
-  // Auto-calculate Products Size Sum: 1 if Metres/KG/Nos, else length * breadth
-  useEffect(() => {
-    const u = (sizeUnit || "").toUpperCase().trim();
-    if (u === "METRES" || u === "METERS" || u === "MTR" || u === "KG" || u === "NOS") {
-      setSizeSum("1");
-    } else {
-      const l = parseFloat(length);
-      const b = parseFloat(breadth);
-      if (!isNaN(l) && !isNaN(b)) {
-        setSizeSum(String(l * b));
-      } else {
-        setSizeSum("");
-      }
-    }
-  }, [sizeUnit, length, breadth]);
-
   // Validations
   const validateOnlyDigits = (val: string) => /^\d*$/.test(val);
   const validateDecimal = (val: string) => /^\d*\.?\d{0,2}$/.test(val);
+
+  // Calculate Products Size Sum: 1 if Metres/KG/Nos, else length * breadth
+  const calculateSizeSum = (lVal: string, bVal: string, uVal: string) => {
+    const u = (uVal || "").toUpperCase().trim();
+    if (u === "METRES" || u === "METERS" || u === "MTR" || u === "KG" || u === "NOS") {
+      return "1";
+    }
+    const l = parseFloat(lVal);
+    const b = parseFloat(bVal);
+    if (!isNaN(l) && !isNaN(b)) {
+      return String(l * b);
+    }
+    return "";
+  };
+
+  const handleLengthChange = (val: string) => {
+    if (!validateDecimal(val)) return;
+    setLength(val);
+    setIsSizeSumManuallyEdited(false);
+    setSizeSum(calculateSizeSum(val, breadth, sizeUnit));
+  };
+
+  const handleBreadthChange = (val: string) => {
+    if (!validateDecimal(val)) return;
+    setBreadth(val);
+    setIsSizeSumManuallyEdited(false);
+    setSizeSum(calculateSizeSum(length, val, sizeUnit));
+  };
+
+  const handleSizeUnitChange = (val: string) => {
+    setSizeUnit(val);
+    const u = (val || "").toUpperCase().trim();
+    if (u === "METRES" || u === "METERS" || u === "MTR" || u === "KG" || u === "NOS") {
+      setSizeSum("1");
+    } else if (!isSizeSumManuallyEdited) {
+      setSizeSum(calculateSizeSum(length, breadth, val));
+    }
+  };
+
+  const handleSizeSumChange = (val: string) => {
+    if (!validateDecimal(val)) return;
+    setIsSizeSumManuallyEdited(true);
+    setSizeSum(val);
+  };
 
   // Dialog Callbacks
   const populateCategoryName = async () => {
@@ -122,6 +151,11 @@ export function AddProductPage() {
     if (!categoryId || !subCategoryId || !rate) return;
     trigger("heavy");
 
+    const effectiveSizeSum =
+      sizeSum.trim() !== ""
+        ? sizeSum.trim()
+        : (calculateSizeSum(length, breadth, sizeUnit) || "1");
+
     const formData = new FormData();
     formData.append("products_code", productCode.trim());
     formData.append("products_catg_id", categoryId);
@@ -132,7 +166,7 @@ export function AddProductPage() {
     formData.append("products_size1", length);
     formData.append("products_size2", breadth);
     formData.append("products_size_unit", sizeUnit);
-    formData.append("products_size_sum", sizeSum);
+    formData.append("products_size_sum", effectiveSizeSum);
     formData.append("products_rate", rate);
     if (selectedFile) {
       formData.append("products_image", selectedFile);
@@ -298,9 +332,7 @@ export function AddProductPage() {
                   type="text"
                   maxLength={6}
                   value={length}
-                  onChange={(e) => {
-                    if (validateDecimal(e.target.value)) setLength(e.target.value);
-                  }}
+                  onChange={(e) => handleLengthChange(e.target.value)}
                   placeholder="e.g. 8"
                   className="bg-background border-border rounded-xl"
                 />
@@ -314,9 +346,7 @@ export function AddProductPage() {
                   type="text"
                   maxLength={6}
                   value={breadth}
-                  onChange={(e) => {
-                    if (validateDecimal(e.target.value)) setBreadth(e.target.value);
-                  }}
+                  onChange={(e) => handleBreadthChange(e.target.value)}
                   placeholder="e.g. 4"
                   className="bg-background border-border rounded-xl"
                 />
@@ -327,13 +357,13 @@ export function AddProductPage() {
               {/* Size Unit */}
               <div className="flex flex-col gap-1.5">
                 <Label className="text-xs font-bold text-text-muted uppercase tracking-wider">Size Unit</Label>
-                <Select value={sizeUnit} onValueChange={setSizeUnit}>
+                <Select value={sizeUnit} onValueChange={handleSizeUnitChange}>
                   <SelectTrigger className="w-full bg-background border-border rounded-xl h-10">
                     <SelectValue placeholder="Select Size Unit" />
                   </SelectTrigger>
                   <SelectContent className="bg-popover border border-border rounded-xl">
                     {sizeUnitOptions.map((opt) => (
-                      <SelectItem key={opt.value} value={opt.value} className="text-xs font-semibold rounded-lg cursor-pointer">
+                       <SelectItem key={opt.value} value={opt.value} className="text-xs font-semibold rounded-lg cursor-pointer">
                         {opt.label}
                       </SelectItem>
                     ))}
@@ -349,9 +379,7 @@ export function AddProductPage() {
                   type="text"
                   maxLength={10}
                   value={sizeSum}
-                  onChange={(e) => {
-                    if (validateDecimal(e.target.value)) setSizeSum(e.target.value);
-                  }}
+                  onChange={(e) => handleSizeSumChange(e.target.value)}
                   placeholder="e.g. 32"
                   className="bg-background border-border rounded-xl"
                 />

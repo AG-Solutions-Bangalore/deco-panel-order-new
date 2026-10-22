@@ -1,10 +1,17 @@
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useWebHaptics } from "web-haptics/react";
+import { useUserRole } from "@/hooks/use-user-role";
 
 export default function MasterFilter() {
   const { pathname } = useLocation();
   const { trigger } = useWebHaptics();
+  const { isUser5 } = useUserRole();
+
+  // For user_type = 5, inside master only products are available
+  if (isUser5) {
+    return null;
+  }
 
   const tabs = [
     { name: "Products", href: "/products" },
