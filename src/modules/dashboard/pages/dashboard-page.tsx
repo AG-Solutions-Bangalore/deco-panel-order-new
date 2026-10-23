@@ -126,31 +126,26 @@ export function DashboardPage() {
           </Link>
         )}
 
-        {/* Orders KPI - visible to user_type 4 and default users (not user 5) */}
-        {!isUser5 && (
-          <Link
-            to="/"
-            className="block focus:outline-none focus:ring-2 focus:ring-success rounded-2xl"
-          >
-            <KPICard
-              title="Total Orders"
-              value={dashboardData?.ordersCount || 0}
-              icon={FileSpreadsheet}
-              colorClass="text-success"
-              bgIconClass="bg-success/10"
-              isLoading={isLoadingData}
-            />
-          </Link>
-        )}
+        {/* Orders KPI - visible to user_type 4, 5 and default users */}
+        <Link
+          to="/"
+          className="block focus:outline-none focus:ring-2 focus:ring-success rounded-2xl"
+        >
+          <KPICard
+            title="Total Orders"
+            value={dashboardData?.ordersCount || 0}
+            icon={FileSpreadsheet}
+            colorClass="text-success"
+            bgIconClass="bg-success/10"
+            isLoading={isLoadingData}
+          />
+        </Link>
       </div>
 
       {/* Main Operations Split Layout Grid */}
-      <div className={cn(
-        "grid gap-6 items-start",
-        isUser5 ? "grid-cols-1" : "grid-cols-1 lg:grid-cols-3"
-      )}>
-        {/* Left Side: Recent Orders Table (hidden for user 5) */}
-        {!isUser5 && fullClose && (
+      <div className="grid gap-6 items-start grid-cols-1 lg:grid-cols-3">
+        {/* Left Side: Recent Orders Table */}
+        {fullClose && (
           <RecentOrdersCard
             orders={filteredOrders}
             searchQuery={searchQuery}
@@ -167,10 +162,7 @@ export function DashboardPage() {
         )}
 
         {/* Right Side Stack */}
-        <div className={cn(
-          "flex flex-col gap-6",
-          isUser5 ? "w-full" : "lg:col-span-1"
-        )}>
+        <div className="flex flex-col gap-6 lg:col-span-1">
           {/* Quick Actions Navigation Matrix */}
 
           {/* Categories Showcase Carousel */}

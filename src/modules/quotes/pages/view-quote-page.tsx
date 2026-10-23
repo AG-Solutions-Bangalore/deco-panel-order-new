@@ -68,9 +68,9 @@ function getItemAmount(item: any): number {
 function calculateTotalQuotationAmount(quoteData: any): number {
   if (!quoteData) return 0;
   const items = quoteData.quotationSub || [];
-  const calculatedSum = items.reduce((sum: number, item: any) => sum + getItemAmount(item), 0);
+  const calculatedSum = items.reduce((sum: number, item: any) => sum + Math.round(getItemAmount(item)), 0);
   if (quoteData.quotationSubSum && Number(quoteData.quotationSubSum) > 0) {
-    return Number(quoteData.quotationSubSum);
+    return Math.round(Number(quoteData.quotationSubSum));
   }
   return calculatedSum;
 }
@@ -95,7 +95,7 @@ export function ViewQuotePage({ quoteId }: ViewQuotePageProps) {
 
     try {
       const q = quoteData.quotation;
-      const message = `Quotation Details:\n\nClient: ${q.full_name || ""}\nQuotation No: ${q.quotation_no || ""}\nDate: ${formatQuotationDate(q.quotation_date)}\nTotal Amount: ₹${calculateTotalQuotationAmount(quoteData).toFixed(2)}\n\nThank you for choosing Deco Panel!`;
+      const message = `Quotation Details:\n\nClient: ${q.full_name || ""}\nQuotation No: ${q.quotation_no || ""}\nDate: ${formatQuotationDate(q.quotation_date)}\nTotal Amount: ₹${Math.round(calculateTotalQuotationAmount(quoteData))}\n\nThank you for choosing Deco Panel!`;
       const encodedMessage = encodeURIComponent(message);
 
       // Determine user agent for device specific link
@@ -305,7 +305,7 @@ export function ViewQuotePage({ quoteId }: ViewQuotePageProps) {
                           ₹{rate.toFixed(2)}
                         </td>
                         <td className="py-3 px-3 text-right font-bold text-text print:text-black">
-                          ₹{amount.toFixed(2)}
+                          ₹{Math.round(amount)}
                         </td>
                       </tr>
                     );
@@ -320,7 +320,7 @@ export function ViewQuotePage({ quoteId }: ViewQuotePageProps) {
                       colSpan={4}
                       className="py-3.5 px-3 text-right text-lg text-primary print:text-black font-black"
                     >
-                      ₹{totalAmount.toFixed(2)}
+                      ₹{Math.round(totalAmount)}
                     </td>
                   </tr>
                 </tbody>
@@ -439,7 +439,7 @@ export function ViewQuotePage({ quoteId }: ViewQuotePageProps) {
                       {rate.toFixed(2)}
                     </td>
                     <td className="p-1.5 border border-black text-right text-xs font-semibold">
-                      {amount.toFixed(2)}
+                      {Math.round(amount)}
                     </td>
                   </tr>
                 );
@@ -453,7 +453,7 @@ export function ViewQuotePage({ quoteId }: ViewQuotePageProps) {
                   className="p-2 border border-black font-bold text-right text-xs"
                   colSpan={3}
                 >
-                  ₹{totalAmount.toFixed(2)}
+                  ₹{Math.round(totalAmount)}
                 </td>
               </tr>
             </tbody>

@@ -34,9 +34,12 @@ export function BottomNav() {
     }
 
     if (isUser5) {
-      // user_type = 5: dashboard, master (only product) + profile
+      // user_type = 5: dashboard, orders, create order, quotes, master (only product) + profile
       return [
         { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard, active: isDashboardActive },
+        { name: "Orders", href: "/", icon: Home, active: isOrdersActive },
+        { name: "Order", href: "/orders/create", icon: PlusCircle, active: isCreateOrderActive },
+        { name: "Quotes", href: "/quotes", icon: FileText, active: isQuotesActive },
         { name: "Master", href: "/products", icon: Package, active: isProductsActive },
         { name: "Profile", href: "/profile", icon: User, active: isProfileActive },
       ];
