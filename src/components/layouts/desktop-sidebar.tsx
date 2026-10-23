@@ -30,20 +30,25 @@ export function DesktopSidebar() {
 
   const menuItems = useMemo(() => {
     if (isUser4) {
-      // user_type = 4: dashboard, orders, create orders, quotes
+      // user_type = 4: dashboard, orders, create orders, quotes, reports (order & quotation report)
       return [
         { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
         { name: "Orders", href: "/", icon: Home },
         { name: "Create Order", href: "/orders/create", icon: PlusCircle },
         { name: "Quotes", href: "/quotes", icon: FileText },
+        { name: "Reports", href: "/order-report", icon: BarChart3 },
       ];
     }
 
     if (isUser5) {
-      // user_type = 5: dashboard, master (inside master only product)
+      // user_type = 5: dashboard, master (inside master only product), orders, create order, quotes, reports (all 3)
       return [
         { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+        { name: "Orders", href: "/", icon: Home },
+        { name: "Create Order", href: "/orders/create", icon: PlusCircle },
+        { name: "Quotes", href: "/quotes", icon: FileText },
         { name: "Master", href: "/products", icon: Package },
+        { name: "Reports", href: "/product-report", icon: BarChart3 },
       ];
     }
 
@@ -140,6 +145,17 @@ export function DesktopSidebar() {
               "/edit-brand",
             ];
             isActive = masterRoutes.some((route) => pathname?.startsWith(route));
+          }
+
+          if (item.name === "Reports") {
+            const reportRoutes = [
+              "/product-report",
+              "/order-report",
+              "/quotation-report",
+              "/order-view-report",
+              "/quotation-view-report",
+            ];
+            isActive = reportRoutes.some((route) => pathname?.startsWith(route));
           }
 
           return (

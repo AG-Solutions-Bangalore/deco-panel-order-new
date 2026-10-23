@@ -30,30 +30,41 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
 
     if (token && !isAuthRoute) {
       if (userTypeId === "5") {
-        // user_type = 5: only dashboard, master (only product), and profile
-        const isMasterProductRoute =
+        // user_type = 5: dashboard, master (only product), orders, create order, quotes, reports (all 3), profile
+        const isUser5AllowedRoute =
+          pathname === "/" ||
+          pathname?.startsWith("/dashboard") ||
+          pathname?.startsWith("/orders") ||
+          pathname?.startsWith("/quotes") ||
           pathname === "/products" ||
           pathname?.startsWith("/products/") ||
           pathname?.startsWith("/add-product") ||
-          pathname?.startsWith("/edit-product");
-        const isCommonRoute =
-          pathname === "/dashboard" ||
-          pathname?.startsWith("/dashboard/") ||
+          pathname?.startsWith("/edit-product") ||
+          pathname?.startsWith("/product-report") ||
+          pathname?.startsWith("/order-report") ||
+          pathname?.startsWith("/quotation-report") ||
+          pathname?.startsWith("/order-view-report") ||
+          pathname?.startsWith("/quotation-view-report") ||
           pathname === "/profile" ||
           pathname?.startsWith("/profile/");
 
-        if (!isMasterProductRoute && !isCommonRoute) {
+        if (!isUser5AllowedRoute) {
           navigate("/dashboard", { replace: true });
           return;
         }
       } else if (userTypeId === "4") {
-        // user_type = 4: dashboard, orders, create orders, quotes, and profile
+        // user_type = 4: dashboard, orders, create orders, quotes, reports (only order and quotation report), profile
         const isUser4AllowedRoute =
           pathname === "/" ||
           pathname?.startsWith("/dashboard") ||
           pathname?.startsWith("/orders") ||
           pathname?.startsWith("/quotes") ||
-          pathname?.startsWith("/profile");
+          pathname?.startsWith("/order-report") ||
+          pathname?.startsWith("/quotation-report") ||
+          pathname?.startsWith("/order-view-report") ||
+          pathname?.startsWith("/quotation-view-report") ||
+          pathname === "/profile" ||
+          pathname?.startsWith("/profile/");
 
         if (!isUser4AllowedRoute) {
           navigate("/", { replace: true });

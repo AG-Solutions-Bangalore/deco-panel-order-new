@@ -15,21 +15,21 @@ export function QuickNavigation({ onLinkClick }: QuickNavigationProps) {
       title: "New Order",
       subtitle: "Place Order",
       icon: PlusCircle,
-      allowed: !isUser5,
+      allowed: true,
     },
     {
       to: "/quotes/create",
       title: "New Quote",
       subtitle: "Est. Quote",
       icon: FileText,
-      allowed: !isUser5,
+      allowed: true,
     },
     {
       to: "/",
       title: "Orders List",
       subtitle: "All Orders",
       icon: ClipboardList,
-      allowed: !isUser5,
+      allowed: true,
     },
     {
       to: "/products",
@@ -39,11 +39,11 @@ export function QuickNavigation({ onLinkClick }: QuickNavigationProps) {
       allowed: !isUser4,
     },
     {
-      to: "/product-report",
+      to: isUser4 ? "/order-report" : "/product-report",
       title: "Reports",
       subtitle: "Analytics feed",
       icon: BarChart3,
-      allowed: !isUser4 && !isUser5,
+      allowed: true,
     },
     {
       to: "/form",
