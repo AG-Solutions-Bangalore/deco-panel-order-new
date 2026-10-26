@@ -186,10 +186,10 @@ export function ViewQuotePage({ quoteId }: ViewQuotePageProps) {
           </div>
         </div>
 
-        <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+        <div className="flex flex-col min-[380px]:flex-row items-stretch min-[380px]:items-center gap-2 w-full sm:w-auto justify-end">
           <Button
             variant="outline"
-            className="cursor-pointer text-xs font-bold gap-1.5 rounded-xl shrink-0"
+            className="cursor-pointer text-xs font-bold gap-1.5 rounded-xl shrink-0 w-full min-[380px]:w-auto"
             onClick={handlePrint}
           >
             <Printer className="size-4" /> Print Quotation
@@ -197,7 +197,7 @@ export function ViewQuotePage({ quoteId }: ViewQuotePageProps) {
 
           <Button
             onClick={handleWhatsAppShare}
-            className="cursor-pointer text-xs font-bold gap-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white shrink-0"
+            className="cursor-pointer text-xs font-bold gap-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white shrink-0 w-full min-[380px]:w-auto"
             disabled={whatsappLoading}
           >
             <PhoneCall className="size-4" />
@@ -208,9 +208,9 @@ export function ViewQuotePage({ quoteId }: ViewQuotePageProps) {
 
       {/* Main Invoice Card */}
       <Card className="quotation-screen-only bg-panel border border-border/80 shadow-md rounded-2xl overflow-hidden pt-0">
-        <CardContent className="p-6 md:p-8 flex flex-col gap-8 print:p-0">
+        <CardContent className="p-3.5 sm:p-6 md:p-8 flex flex-col gap-5 sm:gap-8 print:p-0">
           {/* Top header stats */}
-          <div className="flex flex-col md:flex-row justify-between gap-6 border-b border-border/40 pb-6 print:flex-row print:justify-between print:gap-4 print:pb-4 print:border-black/25">
+          <div className="flex flex-col md:flex-row justify-between gap-4 sm:gap-6 border-b border-border/40 pb-4 sm:pb-6 print:flex-row print:justify-between print:gap-4 print:pb-4 print:border-black/25">
             <div className="flex flex-col gap-1.5">
               <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider print:text-black">
                 Client / Customer
@@ -247,15 +247,28 @@ export function ViewQuotePage({ quoteId }: ViewQuotePageProps) {
               <span>Proposed Items</span>
             </h3>
 
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse text-sm print:text-xs">
+            <div className="w-full">
+              <table className="w-full table-fixed text-left border-collapse text-[10px] leading-tight sm:text-xs md:text-sm print:table-auto print:text-xs">
+                <colgroup>
+                  <col className="w-[28%] sm:w-[36%]" />
+                  <col className="w-[18%] sm:w-[18%]" />
+                  <col className="w-[10%] sm:w-[12%]" />
+                  <col className="w-[19%] sm:w-[15%]" />
+                  <col className="w-[25%] sm:w-[19%]" />
+                </colgroup>
                 <thead>
-                  <tr className="border-b border-border/60 text-[11px] font-bold text-text-muted uppercase tracking-wider print:text-black print:border-black/20">
-                    <th className="py-2.5 px-3">Item Details</th>
-                    <th className="py-2.5 px-3 text-center">Dimensions</th>
-                    <th className="py-2.5 px-3 text-right">Quantity</th>
-                    <th className="py-2.5 px-3 text-right">Rate</th>
-                    <th className="py-2.5 px-3 text-right">Amount</th>
+                  <tr className="border-b border-border/60 text-[8.5px] sm:text-[11px] font-bold text-text-muted uppercase tracking-tight sm:tracking-wider print:text-black print:border-black/20">
+                    <th className="py-2 px-1 sm:py-2.5 sm:px-3 text-left">Item Details</th>
+                    <th className="py-2 px-1 sm:py-2.5 sm:px-3 text-center">
+                      <span className="sm:hidden">Size</span>
+                      <span className="hidden sm:inline">Dimensions</span>
+                    </th>
+                    <th className="py-2 px-0.5 sm:py-2.5 sm:px-3 text-right whitespace-nowrap">
+                      <span className="sm:hidden">Qty</span>
+                      <span className="hidden sm:inline">Quantity</span>
+                    </th>
+                    <th className="py-2 px-0.5 sm:py-2.5 sm:px-3 text-right whitespace-nowrap">Rate</th>
+                    <th className="py-2 px-0.5 sm:py-2.5 sm:px-3 text-right whitespace-nowrap">Amount</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -277,16 +290,16 @@ export function ViewQuotePage({ quoteId }: ViewQuotePageProps) {
                         key={idx}
                         className="border-b border-border/40 hover:bg-muted/10 print:border-black/10"
                       >
-                        <td className="py-3 px-3">
-                          <div className="flex flex-col">
-                            <span className="font-bold text-text print:text-black">
+                        <td className="py-2 px-1 sm:py-3 sm:px-3">
+                          <div className="flex flex-col gap-0.5">
+                            <span className="text-[11px] sm:text-sm font-bold text-text break-words print:text-black">
                               {item.quotation_sub_thickness
                                 ? `${item.quotation_sub_thickness}${item.quotation_sub_unit || ""} — `
                                 : ""}
                               {item.product_category || ""}{" "}
                               {item.product_sub_category || ""}
                             </span>
-                            <span className="text-xs text-text-muted print:text-black mt-0.5">
+                            <span className="text-[9.5px] sm:text-xs text-text-muted break-words print:text-black">
                               {item.quotation_sub_brand || "N/A"}{" "}
                               {item.quotation_sub_design_no
                                 ? `| Design: ${item.quotation_sub_design_no}`
@@ -294,17 +307,17 @@ export function ViewQuotePage({ quoteId }: ViewQuotePageProps) {
                             </span>
                           </div>
                         </td>
-                        <td className="py-3 px-3 text-center font-medium text-text print:text-black">
+                        <td className="py-2 px-1 sm:py-3 sm:px-3 text-center font-medium text-text break-words print:text-black">
                           {sizeLabel}
                         </td>
-                        <td className="py-3 px-3 text-right font-medium text-text print:text-black">
+                        <td className="py-2 px-0.5 sm:py-3 sm:px-3 text-right font-medium text-text whitespace-nowrap print:text-black">
                           {item.quotation_sub_quantity}
                           {/* {item.quotation_sub_unit || "PCS"} */}
                         </td>
-                        <td className="py-3 px-3 text-right font-medium text-text print:text-black">
+                        <td className="py-2 px-0.5 sm:py-3 sm:px-3 text-right font-medium text-text whitespace-nowrap tabular-nums print:text-black">
                           ₹{rate.toFixed(2)}
                         </td>
-                        <td className="py-3 px-3 text-right font-bold text-text print:text-black">
+                        <td className="py-2 px-0.5 sm:py-3 sm:px-3 text-right font-bold text-text whitespace-nowrap tabular-nums print:text-black">
                           ₹{Math.round(amount)}
                         </td>
                       </tr>
@@ -313,12 +326,12 @@ export function ViewQuotePage({ quoteId }: ViewQuotePageProps) {
 
                   {/* Totals row */}
                   <tr className="border-t-2 border-border/60 bg-muted/20 font-bold print:border-black/30 print:bg-transparent">
-                    <td className="py-3.5 px-3 print:text-black">
+                    <td className="py-2.5 px-1 sm:py-3.5 sm:px-3 text-[10px] sm:text-sm leading-tight print:text-black">
                       Subtotal / Proposal Valuation
                     </td>
                     <td
                       colSpan={4}
-                      className="py-3.5 px-3 text-right text-lg text-primary print:text-black font-black"
+                      className="py-2.5 px-0.5 sm:py-3.5 sm:px-3 text-right text-sm sm:text-lg text-primary print:text-black font-black whitespace-nowrap tabular-nums"
                     >
                       ₹{Math.round(totalAmount)}
                     </td>

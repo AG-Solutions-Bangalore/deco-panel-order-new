@@ -178,7 +178,7 @@ export default function QuotesTable({ quotes, type }: QuotesTableProps) {
             trigger("light");
             column.toggleSorting(column.getIsSorted() === "asc");
           }}
-          className="-ml-4 hover:bg-primary/5 hover:text-primary font-bold text-xs uppercase tracking-wider text-text-muted transition-colors duration-200"
+          className="-ml-2 md:-ml-4 hover:bg-primary/5 hover:text-primary font-bold text-[10px] md:text-xs uppercase tracking-wider text-text-muted transition-colors duration-200"
         >
           Quote No
           <ArrowUpDown className="ml-1.5 size-3.5" />
@@ -186,7 +186,7 @@ export default function QuotesTable({ quotes, type }: QuotesTableProps) {
       ),
       cell: ({ row }) => (
         <div className="flex flex-col gap-0.5 py-1">
-          <span className="font-bold text-text text-sm">
+          <span className="font-bold text-text text-xs md:text-sm">
             #{row.getValue("quotation_no")}
           </span>
           <span className="text-text-muted text-xs font-semibold md:hidden">
@@ -204,7 +204,7 @@ export default function QuotesTable({ quotes, type }: QuotesTableProps) {
             trigger("light");
             column.toggleSorting(column.getIsSorted() === "asc");
           }}
-          className="-ml-4 hover:bg-primary/5 hover:text-primary font-bold text-xs uppercase tracking-wider text-text-muted transition-colors duration-200"
+          className="-ml-2 md:-ml-4 hover:bg-primary/5 hover:text-primary font-bold text-[10px] md:text-xs uppercase tracking-wider text-text-muted transition-colors duration-200"
         >
           Date
           <ArrowUpDown className="ml-1.5 size-3.5" />
@@ -225,7 +225,7 @@ export default function QuotesTable({ quotes, type }: QuotesTableProps) {
             trigger("light");
             column.toggleSorting(column.getIsSorted() === "asc");
           }}
-          className="-ml-4 hover:bg-primary/5 hover:text-primary font-bold text-xs uppercase tracking-wider text-text-muted transition-colors duration-200"
+          className="-ml-2 md:-ml-4 hover:bg-primary/5 hover:text-primary font-bold text-[10px] md:text-xs uppercase tracking-wider text-text-muted transition-colors duration-200"
         >
           Customer
           <ArrowUpDown className="ml-1.5 size-3.5" />
@@ -245,7 +245,7 @@ export default function QuotesTable({ quotes, type }: QuotesTableProps) {
 
         return (
           <div className="flex flex-col gap-1.5 py-1">
-            <span className="font-semibold text-text text-sm leading-tight">
+            <span className="font-semibold text-text text-xs md:text-sm leading-tight">
               {row.getValue("full_name")}
             </span>
             <div className="flex items-center md:hidden">
@@ -266,7 +266,7 @@ export default function QuotesTable({ quotes, type }: QuotesTableProps) {
             trigger("light");
             column.toggleSorting(column.getIsSorted() === "asc");
           }}
-          className="-ml-4 hover:bg-primary/5 hover:text-primary font-bold text-xs uppercase tracking-wider text-text-muted transition-colors duration-200"
+          className="-ml-2 md:-ml-4 hover:bg-primary/5 hover:text-primary font-bold text-[10px] md:text-xs uppercase tracking-wider text-text-muted transition-colors duration-200"
         >
           Status
           <ArrowUpDown className="ml-1.5 size-3.5" />
@@ -302,7 +302,7 @@ export default function QuotesTable({ quotes, type }: QuotesTableProps) {
         const quote = row.original;
         
         return (
-          <div className="flex items-center justify-end gap-1.5">
+          <div className="flex items-center justify-end gap-1 md:gap-1.5">
             {/* Proceed to processing (only for Open quotations list) */}
             {type === "open" && (
               <>
@@ -424,7 +424,7 @@ export default function QuotesTable({ quotes, type }: QuotesTableProps) {
                       return (
                         <TableHead
                           key={header.id}
-                          className={`py-3.5 px-4 font-bold align-middle ${isResponsive ? "hidden md:table-cell" : ""}`}
+                          className={`py-2.5 px-2 md:py-3.5 md:px-4 font-bold align-middle ${isResponsive ? "hidden md:table-cell" : ""}`}
                         >
                           {header.isPlaceholder
                             ? null
@@ -457,7 +457,7 @@ export default function QuotesTable({ quotes, type }: QuotesTableProps) {
                         return (
                           <TableCell 
                             key={cell.id} 
-                            className={`py-3 px-4 align-middle ${isResponsive ? "hidden md:table-cell" : ""}`}
+                            className={`py-2.5 px-2 md:py-3 md:px-4 align-middle ${isResponsive ? "hidden md:table-cell" : ""}`}
                           >
                             {flexRender(
                               cell.column.columnDef.cell,

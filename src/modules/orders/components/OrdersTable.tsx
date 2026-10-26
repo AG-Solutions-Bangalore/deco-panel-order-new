@@ -78,7 +78,7 @@ export default function OrdersTable({ orders, isProcessed = false }: OrdersTable
               trigger("light");
               column.toggleSorting(column.getIsSorted() === "asc");
             }}
-            className="-ml-4 hover:bg-primary/5 hover:text-primary font-bold text-xs uppercase tracking-wider text-text-muted transition-colors duration-200"
+            className="-ml-2 md:-ml-4 hover:bg-primary/5 hover:text-primary font-bold text-[10px] md:text-xs uppercase tracking-wider text-text-muted transition-colors duration-200"
           >
             Order No
             <ArrowUpDown className="ml-1.5 size-3.5 shrink-0" />
@@ -87,7 +87,7 @@ export default function OrdersTable({ orders, isProcessed = false }: OrdersTable
       },
       cell: ({ row }) => (
         <div className="flex flex-col gap-0.5 py-1">
-          <span className="font-bold text-text text-sm">
+          <span className="font-bold text-text text-xs md:text-sm">
             #{row.getValue("orders_no")}
           </span>
           <span className="text-text-muted text-xs font-semibold md:hidden">
@@ -106,7 +106,7 @@ export default function OrdersTable({ orders, isProcessed = false }: OrdersTable
               trigger("light");
               column.toggleSorting(column.getIsSorted() === "asc");
             }}
-            className="-ml-4 hover:bg-primary/5 hover:text-primary font-bold text-xs uppercase tracking-wider text-text-muted transition-colors duration-200"
+            className="-ml-2 md:-ml-4 hover:bg-primary/5 hover:text-primary font-bold text-[10px] md:text-xs uppercase tracking-wider text-text-muted transition-colors duration-200"
           >
             Date
             <ArrowUpDown className="ml-1.5 size-3.5 shrink-0" />
@@ -129,7 +129,7 @@ export default function OrdersTable({ orders, isProcessed = false }: OrdersTable
               trigger("light");
               column.toggleSorting(column.getIsSorted() === "asc");
             }}
-            className="-ml-4 hover:bg-primary/5 hover:text-primary font-bold text-xs uppercase tracking-wider text-text-muted transition-colors duration-200"
+            className="-ml-2 md:-ml-4 hover:bg-primary/5 hover:text-primary font-bold text-[10px] md:text-xs uppercase tracking-wider text-text-muted transition-colors duration-200"
           >
             Customer
             <ArrowUpDown className="ml-1.5 size-3.5 shrink-0" />
@@ -150,7 +150,7 @@ export default function OrdersTable({ orders, isProcessed = false }: OrdersTable
 
         return (
           <div className="flex flex-col gap-1.5 py-1">
-            <span className="font-semibold text-text text-sm leading-tight">
+            <span className="font-semibold text-text text-xs md:text-sm leading-tight">
               {row.getValue("full_name")}
             </span>
             <div className="flex items-center md:hidden">
@@ -172,7 +172,7 @@ export default function OrdersTable({ orders, isProcessed = false }: OrdersTable
               trigger("light");
               column.toggleSorting(column.getIsSorted() === "asc");
             }}
-            className="-ml-4 hover:bg-primary/5 hover:text-primary font-bold text-xs uppercase tracking-wider text-text-muted transition-colors duration-200"
+            className="-ml-2 md:-ml-4 hover:bg-primary/5 hover:text-primary font-bold text-[10px] md:text-xs uppercase tracking-wider text-text-muted transition-colors duration-200"
           >
             Status
             <ArrowUpDown className="ml-1.5 size-3.5 shrink-0" />
@@ -208,7 +208,7 @@ export default function OrdersTable({ orders, isProcessed = false }: OrdersTable
       cell: ({ row }) => {
         const order = row.original;
         return (
-          <div className="flex items-center justify-end gap-1.5 pr-2" onClick={(e) => e.stopPropagation()}>
+          <div className="flex items-center justify-end gap-1 md:gap-1.5 pr-0 md:pr-2" onClick={(e) => e.stopPropagation()}>
             {userTypeId !== "1" && !isProcessed && (
               <>
                 <Tooltip>
@@ -396,7 +396,7 @@ export default function OrdersTable({ orders, isProcessed = false }: OrdersTable
                         return (
                           <TableHead
                             key={header.id}
-                            className={`py-3.5 px-4 font-bold align-middle ${isResponsive ? "hidden md:table-cell" : ""}`}
+                            className={`py-2.5 px-2 md:py-3.5 md:px-4 font-bold align-middle ${isResponsive ? "hidden md:table-cell" : ""}`}
                           >
                             {header.isPlaceholder
                               ? null
@@ -429,7 +429,7 @@ export default function OrdersTable({ orders, isProcessed = false }: OrdersTable
                           return (
                             <TableCell 
                               key={cell.id} 
-                              className={`py-3 px-4 align-middle ${isResponsive ? "hidden md:table-cell" : ""}`}
+                              className={`py-2.5 px-2 md:py-3 md:px-4 align-middle ${isResponsive ? "hidden md:table-cell" : ""}`}
                             >
                               {flexRender(
                                 cell.column.columnDef.cell,
