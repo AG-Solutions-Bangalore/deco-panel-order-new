@@ -1,49 +1,60 @@
 import { Link } from "react-router-dom";
 import { PlusCircle, FileText, ClipboardList, Package, BarChart3, Mail } from "lucide-react";
+import { useUserRole } from "@/hooks/use-user-role";
 
 interface QuickNavigationProps {
   onLinkClick: () => void;
 }
 
 export function QuickNavigation({ onLinkClick }: QuickNavigationProps) {
-  const links = [
+  const { isUser4, isUser5 } = useUserRole();
+
+  const allLinks = [
     {
       to: "/orders/create",
       title: "New Order",
       subtitle: "Place Order",
       icon: PlusCircle,
+      allowed: true,
     },
     {
       to: "/quotes/create",
       title: "New Quote",
       subtitle: "Est. Quote",
       icon: FileText,
+      allowed: true,
     },
     {
       to: "/",
       title: "Orders List",
       subtitle: "All Orders",
       icon: ClipboardList,
+      allowed: true,
     },
     {
       to: "/products",
       title: "Master",
-      subtitle: "Catalog list",
+      subtitle: "Products Catalog",
       icon: Package,
+      allowed: !isUser4,
     },
     {
-      to: "/product-report",
+      to: isUser4 ? "/order-report" : "/product-report",
       title: "Reports",
       subtitle: "Analytics feed",
       icon: BarChart3,
+      allowed: true,
     },
     {
       to: "/form",
       title: "Contact Form",
       subtitle: "Feedback",
       icon: Mail,
+      allowed: !isUser4 && !isUser5,
     },
   ];
+
+  const links = allLinks.filter((l) => l.allowed);
 
   return (
     <div className="flex flex-col gap-3 bg-panel border border-border p-5 rounded-2xl shadow-sm">

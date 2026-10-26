@@ -1,11 +1,67 @@
+import { useMemo } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Home, PlusCircle, FileText, User, Users, BarChart3, Package, LayoutDashboard } from "lucide-react";
+import { Home, PlusCircle, FileText, User, Package, LayoutDashboard } from "lucide-react";
 import { useWebHaptics } from "web-haptics/react";
 import { cn } from "@/lib/utils";
+import { useUserRole } from "@/hooks/use-user-role";
 
 export function BottomNav() {
   const pathname = useLocation().pathname;
   const { trigger } = useWebHaptics();
+  const { isUser4, isUser5 } = useUserRole();
+
+  const isDashboardActive = pathname?.startsWith("/dashboard");
+  const isCreateOrderActive = pathname === "/orders/create";
+  const isOrdersActive = pathname === "/";
+  const isQuotesActive = pathname?.startsWith("/quotes");
+  const isProfileActive = pathname?.startsWith("/profile");
+  const isProductsActive =
+    pathname?.startsWith("/products") ||
+    pathname?.startsWith("/categories") ||
+    pathname?.startsWith("/sub-categories") ||
+    pathname?.startsWith("/brand");
+
+  const tabs = useMemo(() => {
+    if (isUser4) {
+      // user_type = 4: dashboard, orders, create orders, quotes + profile
+      return [
+        { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard, active: isDashboardActive },
+        { name: "Orders", href: "/", icon: Home, active: isOrdersActive },
+        { name: "Order", href: "/orders/create", icon: PlusCircle, active: isCreateOrderActive },
+        { name: "Quotes", href: "/quotes", icon: FileText, active: isQuotesActive },
+        { name: "Profile", href: "/profile", icon: User, active: isProfileActive },
+      ];
+    }
+
+    if (isUser5) {
+      // user_type = 5: dashboard, orders, create order, quotes, master (only product) + profile
+      return [
+        { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard, active: isDashboardActive },
+        { name: "Orders", href: "/", icon: Home, active: isOrdersActive },
+        { name: "Order", href: "/orders/create", icon: PlusCircle, active: isCreateOrderActive },
+        { name: "Quotes", href: "/quotes", icon: FileText, active: isQuotesActive },
+        { name: "Master", href: "/products", icon: Package, active: isProductsActive },
+        { name: "Profile", href: "/profile", icon: User, active: isProfileActive },
+      ];
+    }
+
+    // Default for user_type = 2 and 3: unchanged from as of now
+    return [
+      { name: "Orders", href: "/", icon: Home, active: isOrdersActive },
+      { name: "Order", href: "/orders/create", icon: PlusCircle, active: isCreateOrderActive },
+      { name: "Quotes", href: "/quotes", icon: FileText, active: isQuotesActive },
+      { name: "Profile", href: "/profile", icon: User, active: isProfileActive },
+    ];
+  }, [
+    isUser4,
+    isUser5,
+    isDashboardActive,
+    isOrdersActive,
+    isCreateOrderActive,
+    isQuotesActive,
+    isProductsActive,
+    isProfileActive,
+  ]);
 
   if (
     pathname?.startsWith("/login") ||
@@ -18,30 +74,6 @@ export function BottomNav() {
   const handlePress = () => {
     trigger("light");
   };
-
-  const isDashboardActive = pathname?.startsWith("/dashboard");
-  const isCreateOrderActive = pathname === "/orders/create";
-  const isOrdersActive = pathname === "/";
-  const isQuotesActive = pathname?.startsWith("/quotes");
-  const isUsersActive = pathname?.startsWith("/users");
-  const isReportsActive = pathname?.includes("report");
-  const isProfileActive = pathname?.startsWith("/profile");
-  const isProductsActive =
-    pathname?.startsWith("/products") ||
-    pathname?.startsWith("/categories") ||
-    pathname?.startsWith("/sub-categories") ||
-    pathname?.startsWith("/brand");
-
-  const tabs = [
-    // { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard, active: isDashboardActive },
-    { name: "Orders", href: "/", icon: Home, active: isOrdersActive },
-    { name: "Order", href: "/orders/create", icon: PlusCircle, active: isCreateOrderActive },
-    { name: "Quotes", href: "/quotes", icon: FileText, active: isQuotesActive },
-    // { name: "Master", href: "/products", icon: Package, active: isProductsActive },
-    // { name: "Users", href: "/users", icon: Users, active: isUsersActive },
-    // { name: "Reports", href: "/product-report", icon: BarChart3, active: isReportsActive },
-    { name: "Profile", href: "/profile", icon: User, active: isProfileActive },
-  ];
 
   return (
     <>

@@ -7,8 +7,11 @@ import KPICard from "../components/kpi-card";
 import QuickNavigation from "../components/quick-navigation";
 import RecentOrdersCard from "../components/recent-orders-card";
 import CategoryShowcase from "../components/category-showcase";
+import { cn } from "@/lib/utils";
+import { useUserRole } from "@/hooks/use-user-role";
 
 export function DashboardPage() {
+  const { isUser4, isUser5 } = useUserRole();
   const {
     // States
     selectedYear,
@@ -85,38 +88,45 @@ export function DashboardPage() {
       </div>
 
       {/* KPI Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-        {/* Products KPI */}
-        <Link
-          to="/products"
-          className="block focus:outline-none focus:ring-2 focus:ring-primary rounded-2xl"
-        >
-          <KPICard
-            title="Total Products"
-            value={dashboardData?.productsCount || 0}
-            icon={Package}
-            colorClass="text-primary"
-            bgIconClass="bg-primary/10"
-            isLoading={isLoadingData}
-          />
-        </Link>
+      <div className={cn(
+        "grid gap-5",
+        isUser5 ? "grid-cols-1 md:grid-cols-2" : isUser4 ? "grid-cols-1 md:grid-cols-2" : "grid-cols-1 md:grid-cols-3"
+      )}>
+        {/* Products KPI - visible to user_type 5 and default users (not user 4) */}
+        {!isUser4 && (
+          <Link
+            to="/products"
+            className="block focus:outline-none focus:ring-2 focus:ring-primary rounded-2xl"
+          >
+            <KPICard
+              title="Total Products"
+              value={dashboardData?.productsCount || 0}
+              icon={Package}
+              colorClass="text-primary"
+              bgIconClass="bg-primary/10"
+              isLoading={isLoadingData}
+            />
+          </Link>
+        )}
 
-        {/* Clients KPI */}
-        <Link
-          to="/users"
-          className="block focus:outline-none focus:ring-2 focus:ring-info rounded-2xl"
-        >
-          <KPICard
-            title="Active Clients"
-            value={dashboardData?.usersCount || 0}
-            icon={Users}
-            colorClass="text-info"
-            bgIconClass="bg-info/10"
-            isLoading={isLoadingData}
-          />
-        </Link>
+        {/* Clients KPI - only visible to full admin / user 2, 3 */}
+        {!isUser4 && !isUser5 && (
+          <Link
+            to="/users"
+            className="block focus:outline-none focus:ring-2 focus:ring-info rounded-2xl"
+          >
+            <KPICard
+              title="Active Clients"
+              value={dashboardData?.usersCount || 0}
+              icon={Users}
+              colorClass="text-info"
+              bgIconClass="bg-info/10"
+              isLoading={isLoadingData}
+            />
+          </Link>
+        )}
 
-        {/* Orders KPI */}
+        {/* Orders KPI - visible to user_type 4, 5 and default users */}
         <Link
           to="/"
           className="block focus:outline-none focus:ring-2 focus:ring-success rounded-2xl"
@@ -133,7 +143,7 @@ export function DashboardPage() {
       </div>
 
       {/* Main Operations Split Layout Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+      <div className="grid gap-6 items-start grid-cols-1 lg:grid-cols-3">
         {/* Left Side: Recent Orders Table */}
         {fullClose && (
           <RecentOrdersCard

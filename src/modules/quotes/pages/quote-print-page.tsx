@@ -32,9 +32,9 @@ function getItemAmount(item: any): number {
 function calculateTotalQuotationAmount(quoteData: any): number {
   if (!quoteData) return 0;
   const items = quoteData.quotationSub || [];
-  const calculatedSum = items.reduce((sum: number, item: any) => sum + getItemAmount(item), 0);
+  const calculatedSum = items.reduce((sum: number, item: any) => sum + Math.round(getItemAmount(item)), 0);
   if (quoteData.quotationSubSum && Number(quoteData.quotationSubSum) > 0) {
-    return Number(quoteData.quotationSubSum);
+    return Math.round(Number(quoteData.quotationSubSum));
   }
   return calculatedSum;
 }
@@ -201,7 +201,7 @@ export function QuotePrintPage({ quoteId }: { quoteId: string }) {
                       Rs. {rate.toFixed(2)}
                     </td>
                     <td className="px-0.5 py-2 text-right font-bold tabular-nums whitespace-nowrap sm:px-2 sm:py-2.5">
-                      Rs. {amount.toFixed(2)}
+                      Rs. {Math.round(amount)}
                     </td>
                   </tr>
                 );
@@ -215,7 +215,7 @@ export function QuotePrintPage({ quoteId }: { quoteId: string }) {
                   colSpan={4}
                   className="px-0.5 py-2.5 text-right text-sm font-black tabular-nums whitespace-nowrap sm:px-2 sm:py-3 sm:text-base"
                 >
-                  Rs. {totalAmount.toFixed(2)}
+                  Rs. {Math.round(totalAmount)}
                 </td>
               </tr>
             </tbody>
