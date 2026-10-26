@@ -186,10 +186,10 @@ export function ViewQuotePage({ quoteId }: ViewQuotePageProps) {
           </div>
         </div>
 
-        <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+        <div className="flex flex-col min-[380px]:flex-row items-stretch min-[380px]:items-center gap-2 w-full sm:w-auto justify-end">
           <Button
             variant="outline"
-            className="cursor-pointer text-xs font-bold gap-1.5 rounded-xl shrink-0"
+            className="cursor-pointer text-xs font-bold gap-1.5 rounded-xl shrink-0 w-full min-[380px]:w-auto"
             onClick={handlePrint}
           >
             <Printer className="size-4" /> Print Quotation
@@ -197,7 +197,7 @@ export function ViewQuotePage({ quoteId }: ViewQuotePageProps) {
 
           <Button
             onClick={handleWhatsAppShare}
-            className="cursor-pointer text-xs font-bold gap-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white shrink-0"
+            className="cursor-pointer text-xs font-bold gap-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white shrink-0 w-full min-[380px]:w-auto"
             disabled={whatsappLoading}
           >
             <PhoneCall className="size-4" />

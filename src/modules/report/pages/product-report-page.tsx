@@ -156,7 +156,7 @@ export function ProductReportPage() {
           </div>
         </div>
 
-          <div className="overflow-x-auto relative">
+          <div className="relative hidden md:block overflow-x-auto scrollbar-thin">
             <Table>
             <TableHeader className="bg-muted/40">
               <TableRow className="hover:bg-transparent">
@@ -312,6 +312,97 @@ export function ProductReportPage() {
               )}
             </TableBody>
             </Table>
+          </div>
+
+          {/* Mobile card view */}
+          <div className="md:hidden">
+            {loading ? (
+              <div className="flex h-48 items-center justify-center gap-2 text-muted-foreground">
+                <Spinner className="size-5 animate-spin text-primary" />
+                <span className="text-sm font-semibold">Loading product report...</span>
+              </div>
+            ) : sortedProducts.length ? (
+              <div className="flex flex-col gap-3 p-3">
+                {sortedProducts.map((product, index) => {
+                  const isActive = product.product_status === "Active";
+
+                  return (
+                    <div
+                      key={product.id || index}
+                      className="rounded-xl border border-border/60 bg-background/50 p-3"
+                    >
+                      <div className="mb-2 flex items-start justify-between gap-3 border-b border-border/40 pb-2">
+                        <div className="flex min-w-0 flex-col">
+                          <span className="text-[9px] font-bold uppercase tracking-wider text-primary">
+                            Product #{index + 1}
+                          </span>
+                          <span className="text-xs font-bold text-text break-words">
+                            {product.product_category || "-"}
+                          </span>
+                        </div>
+                        <span
+                          className={`inline-flex shrink-0 items-center rounded-full border px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider ${
+                            isActive
+                              ? "border-emerald-500/25 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                              : "border-border bg-muted text-muted-foreground"
+                          }`}
+                        >
+                          {product.product_status || "Unknown"}
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-x-3 gap-y-2">
+                        <div className="flex min-w-0 flex-col gap-0.5">
+                          <span className="text-[9px] font-bold uppercase tracking-wide text-text-muted">
+                            Sub Category
+                          </span>
+                          <span className="text-[11px] font-semibold text-text break-words">
+                            {product.product_sub_category || "-"}
+                          </span>
+                        </div>
+                        <div className="flex min-w-0 flex-col gap-0.5">
+                          <span className="text-[9px] font-bold uppercase tracking-wide text-text-muted">
+                            Brand
+                          </span>
+                          <span className="text-[11px] font-semibold text-text break-words">
+                            {product.products_brand || "-"}
+                          </span>
+                        </div>
+                        <div className="flex min-w-0 flex-col gap-0.5">
+                          <span className="text-[9px] font-bold uppercase tracking-wide text-text-muted">
+                            Thickness
+                          </span>
+                          <span className="text-[11px] font-semibold text-text break-words">
+                            {formatProductThickness(product)}
+                          </span>
+                        </div>
+                        <div className="flex min-w-0 flex-col gap-0.5">
+                          <span className="text-[9px] font-bold uppercase tracking-wide text-text-muted">
+                            Size
+                          </span>
+                          <span className="text-[11px] font-semibold text-text break-words">
+                            {formatProductSize(product)}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="mt-2 flex items-center justify-between border-t border-border/40 pt-2">
+                        <span className="text-[9px] font-bold uppercase tracking-wide text-text-muted">
+                          Rate
+                        </span>
+                        <span className="text-sm font-black tabular-nums text-text">
+                          ₹{Number(product.products_rate || 0).toFixed(2)}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <p className="p-6 text-center text-sm font-semibold text-muted-foreground">
+                Sorry, there is no matching data to display.
+              </p>
+            )}
           </div>
         </div>
       </div>

@@ -220,18 +220,18 @@ export function ProductsListPage() {
                 <Table>
                   <TableHeader className="bg-muted/40 border-b border-border/60">
                     <TableRow className="hover:bg-transparent">
-                      <TableHead className="py-3.5 px-4 font-bold text-xs uppercase tracking-wider text-text-muted w-20">Image</TableHead>
-                      <TableHead className="py-3.5 px-4 font-bold text-xs uppercase tracking-wider text-text-muted">
+                      <TableHead className="py-2.5 px-2 md:py-3.5 md:px-4 font-bold text-[10px] md:text-xs uppercase tracking-wider text-text-muted w-14 md:w-20">Image</TableHead>
+                      <TableHead className="py-2.5 px-2 md:py-3.5 md:px-4 font-bold text-[10px] md:text-xs uppercase tracking-wider text-text-muted">
                         <Button
                           variant="ghost"
                           onClick={() => handleSort("product_category")}
-                          className="-ml-4 hover:bg-primary/5 hover:text-primary font-bold text-xs uppercase tracking-wider text-text-muted transition-colors duration-200"
+                          className="-ml-2 md:-ml-4 px-2 md:px-4 hover:bg-primary/5 hover:text-primary font-bold text-[10px] md:text-xs uppercase tracking-wider text-text-muted transition-colors duration-200"
                         >
                           Category
                           <ArrowUpDown className="ml-1.5 size-3.5 shrink-0" />
                         </Button>
                       </TableHead>
-                      <TableHead className="py-3.5 px-4 font-bold text-xs uppercase tracking-wider text-text-muted">
+                      <TableHead className="hidden md:table-cell py-3.5 px-4 font-bold text-xs uppercase tracking-wider text-text-muted">
                         <Button
                           variant="ghost"
                           onClick={() => handleSort("product_sub_category")}
@@ -241,7 +241,7 @@ export function ProductsListPage() {
                           <ArrowUpDown className="ml-1.5 size-3.5 shrink-0" />
                         </Button>
                       </TableHead>
-                      <TableHead className="py-3.5 px-4 font-bold text-xs uppercase tracking-wider text-text-muted">
+                      <TableHead className="hidden md:table-cell py-3.5 px-4 font-bold text-xs uppercase tracking-wider text-text-muted">
                         <Button
                           variant="ghost"
                           onClick={() => handleSort("products_brand")}
@@ -251,20 +251,20 @@ export function ProductsListPage() {
                           <ArrowUpDown className="ml-1.5 size-3.5 shrink-0" />
                         </Button>
                       </TableHead>
-                      <TableHead className="py-3.5 px-4 font-bold text-xs uppercase tracking-wider text-text-muted w-24">Thickness</TableHead>
-                      <TableHead className="py-3.5 px-4 font-bold text-xs uppercase tracking-wider text-text-muted w-24">Size</TableHead>
-                      <TableHead className="py-3.5 px-4 font-bold text-xs uppercase tracking-wider text-text-muted w-24">
+                      <TableHead className="hidden md:table-cell py-3.5 px-4 font-bold text-xs uppercase tracking-wider text-text-muted w-24">Thickness</TableHead>
+                      <TableHead className="hidden md:table-cell py-3.5 px-4 font-bold text-xs uppercase tracking-wider text-text-muted w-24">Size</TableHead>
+                      <TableHead className="py-2.5 px-2 md:py-3.5 md:px-4 font-bold text-[10px] md:text-xs uppercase tracking-wider text-text-muted text-right whitespace-nowrap">
                         <Button
                           variant="ghost"
                           onClick={() => handleSort("products_rate")}
-                          className="-ml-4 hover:bg-primary/5 hover:text-primary font-bold text-xs uppercase tracking-wider text-text-muted transition-colors duration-200"
+                          className="-ml-2 md:-ml-4 px-2 md:px-4 hover:bg-primary/5 hover:text-primary font-bold text-[10px] md:text-xs uppercase tracking-wider text-text-muted transition-colors duration-200"
                         >
                           Rate
                           <ArrowUpDown className="ml-1.5 size-3.5 shrink-0" />
                         </Button>
                       </TableHead>
-                      <TableHead className="py-3.5 px-4 font-bold text-xs uppercase tracking-wider text-text-muted w-28">Status</TableHead>
-                      <TableHead className="py-3.5 px-4 font-bold text-xs uppercase tracking-wider text-text-muted text-right pr-6 w-24">Actions</TableHead>
+                      <TableHead className="hidden md:table-cell py-3.5 px-4 font-bold text-xs uppercase tracking-wider text-text-muted w-28">Status</TableHead>
+                      <TableHead className="py-2.5 px-2 md:py-3.5 md:px-4 text-right font-bold text-[10px] md:text-xs uppercase tracking-wider text-text-muted pr-3 md:pr-6 w-16 md:w-24">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -277,33 +277,53 @@ export function ProductsListPage() {
 
                         return (
                           <TableRow key={product.id} className="border-b border-border/40 hover:bg-primary/[0.03] dark:hover:bg-primary/[0.08] transition-all duration-300 ease-in-out">
-                            <TableCell className="py-3.5 px-4">
+                            <TableCell className="py-2.5 px-2 md:py-3.5 md:px-4">
                               <img
                                 src={imageUrl}
                                 alt="Product"
-                                className="size-11 rounded-full object-cover border border-border/50 bg-background shadow-xs shrink-0"
+                                className="size-9 md:size-11 rounded-full object-cover border border-border/50 bg-background shadow-xs shrink-0"
                                 loading="lazy"
                               />
                             </TableCell>
-                            <TableCell className="py-3.5 px-4 font-semibold text-text text-sm">
-                              {product.product_category}
+                            <TableCell className="py-2.5 px-2 md:py-3.5 md:px-4 font-semibold text-text">
+                              <div className="flex flex-col gap-0.5">
+                                <span className="text-xs md:text-sm">{product.product_category}</span>
+                                <span className="text-[10px] font-medium text-text-muted md:hidden">
+                                  {product.product_sub_category}
+                                </span>
+                                <span className="text-[10px] font-medium text-text-muted md:hidden">
+                                  {product.products_brand}
+                                </span>
+                                <span className="text-[10px] font-medium text-text-muted md:hidden">
+                                  {product.products_thickness} {product.products_unit} · {formatProductSize(product)}
+                                </span>
+                                <span className="md:hidden mt-0.5">
+                                  <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider border ${
+                                    isActive
+                                      ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
+                                      : "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20"
+                                  }`}>
+                                    {product.product_status}
+                                  </span>
+                                </span>
+                              </div>
                             </TableCell>
-                            <TableCell className="py-3.5 px-4 font-semibold text-text text-sm">
+                            <TableCell className="hidden md:table-cell py-3.5 px-4 font-semibold text-text text-sm">
                               {product.product_sub_category}
                             </TableCell>
-                            <TableCell className="py-3.5 px-4 font-semibold text-text text-sm">
+                            <TableCell className="hidden md:table-cell py-3.5 px-4 font-semibold text-text text-sm">
                               {product.products_brand}
                             </TableCell>
-                            <TableCell className="py-3.5 px-4 text-text font-semibold text-sm">
+                            <TableCell className="hidden md:table-cell py-3.5 px-4 text-text font-semibold text-sm">
                               {product.products_thickness} {product.products_unit}
                             </TableCell>
-                            <TableCell className="py-3.5 px-4 text-text font-semibold text-sm whitespace-nowrap">
+                            <TableCell className="hidden md:table-cell py-3.5 px-4 text-text font-semibold text-sm whitespace-nowrap">
                               {formatProductSize(product)}
                             </TableCell>
-                            <TableCell className="py-3.5 px-4 text-text font-bold text-sm font-mono">
+                            <TableCell className="py-2.5 px-2 md:py-3.5 md:px-4 text-right md:text-left text-text font-bold text-xs md:text-sm font-mono whitespace-nowrap">
                               ₹{Number(product.products_rate).toFixed(2)}
                             </TableCell>
-                            <TableCell className="py-3.5 px-4">
+                            <TableCell className="hidden md:table-cell py-3.5 px-4">
                               <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider border ${
                                 isActive
                                   ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
@@ -312,7 +332,7 @@ export function ProductsListPage() {
                                 {product.product_status}
                               </span>
                             </TableCell>
-                            <TableCell className="py-3.5 px-4 text-right pr-6">
+                            <TableCell className="py-2.5 px-2 md:py-3.5 md:px-4 text-right pr-3 md:pr-6">
                               <div className="flex items-center justify-end gap-1.5">
                                 <Tooltip>
                                   <TooltipTrigger asChild>

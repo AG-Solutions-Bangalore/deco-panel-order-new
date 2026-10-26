@@ -131,11 +131,11 @@ export function RecentOrdersCard({
                 <Table>
                   <TableHeader className="bg-muted/40 border-b border-border/60">
                     <TableRow className="hover:bg-transparent">
-                      <TableHead className="py-3 px-4 font-bold text-xs uppercase tracking-wider text-text-muted">Order No</TableHead>
-                      <TableHead className="py-3 px-4 font-bold text-xs uppercase tracking-wider text-text-muted">Date</TableHead>
-                      <TableHead className="py-3 px-4 font-bold text-xs uppercase tracking-wider text-text-muted">Client Name</TableHead>
-                      <TableHead className="py-3 px-4 font-bold text-xs uppercase tracking-wider text-text-muted">Status</TableHead>
-                      <TableHead className="py-3 px-4 font-bold text-xs uppercase tracking-wider text-text-muted text-right pr-6">Action</TableHead>
+                      <TableHead className="py-3 px-2 md:px-4 font-bold text-[10px] md:text-xs uppercase tracking-wider text-text-muted">Order No</TableHead>
+                      <TableHead className="hidden md:table-cell py-3 px-4 font-bold text-xs uppercase tracking-wider text-text-muted">Date</TableHead>
+                      <TableHead className="py-3 px-2 md:px-4 font-bold text-[10px] md:text-xs uppercase tracking-wider text-text-muted">Client Name</TableHead>
+                      <TableHead className="hidden md:table-cell py-3 px-4 font-bold text-xs uppercase tracking-wider text-text-muted">Status</TableHead>
+                      <TableHead className="py-3 px-2 md:px-4 font-bold text-[10px] md:text-xs uppercase tracking-wider text-text-muted text-right pr-3 md:pr-6">Action</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -144,25 +144,37 @@ export function RecentOrdersCard({
                         key={order.id} 
                         className="border-b border-border/40 hover:bg-primary/[0.02] dark:hover:bg-primary/[0.06] transition-colors"
                       >
-                        <td className="py-3 px-4 font-mono text-sm font-bold text-text">
-                          #{order.orders_no}
+                        <td className="py-3 px-2 md:px-4 font-mono text-xs md:text-sm font-bold text-text">
+                          <div className="flex flex-col gap-0.5">
+                            <span>#{order.orders_no}</span>
+                            <span className="md:hidden text-[10px] font-semibold text-text-muted">
+                              {formatOrderDate(order.orders_date)}
+                            </span>
+                          </div>
                         </td>
-                        <td className="py-3 px-4 font-mono text-xs font-semibold text-text-muted">
+                        <td className="hidden md:table-cell py-3 px-4 font-mono text-xs font-semibold text-text-muted">
                           {formatOrderDate(order.orders_date)}
                         </td>
-                        <td className="py-3 px-4 text-sm font-semibold text-text">
-                          {order.full_name}
+                        <td className="py-3 px-2 md:px-4 text-xs md:text-sm font-semibold text-text">
+                          <div className="flex flex-col gap-1">
+                            <span className="break-words">{order.full_name}</span>
+                            <span className="md:hidden">
+                              <span className="inline-flex items-center rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                                {order.orders_status || "Order"}
+                              </span>
+                            </span>
+                          </div>
                         </td>
-                        <td className="py-3 px-4">
+                        <td className="hidden md:table-cell py-3 px-4">
                           <span className="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
                             {order.orders_status || "Order"}
                           </span>
                         </td>
-                        <td className="py-3 px-4 text-right pr-6">
+                        <td className="py-3 px-2 md:px-4 text-right pr-3 md:pr-6">
                           <Button
                             variant="ghost"
                             size="icon-sm"
-                            className="h-7 w-7 text-text-muted hover:text-primary hover:bg-primary/5 rounded-lg transition-colors cursor-pointer"
+                            className="h-8 w-8 text-text-muted hover:text-primary hover:bg-primary/5 rounded-lg transition-colors cursor-pointer"
                             asChild
                           >
                             <Link to={`/orders/${order.id}`} onClick={onActionClick}>

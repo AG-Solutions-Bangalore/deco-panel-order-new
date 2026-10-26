@@ -173,7 +173,7 @@ export function UsersTable({
             <TableRow className="hover:bg-transparent">
               <TableHead
                 onClick={() => handleSort("sl_no")}
-                className="w-24 px-4 py-3.5 font-bold text-xs uppercase tracking-wider text-muted-foreground cursor-pointer select-none hover:text-foreground transition-colors"
+                className="hidden md:table-cell w-24 px-4 py-3.5 font-bold text-xs uppercase tracking-wider text-muted-foreground cursor-pointer select-none hover:text-foreground transition-colors"
               >
                 <div className="flex items-center gap-1">
                   SL No
@@ -186,7 +186,7 @@ export function UsersTable({
               </TableHead>
               <TableHead
                 onClick={() => handleSort("full_name")}
-                className="px-4 py-3.5 font-bold text-xs uppercase tracking-wider text-muted-foreground cursor-pointer select-none hover:text-foreground transition-colors"
+                className="px-2 md:px-4 py-3.5 font-bold text-[10px] md:text-xs uppercase tracking-wider text-muted-foreground cursor-pointer select-none hover:text-foreground transition-colors"
               >
                 <div className="flex items-center gap-1">
                   Full Name
@@ -199,7 +199,7 @@ export function UsersTable({
               </TableHead>
               <TableHead
                 onClick={() => handleSort("email")}
-                className="px-4 py-3.5 font-bold text-xs uppercase tracking-wider text-muted-foreground cursor-pointer select-none hover:text-foreground transition-colors"
+                className="hidden md:table-cell px-4 py-3.5 font-bold text-xs uppercase tracking-wider text-muted-foreground cursor-pointer select-none hover:text-foreground transition-colors"
               >
                 <div className="flex items-center gap-1">
                   Email
@@ -212,7 +212,7 @@ export function UsersTable({
               </TableHead>
               <TableHead
                 onClick={() => handleSort("mobile")}
-                className="px-4 py-3.5 font-bold text-xs uppercase tracking-wider text-muted-foreground cursor-pointer select-none hover:text-foreground transition-colors"
+                className="px-2 md:px-4 py-3.5 font-bold text-[10px] md:text-xs uppercase tracking-wider text-muted-foreground cursor-pointer select-none hover:text-foreground transition-colors"
               >
                 <div className="flex items-center gap-1">
                   Mobile
@@ -225,7 +225,7 @@ export function UsersTable({
               </TableHead>
               <TableHead
                 onClick={() => handleSort("user_status")}
-                className="px-4 py-3.5 font-bold text-xs uppercase tracking-wider text-muted-foreground cursor-pointer select-none hover:text-foreground transition-colors"
+                className="px-2 md:px-4 py-3.5 font-bold text-[10px] md:text-xs uppercase tracking-wider text-muted-foreground cursor-pointer select-none hover:text-foreground transition-colors"
               >
                 <div className="flex items-center gap-1">
                   Status
@@ -236,7 +236,7 @@ export function UsersTable({
                   )}
                 </div>
               </TableHead>
-              <TableHead className="w-24 px-4 py-3.5 text-right font-bold text-xs uppercase tracking-wider text-muted-foreground">
+              <TableHead className="w-16 md:w-24 px-2 md:px-4 py-3.5 text-right font-bold text-[10px] md:text-xs uppercase tracking-wider text-muted-foreground">
                 Action
               </TableHead>
             </TableRow>
@@ -258,22 +258,27 @@ export function UsersTable({
 
                 return (
                   <TableRow key={user.id} className="border-b border-border/40">
-                    <TableCell className="px-4 py-3 font-semibold text-muted-foreground">
+                    <TableCell className="hidden md:table-cell px-4 py-3 font-semibold text-muted-foreground">
                       {index + 1}
                     </TableCell>
-                    <TableCell className="px-4 py-3 font-bold text-foreground">
-                      {user.full_name || "-"}
+                    <TableCell className="px-2 md:px-4 py-3 font-bold text-foreground">
+                      <div className="flex flex-col gap-0.5">
+                        <span className="text-xs md:text-sm">{user.full_name || "-"}</span>
+                        <span className="text-[10px] font-medium text-muted-foreground break-all md:hidden">
+                          {user.email || "-"}
+                        </span>
+                      </div>
                     </TableCell>
-                    <TableCell className="px-4 py-3 text-muted-foreground">
+                    <TableCell className="hidden md:table-cell px-4 py-3 text-muted-foreground">
                       {user.email || "-"}
                     </TableCell>
-                    <TableCell className="px-4 py-3 text-muted-foreground">
+                    <TableCell className="px-2 md:px-4 py-3 text-xs md:text-sm text-muted-foreground">
                       {user.mobile || "-"}
                     </TableCell>
-                    <TableCell className="px-4 py-3">
+                    <TableCell className="px-2 md:px-4 py-3">
                       <StatusPill status={user.user_status} />
                     </TableCell>
-                    <TableCell className="px-4 py-3">
+                    <TableCell className="px-2 md:px-4 py-3">
                       <div className="flex justify-end">
                         <StatusToggleSwitch
                           checked={isActive}

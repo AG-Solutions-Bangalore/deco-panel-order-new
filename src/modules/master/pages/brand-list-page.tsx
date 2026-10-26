@@ -110,19 +110,19 @@ export function BrandListPage() {
                 <Table>
                   <TableHeader className="bg-muted/40 border-b border-border/60">
                     <TableRow className="hover:bg-transparent">
-                      <TableHead className="py-3.5 px-4 font-bold text-xs uppercase tracking-wider text-text-muted w-20">Logo</TableHead>
-                      <TableHead className="py-3.5 px-4 font-bold text-xs uppercase tracking-wider text-text-muted">
+                      <TableHead className="py-2.5 px-2 md:py-3.5 md:px-4 font-bold text-[10px] md:text-xs uppercase tracking-wider text-text-muted w-14 md:w-20">Logo</TableHead>
+                      <TableHead className="py-2.5 px-2 md:py-3.5 md:px-4 font-bold text-[10px] md:text-xs uppercase tracking-wider text-text-muted">
                         <Button
                           variant="ghost"
                           onClick={() => handleSort("brands_name")}
-                          className="-ml-4 hover:bg-primary/5 hover:text-primary font-bold text-xs uppercase tracking-wider text-text-muted transition-colors duration-200"
+                          className="-ml-2 md:-ml-4 px-2 md:px-4 hover:bg-primary/5 hover:text-primary font-bold text-[10px] md:text-xs uppercase tracking-wider text-text-muted transition-colors duration-200"
                         >
                           Brand Name
                           <ArrowUpDown className="ml-1.5 size-3.5 shrink-0" />
                         </Button>
                       </TableHead>
-                      <TableHead className="py-3.5 px-4 font-bold text-xs uppercase tracking-wider text-text-muted w-32">Status</TableHead>
-                      <TableHead className="py-3.5 px-4 font-bold text-xs uppercase tracking-wider text-text-muted text-right pr-6 w-28">Actions</TableHead>
+                      <TableHead className="hidden md:table-cell py-3.5 px-4 font-bold text-xs uppercase tracking-wider text-text-muted w-32">Status</TableHead>
+                      <TableHead className="py-2.5 px-2 md:py-3.5 md:px-4 text-right font-bold text-[10px] md:text-xs uppercase tracking-wider text-text-muted pr-3 md:pr-6 w-16 md:w-28">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -137,18 +137,29 @@ export function BrandListPage() {
 
                         return (
                           <TableRow key={hasBrandId ? String(brandId) : brand.brands_name} className="border-b border-border/40 hover:bg-primary/[0.03] dark:hover:bg-primary/[0.08] transition-all duration-300 ease-in-out">
-                            <TableCell className="py-3.5 px-4">
+                            <TableCell className="py-2.5 px-2 md:py-3.5 md:px-4">
                               <img
                                 src={imageUrl}
                                 alt={brand.brands_name}
-                                className="size-11 rounded-full object-cover border border-border/50 bg-background shadow-xs shrink-0"
+                                className="size-9 md:size-11 rounded-full object-cover border border-border/50 bg-background shadow-xs shrink-0"
                                 loading="lazy"
                               />
                             </TableCell>
-                            <TableCell className="py-3.5 px-4 font-semibold text-text text-sm">
-                              {brand.brands_name}
+                            <TableCell className="py-2.5 px-2 md:py-3.5 md:px-4 font-semibold text-text">
+                              <div className="flex flex-col gap-0.5">
+                                <span className="text-xs md:text-sm">{brand.brands_name}</span>
+                                <span className="md:hidden mt-0.5">
+                                  <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider border ${
+                                    isActive
+                                      ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
+                                      : "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20"
+                                  }`}>
+                                    {brand.brands_status}
+                                  </span>
+                                </span>
+                              </div>
                             </TableCell>
-                            <TableCell className="py-3.5 px-4">
+                            <TableCell className="hidden md:table-cell py-3.5 px-4">
                               <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider border ${
                                 isActive
                                   ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
@@ -157,7 +168,7 @@ export function BrandListPage() {
                                 {brand.brands_status}
                               </span>
                             </TableCell>
-                            <TableCell className="py-3.5 px-4 text-right pr-6">
+                            <TableCell className="py-2.5 px-2 md:py-3.5 md:px-4 text-right pr-3 md:pr-6">
                               <div className="flex items-center justify-end gap-1.5">
                                 <Tooltip>
                                   <TooltipTrigger asChild>

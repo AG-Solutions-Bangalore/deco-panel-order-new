@@ -12,6 +12,7 @@ import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { useViewReport } from "../hooks/use-view-report";
 import { formatReportCell } from "../utils/report-utils";
+import { ReportMobileCards } from "../components/ReportMobileCards";
 
 export function QuotationViewReportPage() {
   const { trigger } = useWebHaptics();
@@ -35,12 +36,18 @@ export function QuotationViewReportPage() {
 
   const handleSavePDF = async () => {
     trigger("medium");
-    const element = tableRef.current;
-    if (!element) return;
+    if (!tableRef.current) return;
 
     try {
       setPdfGenerating(true);
       toast.loading("Generating PDF report...", { id: "pdf-toast" });
+
+      await new Promise<void>((resolve) =>
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+      );
+
+      const element = tableRef.current;
+      if (!element) return;
 
       const canvas = await html2canvas(element, {
         scale: 2,
@@ -152,16 +159,24 @@ export function QuotationViewReportPage() {
         </Button>
       </div>
 
-      <div ref={tableRef} className="bg-panel border border-border/80 shadow-sm overflow-hidden rounded-2xl">
-        <div className="p-4 md:p-6 border-b border-border/60 flex justify-between items-center">
-          <h3 className="font-bold text-lg text-text">Detailed Quotations</h3>
-          <span className="text-xs font-semibold text-text-muted">
-            Total {sortedRows.length} Rows
-          </span>
-        </div>
+      <div className="bg-panel border border-border/80 shadow-sm overflow-hidden rounded-2xl">
+        <div
+          ref={tableRef}
+          className={
+            pdfGenerating
+              ? "fixed left-0 top-0 -z-50 w-[1200px] border border-border/80 bg-panel"
+              : "hidden md:block"
+          }
+        >
+          <div className="p-4 md:p-6 border-b border-border/60 flex justify-between items-center">
+            <h3 className="font-bold text-lg text-text">Detailed Quotations</h3>
+            <span className="text-xs font-semibold text-text-muted">
+              Total {sortedRows.length} Rows
+            </span>
+          </div>
 
-        <div className="overflow-x-auto relative">
-          <Table>
+          <div className="overflow-x-auto relative">
+            <Table>
             <TableHeader className="bg-muted/40">
               <TableRow className="hover:bg-transparent">
                 {headers.map((header, idx) => (
@@ -221,12 +236,40 @@ export function QuotationViewReportPage() {
                 </TableRow>
               )}
             </TableBody>
-          </Table>
+            </Table>
+          </div>
+        </div>
+
+        {/* Mobile card view */}
+        <div className={pdfGenerating ? "hidden" : "md:hidden"}>
+          <div className="p-4 border-b border-border/60 flex justify-between items-center">
+            <h3 className="font-bold text-base text-text">Detailed Quotations</h3>
+            <span className="text-[10px] font-semibold text-text-muted">
+              Total {sortedRows.length} Rows
+            </span>
+          </div>
+
+          {loading ? (
+            <div className="flex h-48 items-center justify-center gap-2 text-muted-foreground">
+              <Spinner className="size-5 animate-spin text-primary" />
+              <span className="text-sm font-semibold">Loading report data...</span>
+            </div>
+          ) : paginatedRows.length ? (
+            <ReportMobileCards
+              headers={headers}
+              rows={paginatedRows}
+              startIndex={startIndex}
+            />
+          ) : (
+            <p className="p-6 text-center text-sm font-semibold text-muted-foreground">
+              Sorry, there is no matching data to display.
+            </p>
+          )}
         </div>
 
         {/* Pagination Controls */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-between px-4 py-3.5 border-t border-border/60 bg-muted/20">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 py-3.5 border-t border-border/60 bg-muted/20">
             <div className="text-xs font-semibold text-text-muted">
               Showing <span className="font-bold text-text">{startIndex + 1}</span> to{" "}
               <span className="font-bold text-text">
