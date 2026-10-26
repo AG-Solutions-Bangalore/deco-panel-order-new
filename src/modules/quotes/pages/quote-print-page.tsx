@@ -140,11 +140,11 @@ export function QuotePrintPage({ quoteId }: { quoteId: string }) {
 
           <table className="w-full table-fixed border-collapse text-left text-[9px] leading-tight sm:text-[11px] sm:leading-relaxed print:table-auto print:text-[11px] print:leading-relaxed">
             <colgroup>
-              <col className="w-[34%] sm:w-[36%] print:w-auto" />
-              <col className="w-[19%] sm:w-[18%] print:w-auto" />
+              <col className="w-[28%] sm:w-[36%] print:w-auto" />
+              <col className="w-[18%] sm:w-[18%] print:w-auto" />
               <col className="w-[10%] sm:w-[12%] print:w-auto" />
-              <col className="w-[16%] sm:w-[15%] print:w-auto" />
-              <col className="w-[21%] sm:w-[19%] print:w-auto" />
+              <col className="w-[19%] sm:w-[15%] print:w-auto" />
+              <col className="w-[25%] sm:w-[19%] print:w-auto" />
             </colgroup>
             <thead>
               <tr className="border-b border-black/20 font-bold uppercase tracking-tight text-black/80 sm:tracking-wide">
@@ -153,12 +153,12 @@ export function QuotePrintPage({ quoteId }: { quoteId: string }) {
                   <span className="sm:hidden">Size</span>
                   <span className="hidden sm:inline">Dimensions</span>
                 </th>
-                <th className="px-1 py-2 text-right sm:px-2">
+                <th className="px-0.5 py-2 text-right whitespace-nowrap sm:px-2">
                   <span className="sm:hidden">Qty</span>
                   <span className="hidden sm:inline">Quantity</span>
                 </th>
-                <th className="px-1 py-2 text-right sm:px-2">Rate</th>
-                <th className="px-1 py-2 text-right sm:px-2">Amount</th>
+                <th className="px-0.5 py-2 text-right whitespace-nowrap sm:px-2">Rate</th>
+                <th className="px-0.5 py-2 text-right whitespace-nowrap sm:px-2">Amount</th>
               </tr>
             </thead>
             <tbody>
@@ -193,13 +193,14 @@ export function QuotePrintPage({ quoteId }: { quoteId: string }) {
                         ? `${size1} ${item.quotation_sub_size_unit || ""}`
                         : "-"}
                     </td>
-                    <td className="px-1 py-2 text-right font-medium sm:px-2 sm:py-2.5">
-                      {item.quotation_sub_quantity} {item.quotation_sub_unit || "PCS"}
+                    <td className="px-0.5 py-2 text-right font-medium whitespace-nowrap sm:px-2 sm:py-2.5">
+                      {item.quotation_sub_quantity}
+                      <span className="hidden sm:inline"> {item.quotation_sub_unit || "PCS"}</span>
                     </td>
-                    <td className="px-1 py-2 text-right tabular-nums break-words sm:px-2 sm:py-2.5">
+                    <td className="px-0.5 py-2 text-right tabular-nums whitespace-nowrap sm:px-2 sm:py-2.5">
                       Rs. {rate.toFixed(2)}
                     </td>
-                    <td className="px-1 py-2 text-right font-bold tabular-nums break-words sm:px-2 sm:py-2.5">
+                    <td className="px-0.5 py-2 text-right font-bold tabular-nums whitespace-nowrap sm:px-2 sm:py-2.5">
                       Rs. {amount.toFixed(2)}
                     </td>
                   </tr>
@@ -212,7 +213,7 @@ export function QuotePrintPage({ quoteId }: { quoteId: string }) {
                 </td>
                 <td
                   colSpan={4}
-                  className="px-1 py-2.5 text-right text-sm font-black tabular-nums break-words sm:px-2 sm:py-3 sm:text-base"
+                  className="px-0.5 py-2.5 text-right text-sm font-black tabular-nums whitespace-nowrap sm:px-2 sm:py-3 sm:text-base"
                 >
                   Rs. {totalAmount.toFixed(2)}
                 </td>

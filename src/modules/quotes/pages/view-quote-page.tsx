@@ -250,11 +250,11 @@ export function ViewQuotePage({ quoteId }: ViewQuotePageProps) {
             <div className="w-full">
               <table className="w-full table-fixed text-left border-collapse text-[10px] leading-tight sm:text-xs md:text-sm print:table-auto print:text-xs">
                 <colgroup>
-                  <col className="w-[34%] sm:w-[36%]" />
-                  <col className="w-[19%] sm:w-[18%]" />
+                  <col className="w-[28%] sm:w-[36%]" />
+                  <col className="w-[18%] sm:w-[18%]" />
                   <col className="w-[10%] sm:w-[12%]" />
-                  <col className="w-[16%] sm:w-[15%]" />
-                  <col className="w-[21%] sm:w-[19%]" />
+                  <col className="w-[19%] sm:w-[15%]" />
+                  <col className="w-[25%] sm:w-[19%]" />
                 </colgroup>
                 <thead>
                   <tr className="border-b border-border/60 text-[8.5px] sm:text-[11px] font-bold text-text-muted uppercase tracking-tight sm:tracking-wider print:text-black print:border-black/20">
@@ -263,12 +263,12 @@ export function ViewQuotePage({ quoteId }: ViewQuotePageProps) {
                       <span className="sm:hidden">Size</span>
                       <span className="hidden sm:inline">Dimensions</span>
                     </th>
-                    <th className="py-2 px-1 sm:py-2.5 sm:px-3 text-right">
+                    <th className="py-2 px-0.5 sm:py-2.5 sm:px-3 text-right whitespace-nowrap">
                       <span className="sm:hidden">Qty</span>
                       <span className="hidden sm:inline">Quantity</span>
                     </th>
-                    <th className="py-2 px-1 sm:py-2.5 sm:px-3 text-right">Rate</th>
-                    <th className="py-2 px-1 sm:py-2.5 sm:px-3 text-right">Amount</th>
+                    <th className="py-2 px-0.5 sm:py-2.5 sm:px-3 text-right whitespace-nowrap">Rate</th>
+                    <th className="py-2 px-0.5 sm:py-2.5 sm:px-3 text-right whitespace-nowrap">Amount</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -310,14 +310,14 @@ export function ViewQuotePage({ quoteId }: ViewQuotePageProps) {
                         <td className="py-2 px-1 sm:py-3 sm:px-3 text-center font-medium text-text break-words print:text-black">
                           {sizeLabel}
                         </td>
-                        <td className="py-2 px-1 sm:py-3 sm:px-3 text-right font-medium text-text print:text-black">
+                        <td className="py-2 px-0.5 sm:py-3 sm:px-3 text-right font-medium text-text whitespace-nowrap print:text-black">
                           {item.quotation_sub_quantity}
                           {/* {item.quotation_sub_unit || "PCS"} */}
                         </td>
-                        <td className="py-2 px-1 sm:py-3 sm:px-3 text-right font-medium text-text break-words tabular-nums print:text-black">
+                        <td className="py-2 px-0.5 sm:py-3 sm:px-3 text-right font-medium text-text whitespace-nowrap tabular-nums print:text-black">
                           ₹{rate.toFixed(2)}
                         </td>
-                        <td className="py-2 px-1 sm:py-3 sm:px-3 text-right font-bold text-text break-words tabular-nums print:text-black">
+                        <td className="py-2 px-0.5 sm:py-3 sm:px-3 text-right font-bold text-text whitespace-nowrap tabular-nums print:text-black">
                           ₹{amount.toFixed(2)}
                         </td>
                       </tr>
@@ -331,7 +331,7 @@ export function ViewQuotePage({ quoteId }: ViewQuotePageProps) {
                     </td>
                     <td
                       colSpan={4}
-                      className="py-2.5 px-1 sm:py-3.5 sm:px-3 text-right text-sm sm:text-lg text-primary print:text-black font-black break-words tabular-nums"
+                      className="py-2.5 px-0.5 sm:py-3.5 sm:px-3 text-right text-sm sm:text-lg text-primary print:text-black font-black whitespace-nowrap tabular-nums"
                     >
                       ₹{totalAmount.toFixed(2)}
                     </td>
