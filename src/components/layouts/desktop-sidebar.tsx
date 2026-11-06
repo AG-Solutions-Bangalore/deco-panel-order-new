@@ -158,6 +158,17 @@ export function DesktopSidebar() {
             isActive = reportRoutes.some((route) => pathname?.startsWith(route));
           }
 
+          if (item.name === "Reports") {
+            const reportRoutes = [
+              "/product-report",
+              "/order-report",
+              "/quotation-report",
+              "/order-view-report",
+              "/quotation-view-report",
+            ];
+            isActive = reportRoutes.some((route) => pathname?.startsWith(route));
+          }
+
           return (
             <Link
               key={item.name}
